@@ -4,10 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
+Django = "*"
 djangorestframework = "*"
 
 [dev-packages]
+flake8 = "*"
+black = "==19.3b0"
 
 [requires]
 python_version = "3.7"

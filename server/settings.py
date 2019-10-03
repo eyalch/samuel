@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "apps.users",
+    "apps.dishes",
 ]
 
 MIDDLEWARE = [
@@ -116,3 +117,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 
 AUTH_USER_MODEL = "users.User"
+
+# MEDIA_ROOT = f"{BASE_DIR}/media/"
+MEDIA_ROOT = "media/"
+MEDIA_URL = "/media/"

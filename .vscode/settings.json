@@ -1,5 +1,7 @@
 {
-  "editor.rulers": [88],
+  "[python]": {
+    "editor.rulers": [88]
+  },
   "python.pythonPath": ".venv/bin/python",
   "python.formatting.provider": "black",
   "python.linting.flake8Enabled": true,
@@ -12,5 +14,8 @@
     "**/CVS": true,
     "**/.DS_Store": true,
     "**/.venv": true
-  }
+  },
+  "eslint.workingDirectories": [
+    { "directory": "./frontend", "changeProcessCWD": true }
+  ]
 }

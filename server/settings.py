@@ -25,7 +25,7 @@ SECRET_KEY = "b*ziowqvps)mxfdtm&c!o(u5&3b*_ub)-e+1mor+xf5qbnkjq)"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -132,3 +132,8 @@ AUTH_USER_MODEL = "users.User"
 MEDIA_ROOT = "media/"
 
 MEDIA_URL = "/media/"
+
+
+# Django REST Framework
+
+REST_FRAMEWORK = {}

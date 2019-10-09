@@ -16,7 +16,7 @@ class OptionalSlashRouter(DefaultRouter):
 router = OptionalSlashRouter()
 router.register("dishes", views.DishViewSet)
 
-urlpatterns = [path("admin/", admin.site.urls), path("", include(router.urls))]
+urlpatterns = [path("admin/", admin.site.urls), path("api/", include(router.urls))]
 
 # Serve media
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

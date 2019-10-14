@@ -1,11 +1,6 @@
-.vscode/
-frontend/
 mediafiles/
-nginx/
 staticfiles/
 .git*
 *.env*
 .venv/
-docker-compose*
-tmux.sh
 db.sqlite3

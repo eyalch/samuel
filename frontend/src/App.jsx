@@ -5,9 +5,6 @@ import styled from 'styled-components'
 import DishList from './DishList'
 import Layout from './Layout'
 
-const sleep = timeout =>
-  new Promise((resolve, _) => setTimeout(resolve, timeout))
-
 const StyledProgress = styled(CircularProgress)`
   display: block;
   margin: auto;

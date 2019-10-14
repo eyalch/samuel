@@ -6,8 +6,10 @@ name = "pypi"
 [packages]
 Django = "*"
 djangorestframework = "*"
-pillow = "*"
+Pillow = "*"
 psycopg2 = "*"
+gunicorn = "*"
+django-environ = "*"
 
 [dev-packages]
 flake8 = "*"

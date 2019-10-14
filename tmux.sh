@@ -7,7 +7,7 @@ tmux start-server
 tmux new-session -d -s $SESSION
 
 # Start the Django server
-tmux send-keys "pipenv run ./manage.py runserver 0.0.0.0:8000" C-m
+tmux send-keys "docker-compose up -d && docker-compose logs -f --tail=0" C-m
 
 # Split the window into 2 panes and select the new one
 # left (70%) / right (30%)

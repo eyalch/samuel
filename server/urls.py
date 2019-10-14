@@ -14,7 +14,7 @@ class OptionalSlashRouter(DefaultRouter):
 
 
 router = OptionalSlashRouter()
-router.register("dishes", views.DishViewSet)
+router.register("dishes", views.DishViewSet, base_name="dishes")
 
 urlpatterns = [path("admin/", admin.site.urls), path("api/", include(router.urls))]
 

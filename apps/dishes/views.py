@@ -7,5 +7,7 @@ from .models import Dish
 
 
 class DishViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = Dish.objects.filter(next_date__date=datetime.today())
     serializer_class = DishSerializer
+
+    def get_queryset(self):
+        return Dish.objects.filter(next_date__date=datetime.today())

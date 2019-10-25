@@ -1,6 +1,10 @@
+from datetime import datetime
+
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+
+from dishes.models import Order
 
 
 class UserManager(BaseUserManager):
@@ -45,3 +49,10 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+    def did_order_today(self):
+        try:
+            Order.objects.get(user=self, created_at__date=datetime.today())
+            return True
+        except Order.DoesNotExist:
+            return False

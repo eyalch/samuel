@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 
 import environ
+import ldap
+from django_auth_ldap.config import LDAPSearch
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -132,7 +134,51 @@ FILE_UPLOAD_PERMISSIONS = 0o644
 
 AUTH_USER_MODEL = "users.User"
 
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "users.backend.CustomLDAPBackend",
+)
+
 
 # Django REST Framework
 
-REST_FRAMEWORK = {}
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ]
+}
+
+
+# LDAP authentication
+
+AUTH_LDAP_SERVER_URI = env.str("AD_SERVER")
+
+AUTH_LDAP_BIND_DN = env.str("AD_EMAIL")
+AUTH_LDAP_BIND_PASSWORD = env.str("AD_PASS")
+
+base_dn = env.str("AD_BASE_DN")
+AUTH_LDAP_USER_SEARCH = LDAPSearch(base_dn, ldap.SCOPE_SUBTREE, "mail=%(user)s")
+
+# Populate the Django user from the LDAP directory.
+AUTH_LDAP_USER_ATTR_MAP = {
+    "email": "mail",
+    "first_name": "givenName",
+    "last_name": "sn",
+}
+
+AUTH_LDAP_ALWAYS_UPDATE_USER = True
+
+# Minimize LDAP traffic
+AUTH_LDAP_CACHE_TIMEOUT = 3600
+
+# This is needed for Active Directory (no idea why)
+AUTH_LDAP_CONNECTION_OPTIONS = {ldap.OPT_REFERRALS: 0}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "loggers": {"django_auth_ldap": {"level": "DEBUG", "handlers": ["console"]}},
+}

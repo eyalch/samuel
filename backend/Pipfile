@@ -4,12 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-Django = "*"
-djangorestframework = "*"
-Pillow = "*"
-psycopg2 = "*"
-gunicorn = "*"
-django-environ = "*"
+Django = "==2.2.*"
+djangorestframework = "==3.10.*"
+Pillow = "==6.2.*"
+psycopg2 = "==2.8.*"
+gunicorn = "==19.9.*"
+django-environ = "==0.4.*"
+python-ldap = "==3.2.*"
+django-auth-ldap = "==2.0.*"
+djangorestframework-simplejwt = "==4.3.*"
 
 [dev-packages]
 flake8 = "*"

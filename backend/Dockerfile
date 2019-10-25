@@ -10,14 +10,16 @@ RUN apk update \
     # psycopg2 dependencies
     && apk add postgresql-dev \
     # Pillow dependencies
-    && apk add jpeg-dev zlib-dev freetype-dev lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev
+    && apk add jpeg-dev zlib-dev freetype-dev lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev \
+    # OpenLDAP
+    && apk add openldap-dev
 
 # Install pipenv
 RUN pip install pipenv
 
 # Install dependencies
 COPY Pipfile Pipfile.lock ./
-RUN pipenv install --system --ignore-pipfile --deploy
+RUN pipenv install --system --deploy
 
 # Copy source-code
 COPY . .

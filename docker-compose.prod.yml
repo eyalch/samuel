@@ -1,13 +1,6 @@
 version: '3.6'
 
 services:
-  db:
-    image: postgres:12.0-alpine
-    env_file: .db.env
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    restart: always
-
   backend:
     build: ./backend
     command: gunicorn samuel.wsgi:application --bind 0.0.0.0:8000
@@ -17,8 +10,6 @@ services:
       - backend_staticfiles:/app/staticfiles
       - backend_mediafiles:/app/mediafiles
     env_file: .env
-    depends_on:
-      - db
     restart: always
 
   frontend:
@@ -39,7 +30,6 @@ services:
     restart: always
 
 volumes:
-  postgres_data:
   backend_staticfiles:
   backend_mediafiles:
   frontend_build:

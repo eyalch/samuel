@@ -21,5 +21,3 @@ RUN pipenv install --system --ignore-pipfile --deploy
 
 # Copy source-code
 COPY . .
-
-ENTRYPOINT [ "/app/entrypoint.sh" ]

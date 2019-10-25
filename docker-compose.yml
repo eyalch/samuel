@@ -8,10 +8,6 @@ services:
       - ./backend:/app
       - /app/.venv/ # Don't copy the .venv directory
     network_mode: host
+    env_file: .env
     environment:
       PYTHONDONTWRITEBYTECODE: 1
-      ENV: DEV
-      DEBUG: 'on'
-      SECRET_KEY: ad@i+gons+sq8dx_*i#a8zgy8@h(lg2c92y)2c*v77+=hrvy1q
-      ALLOWED_HOSTS: pluto,10.0.0.11
-      DATABASE_URL: psql://postgres:postgres@db:5432/samuel_dev

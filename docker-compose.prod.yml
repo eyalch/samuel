@@ -12,17 +12,13 @@ services:
     env_file: .env
     restart: always
 
-  frontend:
-    build: ./frontend
-    volumes:
-      - frontend_build:/app/build
-
   nginx:
-    build: ./nginx
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
     volumes:
       - backend_staticfiles:/staticfiles:ro
       - backend_mediafiles:/mediafiles:ro
-      - frontend_build:/usr/share/nginx/html:ro
     ports:
       - 1337:80
     depends_on:
@@ -32,4 +28,3 @@ services:
 volumes:
   backend_staticfiles:
   backend_mediafiles:
-  frontend_build:

@@ -11,7 +11,9 @@
       "program": "${workspaceFolder}/backend/manage.py",
       "args": ["runserver", "--noreload"],
       "django": true,
-      "justMyCode": false
+      "justMyCode": false,
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart"
     }
   ]
 }

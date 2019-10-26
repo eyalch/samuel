@@ -14,10 +14,12 @@ const StyledMain = styled.main`
   animation-delay: ${LOGO_ANIMATION_DELAY + LOGO_ANIMATION_DURATION}ms; */
 `
 
-export default ({ children }) => (
+const Layout = ({ children }) => (
   <Container>
     <Header />
 
     <StyledMain>{children}</StyledMain>
   </Container>
 )
+
+export default Layout

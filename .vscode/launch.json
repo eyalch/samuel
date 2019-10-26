@@ -9,7 +9,7 @@
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}/backend/manage.py",
-      "args": ["runserver", "--noreload"],
+      "args": ["runserver", "--noreload", "0.0.0.0:8000"],
       "django": true,
       "justMyCode": false,
       "console": "internalConsole",

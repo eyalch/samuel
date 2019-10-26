@@ -13,12 +13,12 @@ const StyledDishes = styled.ul`
   padding-bottom: ${p => p.theme.spacing(4)}px;
 `
 
-export default function DishList({ dishes }) {
-  return (
-    <StyledDishes>
-      {dishes.map(dish => (
-        <Dish key={dish.id} dish={dish} />
-      ))}
-    </StyledDishes>
-  )
-}
+const DishList = ({ dishes }) => (
+  <StyledDishes>
+    {dishes.map(dish => (
+      <Dish key={dish.id} dish={dish} />
+    ))}
+  </StyledDishes>
+)
+
+export default DishList

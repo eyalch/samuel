@@ -24,8 +24,10 @@ const StyledLogo = styled.img`
   animation-delay: ${LOGO_ANIMATION_DELAY}ms; */
 `
 
-export default () => (
+const Header = () => (
   <StyledHeader>
     <StyledLogo src={logo} alt="logo" />
   </StyledHeader>
 )
+
+export default Header

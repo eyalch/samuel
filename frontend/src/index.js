@@ -3,8 +3,12 @@ import { createMuiTheme } from '@material-ui/core/styles'
 import { StylesProvider, ThemeProvider } from '@material-ui/styles'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { ThemeProvider as StyledThemeProvider } from 'styled-components'
+import {
+  createGlobalStyle,
+  ThemeProvider as StyledThemeProvider,
+} from 'styled-components'
 import App from './App'
+import { DishesProvider } from './DishesProvider'
 import * as serviceWorker from './serviceWorker'
 
 const theme = createMuiTheme({
@@ -20,13 +24,22 @@ const theme = createMuiTheme({
   },
 })
 
+const GlobalStyles = createGlobalStyle`
+  :root {
+    direction: rtl;
+  }
+`
+
 const app = (
   <ThemeProvider theme={theme}>
     <StyledThemeProvider theme={theme}>
       <StylesProvider injectFirst>
         <CssBaseline />
+        <GlobalStyles />
 
-        <App />
+        <DishesProvider>
+          <App />
+        </DishesProvider>
       </StylesProvider>
     </StyledThemeProvider>
   </ThemeProvider>

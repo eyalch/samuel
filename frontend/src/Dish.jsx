@@ -22,7 +22,7 @@ const StyledCardMedia = styled(({ isPlaceholder, ...props }) => (
     p.isPlaceholder ? `auto calc(100% - ${p.theme.spacing(4)}px)` : 'cover'};
 `
 
-export default function Dish({ dish }) {
+const Dish = ({ dish }) => {
   return (
     <Card component="li">
       <StyledCardActionArea>
@@ -42,3 +42,5 @@ export default function Dish({ dish }) {
     </Card>
   )
 }
+
+export default Dish

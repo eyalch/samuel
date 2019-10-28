@@ -1,6 +1,8 @@
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { createMuiTheme } from '@material-ui/core/styles'
-import { StylesProvider, ThemeProvider } from '@material-ui/styles'
+import { jssPreset, StylesProvider, ThemeProvider } from '@material-ui/styles'
+import { create as createJss } from 'jss'
+import rtl from 'jss-rtl'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import {
@@ -8,7 +10,6 @@ import {
   ThemeProvider as StyledThemeProvider,
 } from 'styled-components'
 import App from './App'
-import { DishesProvider } from './DishesProvider'
 import * as serviceWorker from './serviceWorker'
 
 const theme = createMuiTheme({
@@ -24,6 +25,18 @@ const theme = createMuiTheme({
   },
 })
 
+// Since we can't use both `jss` and `injectFirst` on <StylesProvider>, we're
+// mimicking the behavior of `injectFirst`. This is actually very similar to
+// the source code of Material UI for handling `injectFirst`.
+const head = document.head
+const injectFirstNode = document.createElement('mui-inject-first')
+head.insertBefore(injectFirstNode, head.firstChild)
+
+const jss = createJss({
+  plugins: [...jssPreset().plugins, rtl()],
+  insertionPoint: injectFirstNode,
+})
+
 const GlobalStyles = createGlobalStyle`
   :root {
     direction: rtl;
@@ -33,13 +46,11 @@ const GlobalStyles = createGlobalStyle`
 const app = (
   <ThemeProvider theme={theme}>
     <StyledThemeProvider theme={theme}>
-      <StylesProvider injectFirst>
+      <StylesProvider jss={jss}>
         <CssBaseline />
         <GlobalStyles />
 
-        <DishesProvider>
-          <App />
-        </DishesProvider>
+        <App />
       </StylesProvider>
     </StyledThemeProvider>
   </ThemeProvider>

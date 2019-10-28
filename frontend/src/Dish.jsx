@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography'
 import React from 'react'
 import styled from 'styled-components'
 import placeholderImage from './placeholder.png'
+import { useDishes } from './DishesProvider'
 
 const StyledCardActionArea = styled(CardActionArea)`
   height: 100%;
@@ -23,9 +24,11 @@ const StyledCardMedia = styled(({ isPlaceholder, ...props }) => (
 `
 
 const Dish = ({ dish }) => {
+  const { orderDish } = useDishes()
+
   return (
     <Card component="li">
-      <StyledCardActionArea>
+      <StyledCardActionArea onClick={() => orderDish(dish.id)}>
         <StyledCardMedia
           image={dish.image || placeholderImage}
           isPlaceholder={!dish.image}

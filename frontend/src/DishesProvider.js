@@ -1,10 +1,23 @@
 import React, { createContext, useContext } from 'react'
+import { useAuth } from './AuthProvider'
+import { GET } from './httpHelpers'
 
 const DishesContext = createContext()
 
 export const DishesProvider = ({ children }) => {
+  const { isAuthenticated, setShowAuthDialog } = useAuth()
+
+  const orderDish = async dishId => {
+    if (isAuthenticated()) {
+      console.log(`Ordering dish #${dishId}`)
+    } else {
+      setShowAuthDialog(true)
+    }
+  }
+
   const value = {
     fetchDishes,
+    orderDish,
   }
 
   return (
@@ -14,8 +27,4 @@ export const DishesProvider = ({ children }) => {
 
 export const useDishes = () => useContext(DishesContext)
 
-const fetchDishes = async () => {
-  const res = await fetch('/api/dishes')
-  const dishes = await res.json()
-  return dishes
-}
+const fetchDishes = () => GET('/api/dishes/')

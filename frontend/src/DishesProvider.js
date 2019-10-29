@@ -27,4 +27,4 @@ export const DishesProvider = ({ children }) => {
 
 export const useDishes = () => useContext(DishesContext)
 
-const fetchDishes = () => GET('/api/dishes/')
+const fetchDishes = () => GET('/api/dishes/').then(res => res.json())

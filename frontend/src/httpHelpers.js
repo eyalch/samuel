@@ -1,4 +1,6 @@
-export const GET = url => fetch(url).then(res => res.json())
+import './monkeyFetch'
+
+export const GET = url => fetch(url)
 
 export const POST = (url, body) =>
   fetch(url, {

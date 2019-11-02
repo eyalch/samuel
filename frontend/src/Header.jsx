@@ -11,9 +11,14 @@ const introKeyframes = keyframes`
 `
 
 const StyledHeader = styled.header`
-  padding-top: ${p => p.theme.spacing(4)}px;
-  padding-bottom: ${p => p.theme.spacing(5)}px;
+  padding-top: ${p => p.theme.spacing(3)}px;
+  padding-bottom: ${p => p.theme.spacing(3)}px;
   text-align: center;
+
+  ${p => p.theme.breakpoints.up('sm')} {
+    padding-top: ${p => p.theme.spacing(4)}px;
+    padding-bottom: ${p => p.theme.spacing(5)}px;
+  }
 `
 const StyledLogo = styled.img`
   width: 45vmin;

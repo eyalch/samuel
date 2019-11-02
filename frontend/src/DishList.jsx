@@ -7,10 +7,15 @@ const StyledDishes = styled.ul`
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, max-content));
-  grid-gap: ${p => p.theme.spacing(4)}px;
   justify-content: center;
-  padding-bottom: ${p => p.theme.spacing(4)}px;
+  grid-gap: ${p => p.theme.spacing(2)}px;
+  padding-bottom: ${p => p.theme.spacing(2)}px;
+
+  ${p => p.theme.breakpoints.up('sm')} {
+    grid-template-columns: repeat(auto-fill, 360px);
+    grid-gap: ${p => p.theme.spacing(4)}px;
+    padding-bottom: ${p => p.theme.spacing(4)}px;
+  }
 `
 
 const DishList = ({ dishes }) => (

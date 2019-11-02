@@ -50,9 +50,9 @@ class User(AbstractUser):
 
     objects = UserManager()
 
-    def did_order_today(self):
+    def did_order_dish_today(self, dish):
         try:
-            Order.objects.get(user=self, created_at__date=datetime.today())
+            Order.objects.get(user=self, created_at__date=datetime.today(), dish=dish)
             return True
         except Order.DoesNotExist:
             return False

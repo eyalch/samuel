@@ -11,16 +11,12 @@ const StyledProgress = styled(CircularProgress)`
 `
 
 const DishesPage = () => {
-  const [dishes, setDishes] = useState([])
   const [loading, setLoading] = useState(true)
 
-  const { fetchDishes } = useDishes()
+  const { dishes, fetchDishes } = useDishes()
 
   useEffect(() => {
-    fetchDishes().then(dishes => {
-      setDishes(dishes)
-      setLoading(false)
-    })
+    fetchDishes().then(() => setLoading(false))
   }, [fetchDishes])
 
   return (

@@ -2,7 +2,10 @@ version: '3.6'
 
 services:
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      args:
+        TIME_ZONE: $TIME_ZONE
     command: gunicorn samuel.wsgi:application --bind 0.0.0.0:8000
     expose:
       - 8000

@@ -1,7 +1,6 @@
-from datetime import datetime
-
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from dishes.models import Order
@@ -52,7 +51,7 @@ class User(AbstractUser):
 
     def did_order_dish_today(self, dish):
         try:
-            Order.objects.get(user=self, created_at__date=datetime.today(), dish=dish)
+            Order.objects.get(user=self, created_at__date=timezone.now(), dish=dish)
             return True
         except Order.DoesNotExist:
             return False

@@ -12,7 +12,9 @@ RUN apk update \
     # Pillow dependencies
     && apk add jpeg-dev zlib-dev freetype-dev lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev \
     # OpenLDAP
-    && apk add openldap-dev
+    && apk add openldap-dev \
+    # Time Zone Database
+    && apk add --no-cache tzdata
 
 # Install pipenv
 RUN pip install pipenv
@@ -20,6 +22,11 @@ RUN pip install pipenv
 # Install dependencies
 COPY Pipfile Pipfile.lock ./
 RUN pipenv install --system --deploy
+
+# Set time zone
+ARG TIME_ZONE
+RUN ln -snf /usr/share/zoneinfo/$TIME_ZONE /etc/localtime \
+    && echo $TIME_ZONE > /etc/timezone
 
 # Copy source-code
 COPY . .

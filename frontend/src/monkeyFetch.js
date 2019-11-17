@@ -1,4 +1,5 @@
 import { getAccessToken, refreshToken } from './AuthProvider'
+import endpoints from './endpoints'
 
 // Monkey-patch the `fetch` function to include an access token (if exists) and
 // handle common errors (e.g auto-refresh expired token)
@@ -21,9 +22,13 @@ fetch = (originalFetch => async (path, options = {}) => {
 
     // If the token is invalid then we refresh it and retry the request
     if (data.code === 'token_not_valid') {
-      await refreshToken()
+      // If the refresh token itself is invalid, we just return the response
+      if (path === endpoints.REFRESH_TOKEN) return res
 
-      res = await fetch(path, options)
+      // Retry the request only if the token was successfully refreshed
+      if (await refreshToken()) {
+        res = await fetch(path, options)
+      }
     }
   }
 

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react'
+import endpoints from './endpoints'
 import { POST } from './httpHelpers'
 
 const ACCESS_TOKEN_KEY = 'access_token'
@@ -16,7 +17,7 @@ export const AuthProvider = ({ children }) => {
     // Reset the error (hide the snackbar)
     setWrongCredentialsError(false)
 
-    const res = await POST('/api/token/', { email, password })
+    const res = await POST(endpoints.TOKEN, { email, password })
     const data = await res.json()
 
     if (res.ok) {
@@ -51,10 +52,18 @@ export const refreshToken = async () => {
 
   const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY)
 
-  const res = await POST('/api/token/refresh/', { refresh: refreshToken })
+  const res = await POST(endpoints.REFRESH_TOKEN, { refresh: refreshToken })
   const data = await res.json()
+
+  // If the refresh token is invalid, we remove it
+  if (data.code === 'token_not_valid') {
+    localStorage.removeItem(REFRESH_TOKEN_KEY)
+    return false
+  }
 
   // Update both tokens
   localStorage.setItem(ACCESS_TOKEN_KEY, data.access)
   localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh)
+
+  return true
 }

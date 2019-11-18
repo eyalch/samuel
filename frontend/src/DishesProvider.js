@@ -7,6 +7,7 @@ const DishesContext = createContext()
 
 export const DishesProvider = ({ children }) => {
   const [dishes, setDishes] = useState([])
+  const [orderSuccess, setOrderSuccess] = useState(false)
 
   const { isAuthenticated, setShowAuthDialog } = useAuth()
 
@@ -19,6 +20,7 @@ export const DishesProvider = ({ children }) => {
   const orderDishOrAuthenticate = async dishId => {
     if (isAuthenticated()) {
       await POST(endpoints.ORDER_DISH(dishId))
+      setOrderSuccess(true)
       setDishes(prevDishes =>
         prevDishes.map(dish => ({
           ...dish,
@@ -34,6 +36,8 @@ export const DishesProvider = ({ children }) => {
     dishes,
     fetchDishes,
     orderDish: orderDishOrAuthenticate,
+    orderSuccess,
+    hideOrderSuccess: () => setOrderSuccess(false),
   }
 
   return (

@@ -9,13 +9,15 @@ const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
   const [showAuthDialog, setShowAuthDialog] = useState(false)
-  const [wrongCredentialsError, setWrongCredentialsError] = useState(false)
+  const [showWrongCredentialsError, setShowWrongCredentialsError] = useState(
+    false
+  )
 
   const isAuthenticated = () => localStorage.getItem(ACCESS_TOKEN_KEY) !== null
 
   const authenticate = async (email, password) => {
-    // Reset the error (hide the snackbar)
-    setWrongCredentialsError(false)
+    // Hide the error
+    setShowWrongCredentialsError(false)
 
     const res = await POST(endpoints.TOKEN, { email, password })
     const data = await res.json()
@@ -26,7 +28,7 @@ export const AuthProvider = ({ children }) => {
 
       setShowAuthDialog(false)
     } else if (data.code === 'authentication_failed') {
-      setWrongCredentialsError(true)
+      setShowWrongCredentialsError(true)
     }
   }
 
@@ -35,8 +37,8 @@ export const AuthProvider = ({ children }) => {
     setShowAuthDialog,
     isAuthenticated,
     authenticate,
-    wrongCredentialsError,
-    setWrongCredentialsError,
+    showWrongCredentialsError,
+    hideWrongCredentialsError: () => setShowWrongCredentialsError(false),
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

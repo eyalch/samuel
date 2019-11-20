@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { useDishes } from './DishesProvider'
 import DishList from './DishList'
-import Snackbar from './Snackbar'
+import Snackbar from '../common/Snackbar'
 import { TimeLeft } from './TimeLeft'
 
 const StyledProgress = styled(CircularProgress)`

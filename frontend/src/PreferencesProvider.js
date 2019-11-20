@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react'
-import { GET } from './httpHelpers'
-import endpoints from './endpoints'
+import { GET } from './api/httpHelpers'
+import endpoints from './api/endpoints'
 
 const PreferencesContext = createContext()
 

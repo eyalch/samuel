@@ -10,8 +10,8 @@ import React from 'react'
 import styled from 'styled-components'
 import * as yup from 'yup'
 import { useAuth } from './AuthProvider'
-import { TextFormField } from './FormFields'
-import Snackbar from './Snackbar'
+import { TextFormField } from '../common/FormFields'
+import Snackbar from '../common/Snackbar'
 
 const LoadingButtonContainer = styled.div`
   position: relative;

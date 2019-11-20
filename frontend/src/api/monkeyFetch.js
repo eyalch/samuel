@@ -1,4 +1,4 @@
-import { getAccessToken, refreshToken } from './AuthProvider'
+import { getAccessToken, refreshToken } from '../auth/AuthProvider'
 import endpoints from './endpoints'
 
 // Monkey-patch the `fetch` function to include an access token (if exists) and

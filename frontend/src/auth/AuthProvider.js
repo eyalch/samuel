@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react'
-import endpoints from './endpoints'
-import { POST } from './httpHelpers'
+import endpoints from '../api/endpoints'
+import { POST } from '../api/httpHelpers'
 
 const ACCESS_TOKEN_KEY = 'access_token'
 const REFRESH_TOKEN_KEY = 'refresh_token'

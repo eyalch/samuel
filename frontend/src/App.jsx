@@ -1,9 +1,9 @@
 import React from 'react'
-import AuthDialog from './AuthDialog'
-import { AuthProvider } from './AuthProvider'
-import DishesPage from './DishesPage'
-import { DishesProvider } from './DishesProvider'
-import Layout from './Layout'
+import AuthDialog from './auth/AuthDialog'
+import { AuthProvider } from './auth/AuthProvider'
+import DishesPage from './dishes/DishesPage'
+import { DishesProvider } from './dishes/DishesProvider'
+import Layout from './layout/Layout'
 import { PreferencesProvider } from './PreferencesProvider'
 
 const App = () => (

@@ -5,10 +5,10 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import { useAuth } from './AuthProvider'
-import endpoints from './endpoints'
-import { GET, POST } from './httpHelpers'
-import { usePreferences } from './PreferencesProvider'
+import { useAuth } from '../auth/AuthProvider'
+import endpoints from '../api/endpoints'
+import { GET, POST } from '../api/httpHelpers'
+import { usePreferences } from '../PreferencesProvider'
 
 const DishesContext = createContext()
 

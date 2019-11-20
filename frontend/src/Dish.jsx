@@ -48,7 +48,7 @@ const BigCheckIcon = styled(CheckCircleIcon)`
 const Dish = ({ dish }) => {
   const [loading, setLoading] = useState(false)
 
-  const { orderDish } = useDishes()
+  const { orderDish, hasTimeLeft } = useDishes()
 
   const handleOrder = async () => {
     if (dish.did_user_order_today) return
@@ -62,7 +62,7 @@ const Dish = ({ dish }) => {
     <Card component="li" style={{ position: 'relative' }}>
       <StyledCardActionArea
         onClick={handleOrder}
-        disabled={dish.did_user_order_today}>
+        disabled={dish.did_user_order_today || !hasTimeLeft}>
         <StyledCardMedia
           image={dish.image || placeholderImage}
           isPlaceholder={!dish.image}

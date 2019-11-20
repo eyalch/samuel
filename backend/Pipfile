@@ -13,6 +13,7 @@ django-environ = "==0.4.*"
 python-ldap = "==3.2.*"
 django-auth-ldap = "==2.0.*"
 djangorestframework-simplejwt = "==4.3.*"
+django-dynamic-preferences = "==1.8"
 
 [dev-packages]
 flake8 = "*"

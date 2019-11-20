@@ -1,11 +1,13 @@
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Typography from '@material-ui/core/Typography'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
+import TimerOffIcon from '@material-ui/icons/TimerOff'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { useDishes } from './DishesProvider'
 import DishList from './DishList'
 import Snackbar from './Snackbar'
+import { TimeLeft } from './TimeLeft'
 
 const StyledProgress = styled(CircularProgress)`
   display: block;
@@ -15,18 +17,29 @@ const StyledProgress = styled(CircularProgress)`
 const DishesPage = () => {
   const [loading, setLoading] = useState(true)
 
-  const { dishes, fetchDishes, orderSuccess, hideOrderSuccess } = useDishes()
+  const {
+    dishes,
+    fetchDishes,
+    orderSuccess,
+    hideOrderSuccess,
+    allowOrdersUntil,
+    timeIsUpError,
+    hideTimeIsUpError,
+  } = useDishes()
 
   useEffect(() => {
     fetchDishes().then(() => setLoading(false))
   }, [fetchDishes])
 
   return (
-    <div>
-      {loading ? (
+    <>
+      {loading || allowOrdersUntil === undefined ? (
         <StyledProgress color="inherit" />
       ) : dishes.length ? (
-        <DishList dishes={dishes} />
+        <>
+          <TimeLeft />
+          <DishList dishes={dishes} />
+        </>
       ) : (
         <Typography variant="h4" component="p" align="center">
           אין מנות להיום
@@ -40,7 +53,15 @@ const DishesPage = () => {
         icon={CheckCircleIcon}
         message="ההזמנה התקבלה!"
       />
-    </div>
+
+      <Snackbar
+        open={timeIsUpError}
+        onClose={hideTimeIsUpError}
+        messageId="time-is-up-message"
+        icon={TimerOffIcon}
+        message="לא נותר זמן לביצוע הזמנה!"
+      />
+    </>
   )
 }
 

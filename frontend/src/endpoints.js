@@ -1,6 +1,9 @@
 const ep = path => `/api/${path}/`
 
 export default {
+  // Preferences
+  PREFERENCES: ep('preferences'),
+
   // Auth
   TOKEN: ep('token'),
   REFRESH_TOKEN: ep('token/refresh'),

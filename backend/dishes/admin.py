@@ -45,6 +45,7 @@ class DishAdmin(admin.ModelAdmin):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ("dish", "created_at")
     list_filter = ("created_at", "dish")
+    list_display_links = None
 
     def has_add_permission(self, request, obj=None):
         return False

@@ -13,7 +13,8 @@ export const AuthProvider = ({ children }) => {
     false
   )
 
-  const isAuthenticated = () => localStorage.getItem(ACCESS_TOKEN_KEY) !== null
+  const checkIsAuthenticated = () =>
+    localStorage.getItem(ACCESS_TOKEN_KEY) !== null
 
   const authenticate = async (email, password) => {
     // Hide the error
@@ -35,7 +36,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     showAuthDialog,
     setShowAuthDialog,
-    isAuthenticated,
+    checkIsAuthenticated,
     authenticate,
     showWrongCredentialsError,
     hideWrongCredentialsError: () => setShowWrongCredentialsError(false),

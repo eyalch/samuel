@@ -55,3 +55,6 @@ class User(AbstractUser):
             return True
         except Order.DoesNotExist:
             return False
+
+    def list_todays_orders(self):
+        return Order.objects.filter(user=self, created_at__date=timezone.now())

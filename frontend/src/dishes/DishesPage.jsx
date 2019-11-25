@@ -25,6 +25,8 @@ const DishesPage = () => {
     allowOrdersUntil,
     timeIsUpError,
     hideTimeIsUpError,
+    cancelOrderSuccess,
+    hideCancelOrderSuccess,
   } = useDishes()
 
   useEffect(() => {
@@ -52,6 +54,14 @@ const DishesPage = () => {
         messageId="order-success-message"
         icon={CheckCircleIcon}
         message="ההזמנה התקבלה!"
+      />
+
+      <Snackbar
+        open={cancelOrderSuccess}
+        onClose={hideCancelOrderSuccess}
+        messageId="cancel-order-success-message"
+        icon={CheckCircleIcon}
+        message="ההזמנה בוטלה"
       />
 
       <Snackbar

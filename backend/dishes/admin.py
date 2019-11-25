@@ -1,13 +1,24 @@
 from django.contrib import admin
 from django.utils import timezone
+from django import forms
 
 from .models import Dish, Order
+
+
+class DishAdminForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Make the "name" and "description" fields RTL
+        self.fields["name"].widget.attrs.update({"style": "direction: rtl"})
+        self.fields["description"].widget.attrs.update({"style": "direction: rtl"})
 
 
 @admin.register(Dish)
 class DishAdmin(admin.ModelAdmin):
     list_display = ("name", "description", "next_date", "image")
     actions = ["mark_for_today"]
+    form = DishAdminForm
 
     def mark_for_today(self, request, queryset):
         today = timezone.now()

@@ -10,6 +10,9 @@ import endpoints from '../api/endpoints'
 import { GET, POST, DELETE } from '../api/httpHelpers'
 import { usePreferences } from '../PreferencesProvider'
 
+const ERR_TIME_IS_UP = 'time_is_up'
+const ERR_MAX_ORDERS = 'max_orders'
+
 const DishesContext = createContext()
 
 export const DishesProvider = ({ children }) => {
@@ -18,9 +21,17 @@ export const DishesProvider = ({ children }) => {
   const [hasTimeLeft, setHasTimeLeft] = useState(false)
   const [timeIsUpError, setTimeIsUpError] = useState(false)
   const [cancelOrderSuccess, setCancelOrderSuccess] = useState(false)
+  const [maxOrdersError, setMaxOrdersError] = useState(false)
 
   const { checkIsAuthenticated, setShowAuthDialog } = useAuth()
   const { allow_orders_until } = usePreferences()
+
+  const hideAllSnackbars = () => {
+    setOrderSuccess(false)
+    setTimeIsUpError(false)
+    setCancelOrderSuccess(false)
+    setMaxOrdersError(false)
+  }
 
   const fetchDishes = useCallback(async () => {
     const res = await GET(endpoints.DISHES)
@@ -30,12 +41,15 @@ export const DishesProvider = ({ children }) => {
 
   const orderDishOrAuthenticate = async dishId => {
     if (checkIsAuthenticated()) {
+      hideAllSnackbars()
+
       const res = await POST(endpoints.ORDER_DISH(dishId))
 
       if (!res.ok) {
         const data = await res.json()
 
-        if (data.code === 'time_is_up') setTimeIsUpError(true)
+        if (data.code === ERR_TIME_IS_UP) setTimeIsUpError(true)
+        else if (data.code === ERR_MAX_ORDERS) setMaxOrdersError(true)
 
         return
       }
@@ -62,12 +76,14 @@ export const DishesProvider = ({ children }) => {
   }
 
   const cancelOrder = async dishId => {
+    hideAllSnackbars()
+
     const res = await DELETE(endpoints.ORDER_DISH(dishId))
 
     if (!res.ok) {
       const data = await res.json()
 
-      if (data.code === 'time_is_up') setTimeIsUpError(true)
+      if (data.code === ERR_TIME_IS_UP) setTimeIsUpError(true)
 
       return
     }
@@ -110,6 +126,8 @@ export const DishesProvider = ({ children }) => {
     cancelOrder,
     cancelOrderSuccess,
     hideCancelOrderSuccess: () => setCancelOrderSuccess(false),
+    maxOrdersError,
+    hideMaxOrdersError: () => setMaxOrdersError(false),
   }
 
   return (

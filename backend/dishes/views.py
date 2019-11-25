@@ -20,6 +20,14 @@ class TimeIsUpError(APIException):
     code = "time_is_up"
 
 
+class MaxOrdersError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _(
+        "User has already made the maximum amount of orders for a single day."
+    )
+    code = "max_orders"
+
+
 def check_if_time_is_up():
     """
     Check if there's time left for orders; raise an error if not
@@ -47,8 +55,10 @@ class DishViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericViewSet):
 
         dish = self.get_object()
 
-        # Delete current users' orders for today
-        request.user.list_todays_orders().delete()
+        # Check if user has already ordered the maximum allowed dishes for a single day
+        max_orders_per_day = global_preferences["max_orders_per_day"]
+        if request.user.list_todays_orders().count() == max_orders_per_day:
+            raise MaxOrdersError()
 
         # Create a new order
         Order(user=request.user, dish=dish).save()
@@ -59,9 +69,13 @@ class DishViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericViewSet):
     def delete_order(self, request, pk=None):
         check_if_time_is_up()
 
-        user_orders_for_today = get_list_or_404(request.user.list_todays_orders())
+        dish = self.get_object()
 
-        # Delete the last order
+        user_orders_for_today = get_list_or_404(
+            request.user.list_todays_orders(), dish=dish
+        )
+
+        # Delete the last order of the dish
         user_orders_for_today[-1].delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)

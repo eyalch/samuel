@@ -49,12 +49,5 @@ class User(AbstractUser):
 
     objects = UserManager()
 
-    def did_order_dish_today(self, dish):
-        try:
-            Order.objects.get(user=self, created_at__date=timezone.now(), dish=dish)
-            return True
-        except Order.DoesNotExist:
-            return False
-
     def list_todays_orders(self):
         return Order.objects.filter(user=self, created_at__date=timezone.now())

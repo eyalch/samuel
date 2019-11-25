@@ -1,5 +1,6 @@
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Typography from '@material-ui/core/Typography'
+import BlockIcon from '@material-ui/icons/Block'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import TimerOffIcon from '@material-ui/icons/TimerOff'
 import React, { useEffect, useState } from 'react'
@@ -8,6 +9,7 @@ import { useDishes } from './DishesProvider'
 import DishList from './DishList'
 import Snackbar from '../common/Snackbar'
 import { TimeLeft } from './TimeLeft'
+import { useAuth } from '../auth/AuthProvider'
 
 const StyledProgress = styled(CircularProgress)`
   display: block;
@@ -27,11 +29,19 @@ const DishesPage = () => {
     hideTimeIsUpError,
     cancelOrderSuccess,
     hideCancelOrderSuccess,
+    maxOrdersError,
+    hideMaxOrdersError,
   } = useDishes()
 
+  const { checkIsAuthenticated } = useAuth()
+
+  const isAuthenticated = checkIsAuthenticated()
+
+  // Fetch dishes for the first time and when the user authenticates
   useEffect(() => {
+    setLoading(true)
     fetchDishes().then(() => setLoading(false))
-  }, [fetchDishes])
+  }, [fetchDishes, isAuthenticated])
 
   return (
     <>
@@ -70,6 +80,14 @@ const DishesPage = () => {
         messageId="time-is-up-message"
         icon={TimerOffIcon}
         message="לא נותר זמן לביצוע הזמנה!"
+      />
+
+      <Snackbar
+        open={maxOrdersError}
+        onClose={hideMaxOrdersError}
+        messageId="max-orders-message"
+        icon={BlockIcon}
+        message="כבר ביצעת את הכמות המקסימלית של ההזמנות להיום"
       />
     </>
   )

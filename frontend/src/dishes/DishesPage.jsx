@@ -5,11 +5,12 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import TimerOffIcon from '@material-ui/icons/TimerOff'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { useAuth } from '../auth/AuthProvider'
+import Snackbar from '../common/Snackbar'
+import { usePreferences } from '../PreferencesProvider'
 import { useDishes } from './DishesProvider'
 import DishList from './DishList'
-import Snackbar from '../common/Snackbar'
 import { TimeLeft } from './TimeLeft'
-import { useAuth } from '../auth/AuthProvider'
 
 const StyledProgress = styled(CircularProgress)`
   display: block;
@@ -34,6 +35,7 @@ const DishesPage = () => {
   } = useDishes()
 
   const { checkIsAuthenticated } = useAuth()
+  const { max_orders_per_day } = usePreferences()
 
   const isAuthenticated = checkIsAuthenticated()
 
@@ -87,7 +89,7 @@ const DishesPage = () => {
         onClose={hideMaxOrdersError}
         messageId="max-orders-message"
         icon={BlockIcon}
-        message="כבר ביצעת את הכמות המקסימלית של ההזמנות להיום"
+        message={`ניתן להזמין עד ${max_orders_per_day} מנות ביום!`}
       />
     </>
   )

@@ -5,9 +5,9 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import { useAuth } from '../auth/AuthProvider'
 import endpoints from '../api/endpoints'
-import { GET, POST, DELETE } from '../api/httpHelpers'
+import { DELETE, GET, POST } from '../api/httpHelpers'
+import { useAuth } from '../auth/AuthProvider'
 import { usePreferences } from '../PreferencesProvider'
 
 const ERR_TIME_IS_UP = 'time_is_up'
@@ -33,6 +33,11 @@ export const DishesProvider = ({ children }) => {
     setMaxOrdersError(false)
   }
 
+  const handleErrors = errorCode => {
+    if (errorCode === ERR_TIME_IS_UP) setTimeIsUpError(true)
+    else if (errorCode === ERR_MAX_ORDERS) setMaxOrdersError(true)
+  }
+
   const fetchDishes = useCallback(async () => {
     const res = await GET(endpoints.DISHES)
     const _dishes = await res.json()
@@ -40,39 +45,38 @@ export const DishesProvider = ({ children }) => {
   }, [])
 
   const orderDishOrAuthenticate = async dishId => {
-    if (checkIsAuthenticated()) {
-      hideAllSnackbars()
-
-      const res = await POST(endpoints.ORDER_DISH(dishId))
-
-      if (!res.ok) {
-        const data = await res.json()
-
-        if (data.code === ERR_TIME_IS_UP) setTimeIsUpError(true)
-        else if (data.code === ERR_MAX_ORDERS) setMaxOrdersError(true)
-
-        return
-      }
-
-      setOrderSuccess(true)
-
-      setDishes(prevDishes => {
-        const updatedDishIndex = prevDishes.findIndex(
-          dish => dish.id === dishId
-        )
-        const updatedDish = {
-          ...prevDishes[updatedDishIndex],
-          did_user_order_today: true,
-        }
-        return [
-          ...prevDishes.slice(0, updatedDishIndex),
-          updatedDish,
-          ...prevDishes.slice(updatedDishIndex + 1),
-        ]
-      })
-    } else {
+    // If the user isn't authenticated, open the authentication dialog
+    if (!checkIsAuthenticated()) {
       setShowAuthDialog(true)
+      return
     }
+
+    hideAllSnackbars()
+
+    const res = await POST(endpoints.ORDER_DISH(dishId))
+
+    if (!res.ok) {
+      const data = await res.json()
+
+      handleErrors(data.code)
+      return
+    }
+
+    setOrderSuccess(true)
+
+    setDishes(prevDishes => {
+      const dishIndex = prevDishes.findIndex(dish => dish.id === dishId)
+      const prevDish = prevDishes[dishIndex]
+      const updatedDish = {
+        ...prevDish,
+        orders_count: prevDish.orders_count + 1,
+      }
+      return [
+        ...prevDishes.slice(0, dishIndex),
+        updatedDish,
+        ...prevDishes.slice(dishIndex + 1),
+      ]
+    })
   }
 
   const cancelOrder = async dishId => {
@@ -83,23 +87,23 @@ export const DishesProvider = ({ children }) => {
     if (!res.ok) {
       const data = await res.json()
 
-      if (data.code === ERR_TIME_IS_UP) setTimeIsUpError(true)
-
+      handleErrors(data.code)
       return
     }
 
     setCancelOrderSuccess(true)
 
     setDishes(prevDishes => {
-      const updatedDishIndex = prevDishes.findIndex(dish => dish.id === dishId)
+      const dishIndex = prevDishes.findIndex(dish => dish.id === dishId)
+      const prevDish = prevDishes[dishIndex]
       const updatedDish = {
-        ...prevDishes[updatedDishIndex],
-        did_user_order_today: false,
+        ...prevDish,
+        orders_count: prevDish.orders_count - 1,
       }
       return [
-        ...prevDishes.slice(0, updatedDishIndex),
+        ...prevDishes.slice(0, dishIndex),
         updatedDish,
-        ...prevDishes.slice(updatedDishIndex + 1),
+        ...prevDishes.slice(dishIndex + 1),
       ]
     })
   }

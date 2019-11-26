@@ -1,16 +1,16 @@
 from rest_framework import serializers
 
-from .models import Dish
+from .models import Dish, Order
 
 
 class DishSerializer(serializers.ModelSerializer):
-    did_user_order_today = serializers.SerializerMethodField()
+    orders_count = serializers.SerializerMethodField()
 
-    user_todays_orders = None
+    user_todays_orders = Order.objects.none()
 
     class Meta:
         model = Dish
-        fields = ["id", "name", "description", "image", "did_user_order_today"]
+        fields = ["id", "name", "description", "image", "orders_count"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -19,8 +19,5 @@ class DishSerializer(serializers.ModelSerializer):
         if user.is_authenticated:
             self.user_todays_orders = user.list_todays_orders()
 
-    def get_did_user_order_today(self, dish):
-        if self.user_todays_orders is None:
-            return False
-
-        return self.user_todays_orders.filter(dish=dish).count() > 0
+    def get_orders_count(self, dish):
+        return self.user_todays_orders.filter(dish=dish).count()

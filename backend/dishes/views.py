@@ -53,12 +53,12 @@ class DishViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericViewSet):
     def order(self, request, pk=None):
         check_if_time_is_up()
 
-        dish = self.get_object()
-
         # Check if user has already ordered the maximum allowed dishes for a single day
         max_orders_per_day = global_preferences["max_orders_per_day"]
         if request.user.list_todays_orders().count() == max_orders_per_day:
             raise MaxOrdersError()
+
+        dish = self.get_object()
 
         # Create a new order
         Order(user=request.user, dish=dish).save()

@@ -4,13 +4,17 @@ import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Typography from '@material-ui/core/Typography'
-import CancelIcon from '@material-ui/icons/Cancel'
-import CheckCircleIcon from '@material-ui/icons/CheckCircle'
+import AddCircleIcon from '@material-ui/icons/AddCircle'
+import DoneOutlineIcon from '@material-ui/icons/DoneOutline'
+import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import React, { useState } from 'react'
 import styled, { css } from 'styled-components'
 import { useDishes } from './DishesProvider'
 import placeholderImage from './placeholder.png'
 
+const StyledCard = styled(Card)`
+  position: relative;
+`
 const StyledCardActionArea = styled(CardActionArea)`
   height: 100%;
   display: flex;
@@ -32,25 +36,17 @@ const StyledOverlay = styled.div`
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: space-around;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 0 ${p => p.theme.spacing(1)}px;
 `
-const StyledProgress = styled(CircularProgress)`
-  position: absolute;
-  top: calc(50% - 24px);
-  left: calc(50% - 24px);
-`
-const StyledCheckIcon = styled(CheckCircleIcon)`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 150px;
-`
-const actionIconCss = css`
-  font-size: 50px;
-  display: block;
-`
-const StyledCancelIcon = styled(CancelIcon)`
-  ${actionIconCss}
+const StyledOrderedIcon = styled(DoneOutlineIcon)`
+  height: auto;
+  max-width: 40%;
+  width: 100%;
+  flex-shrink: 1;
 `
 const StyledActionButton = styled.button`
   all: unset;
@@ -72,8 +68,17 @@ const StyledActionButton = styled.button`
       : ''};
 
   :focus,
-  ${StyledOverlay}:hover & {
+  ${StyledCard}:hover & {
     transform: translateX(0);
+  }
+
+  ${p => p.theme.breakpoints.only('xs')} {
+    transform: translateX(0);
+  }
+
+  svg {
+    font-size: 50px;
+    display: block;
   }
 `
 
@@ -82,27 +87,29 @@ const Dish = ({ dish }) => {
 
   const { orderDish, cancelOrder, hasTimeLeft } = useDishes()
 
-  const handleOrder = async () => {
-    if (dish.did_user_order_today || !hasTimeLeft) return
+  const onOrder = async () => {
+    if (!hasTimeLeft) return
 
     setLoading(true)
     await orderDish(dish.id)
     setLoading(false)
   }
 
-  const handleDelete = async () => {
-    if (!dish.did_user_order_today || !hasTimeLeft) return
+  const onDelete = async () => {
+    if (!hasTimeLeft) return
 
     setLoading(true)
     await cancelOrder(dish.id)
     setLoading(false)
   }
 
+  const isOrdered = dish.orders_count > 0
+
   return (
-    <Card component="li" style={{ position: 'relative' }}>
+    <StyledCard component="li">
       <StyledCardActionArea
-        onClick={handleOrder}
-        disabled={dish.did_user_order_today || !hasTimeLeft}
+        onClick={onOrder}
+        disabled={loading || isOrdered || !hasTimeLeft}
         title="לחץ להזמנה">
         <StyledCardMedia
           image={dish.image || placeholderImage}
@@ -118,27 +125,30 @@ const Dish = ({ dish }) => {
         </CardContent>
       </StyledCardActionArea>
 
-      {(loading || dish.did_user_order_today) && (
+      {(loading || isOrdered) && (
         <StyledOverlay>
           {loading ? (
-            <StyledProgress size={48} />
-          ) : dish.did_user_order_today ? (
-            <>
-              <StyledCheckIcon />
-
-              {hasTimeLeft && (
-                <StyledActionButton
-                  right
-                  onClick={handleDelete}
-                  title="לחץ לביטול ההזמנה">
-                  <StyledCancelIcon />
-                </StyledActionButton>
-              )}
-            </>
-          ) : null}
+            <CircularProgress size={72} />
+          ) : (
+            // Show an icon for every order of the dish
+            Array(dish.orders_count)
+              .fill()
+              .map((_, i) => <StyledOrderedIcon key={i} />)
+          )}
         </StyledOverlay>
       )}
-    </Card>
+
+      {!loading && isOrdered && hasTimeLeft && (
+        <>
+          <StyledActionButton right onClick={onDelete} title="ביטול הזמנה">
+            <RemoveCircleIcon />
+          </StyledActionButton>
+          <StyledActionButton left onClick={onOrder} title="הזמנת מנה לאורח">
+            <AddCircleIcon />
+          </StyledActionButton>
+        </>
+      )}
+    </StyledCard>
   )
 }
 

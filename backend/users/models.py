@@ -1,9 +1,6 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
-from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-
-from dishes.models import Order
 
 
 class UserManager(BaseUserManager):
@@ -48,6 +45,3 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
-
-    def list_todays_orders(self):
-        return Order.objects.filter(user=self, created_at__date=timezone.now())

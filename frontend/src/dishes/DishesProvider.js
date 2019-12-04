@@ -44,6 +44,16 @@ export const DishesProvider = ({ children }) => {
     setDishes(_dishes)
   }, [])
 
+  const updateDish = updatedDish =>
+    setDishes(prevDishes => {
+      const dishIndex = prevDishes.findIndex(dish => dish.id === updatedDish.id)
+      return [
+        ...prevDishes.slice(0, dishIndex),
+        updatedDish,
+        ...prevDishes.slice(dishIndex + 1),
+      ]
+    })
+
   const orderDishOrAuthenticate = async dishId => {
     // If the user isn't authenticated, open the authentication dialog
     if (!checkIsAuthenticated()) {
@@ -54,58 +64,30 @@ export const DishesProvider = ({ children }) => {
     hideAllSnackbars()
 
     const res = await POST(endpoints.ORDER_DISH(dishId))
+    const data = await res.json()
 
     if (!res.ok) {
-      const data = await res.json()
-
       handleErrors(data.code)
       return
     }
 
     setOrderSuccess(true)
-
-    setDishes(prevDishes => {
-      const dishIndex = prevDishes.findIndex(dish => dish.id === dishId)
-      const prevDish = prevDishes[dishIndex]
-      const updatedDish = {
-        ...prevDish,
-        orders_count: prevDish.orders_count + 1,
-      }
-      return [
-        ...prevDishes.slice(0, dishIndex),
-        updatedDish,
-        ...prevDishes.slice(dishIndex + 1),
-      ]
-    })
+    updateDish(data)
   }
 
   const cancelOrder = async dishId => {
     hideAllSnackbars()
 
     const res = await DELETE(endpoints.ORDER_DISH(dishId))
+    const data = await res.json()
 
     if (!res.ok) {
-      const data = await res.json()
-
       handleErrors(data.code)
       return
     }
 
     setCancelOrderSuccess(true)
-
-    setDishes(prevDishes => {
-      const dishIndex = prevDishes.findIndex(dish => dish.id === dishId)
-      const prevDish = prevDishes[dishIndex]
-      const updatedDish = {
-        ...prevDish,
-        orders_count: prevDish.orders_count - 1,
-      }
-      return [
-        ...prevDishes.slice(0, dishIndex),
-        updatedDish,
-        ...prevDishes.slice(dishIndex + 1),
-      ]
-    })
+    updateDish(data)
   }
 
   const allowOrdersUntil = useMemo(() => {

@@ -4,9 +4,7 @@ import styled from 'styled-components'
 import { useDishes } from './DishesProvider'
 
 const StyledContainer = styled.div`
-  text-align: center;
   margin-top: -${p => p.theme.spacing(1)}px;
-  margin-bottom: ${p => p.theme.spacing(3)}px;
   height: 62px;
   display: flex;
   flex-direction: column;
@@ -18,7 +16,7 @@ const StyledContainer = styled.div`
   }
 `
 
-export const TimeLeft = () => {
+const TimeLeft = () => {
   const { allowOrdersUntil, hasTimeLeft, setHasTimeLeft } = useDishes()
 
   const [timeLeftToOrderInMillis, setTimeLeftToOrderInMillis] = useState(
@@ -44,11 +42,13 @@ export const TimeLeft = () => {
   return (
     <StyledContainer>
       {timeLeftToOrderInMillis < 0 ? (
-        <Typography variant="h4">ההזמנה נסגרה!</Typography>
+        <Typography variant="h4" component="h2">
+          ההזמנה להיום נסגרה!
+        </Typography>
       ) : (
         <>
           <Typography variant="subtitle2">זמן שנותר לביצוע הזמנה:</Typography>
-          <Typography variant="h4">
+          <Typography variant="h4" component="h2">
             {new Date(timeLeftToOrderInMillis).toISOString().slice(11, 19)}
           </Typography>
         </>
@@ -56,3 +56,5 @@ export const TimeLeft = () => {
     </StyledContainer>
   )
 }
+
+export default TimeLeft

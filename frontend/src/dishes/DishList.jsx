@@ -7,14 +7,13 @@ const StyledDishes = styled.ul`
   margin: 0;
   padding: 0;
   display: grid;
-  justify-content: center;
   grid-gap: ${p => p.theme.spacing(2)}px;
-  padding-bottom: ${p => p.theme.spacing(2)}px;
+  margin-top: ${p => p.theme.spacing(3)}px;
 
   ${p => p.theme.breakpoints.up('sm')} {
+    justify-content: center;
     grid-template-columns: repeat(auto-fill, 360px);
     grid-gap: ${p => p.theme.spacing(4)}px;
-    padding-bottom: ${p => p.theme.spacing(4)}px;
   }
 `
 

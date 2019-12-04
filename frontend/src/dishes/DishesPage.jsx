@@ -1,16 +1,16 @@
 import CircularProgress from '@material-ui/core/CircularProgress'
-import Typography from '@material-ui/core/Typography'
 import BlockIcon from '@material-ui/icons/Block'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import TimerOffIcon from '@material-ui/icons/TimerOff'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { useAuth } from '../auth/AuthProvider'
 import Snackbar from '../common/Snackbar'
 import { usePreferences } from '../PreferencesProvider'
 import { useDishes } from './DishesProvider'
-import DishList from './DishList'
-import { TimeLeft } from './TimeLeft'
+import FutureDishes from './FutureDishes'
+import { getLocalDateISOString } from './helpers'
+import TodayDishes from './TodayDishes'
 
 const StyledProgress = styled(CircularProgress)`
   display: block;
@@ -32,6 +32,7 @@ const DishesPage = () => {
     hideCancelOrderSuccess,
     maxOrdersError,
     hideMaxOrdersError,
+    hasTimeLeft,
   } = useDishes()
 
   const { checkIsAuthenticated } = useAuth()
@@ -45,19 +46,27 @@ const DishesPage = () => {
     fetchDishes().then(() => setLoading(false))
   }, [fetchDishes, isAuthenticated])
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const todayDate = useMemo(() => getLocalDateISOString(), [hasTimeLeft])
+
+  // Split the dishes into the arrays: dishes for today & future dishes
+  const [todayDishes, futureDishes] = dishes.reduce(
+    (result, dish) => {
+      result[dish.date === todayDate ? 0 : 1].push(dish)
+      return result
+    },
+    [[], []]
+  )
+
   return (
     <>
       {loading || allowOrdersUntil === undefined ? (
         <StyledProgress color="inherit" />
-      ) : dishes.length ? (
-        <>
-          <TimeLeft />
-          <DishList dishes={dishes} />
-        </>
       ) : (
-        <Typography variant="h4" component="p" align="center">
-          אין מנות להיום
-        </Typography>
+        <>
+          <TodayDishes dishes={todayDishes} />
+          <FutureDishes dishes={futureDishes} />
+        </>
       )}
 
       <Snackbar
@@ -89,7 +98,11 @@ const DishesPage = () => {
         onClose={hideMaxOrdersError}
         messageId="max-orders-message"
         icon={BlockIcon}
-        message={`ניתן להזמין עד ${max_orders_per_day} מנות ביום!`}
+        message={
+          max_orders_per_day === 1
+            ? 'ניתן להזמין מנה אחת ליום!'
+            : `ניתן להזמין עד ${max_orders_per_day} מנות ליום!`
+        }
       />
     </>
   )

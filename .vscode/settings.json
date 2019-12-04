@@ -9,5 +9,11 @@
   "python.linting.enabled": true,
   "eslint.workingDirectories": [
     { "directory": "./frontend", "changeProcessCWD": true }
-  ]
+  ],
+  "files.exclude": {
+    "backend/.env": true
+  },
+  "files.watcherExclude": {
+    "backend/.venv": true
+  }
 }

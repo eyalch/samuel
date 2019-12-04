@@ -9,7 +9,7 @@ from dishes import views
 from global_preferences.views import CustomGlobalPreferencesViewSet
 
 router = DefaultRouter()
-router.register("dishes", views.DishViewSet, base_name="dishes")
+router.register("dishes", views.ScheduledDishViewSet, base_name="dishes")
 router.register("preferences", CustomGlobalPreferencesViewSet, base_name="preferences")
 
 api_patterns = [

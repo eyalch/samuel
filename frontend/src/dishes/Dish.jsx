@@ -7,9 +7,10 @@ import Typography from '@material-ui/core/Typography'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 import DoneOutlineIcon from '@material-ui/icons/DoneOutline'
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import styled, { css } from 'styled-components'
 import { useDishes } from './DishesProvider'
+import { getLocalDateISOString } from './helpers'
 import placeholderImage from './placeholder.png'
 
 const StyledCard = styled(Card)`
@@ -87,8 +88,15 @@ const Dish = ({ dish }) => {
 
   const { orderDish, cancelOrder, hasTimeLeft } = useDishes()
 
+  // If there's time left to order today OR the dish is not for today,
+  // then the user is allowed to order
+  const isAllowedToOrder = useMemo(() => {
+    const isDishForToday = getLocalDateISOString() === dish.date
+    return hasTimeLeft || !isDishForToday
+  }, [dish.date, hasTimeLeft])
+
   const onOrder = async () => {
-    if (!hasTimeLeft) return
+    if (!isAllowedToOrder) return
 
     setLoading(true)
     await orderDish(dish.id)
@@ -96,7 +104,7 @@ const Dish = ({ dish }) => {
   }
 
   const onDelete = async () => {
-    if (!hasTimeLeft) return
+    if (!isAllowedToOrder) return
 
     setLoading(true)
     await cancelOrder(dish.id)
@@ -109,14 +117,14 @@ const Dish = ({ dish }) => {
     <StyledCard component="li">
       <StyledCardActionArea
         onClick={onOrder}
-        disabled={loading || isOrdered || !hasTimeLeft}
+        disabled={loading || isOrdered || !isAllowedToOrder}
         title="לחץ להזמנה">
         <StyledCardMedia
           image={dish.image || placeholderImage}
           isPlaceholder={!dish.image}
         />
         <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
+          <Typography gutterBottom variant="h5" component="h3">
             {dish.name}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
@@ -138,7 +146,7 @@ const Dish = ({ dish }) => {
         </StyledOverlay>
       )}
 
-      {!loading && isOrdered && hasTimeLeft && (
+      {!loading && isOrdered && isAllowedToOrder && (
         <>
           <StyledActionButton right onClick={onDelete} title="ביטול הזמנה">
             <RemoveCircleIcon />

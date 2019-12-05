@@ -1,3 +1,4 @@
+import Slide from '@material-ui/core/Slide'
 import MSnackbar from '@material-ui/core/Snackbar'
 import React from 'react'
 import styled from 'styled-components'
@@ -41,6 +42,7 @@ const Snackbar = ({
         'aria-describedby': messageId,
         ...ContentProps,
       }}
+      TransitionComponent={Slide}
       {...props}
     />
   )

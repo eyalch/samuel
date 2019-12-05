@@ -43,7 +43,7 @@ const TimeLeft = () => {
     <StyledContainer>
       {timeLeftToOrderInMillis < 0 ? (
         <Typography variant="h4" component="h2">
-          ההזמנה להיום נסגרה!
+          ההזמנה להיום נסגרה
         </Typography>
       ) : (
         <>

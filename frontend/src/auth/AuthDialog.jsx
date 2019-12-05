@@ -1,5 +1,3 @@
-import Button from '@material-ui/core/Button'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -7,22 +5,11 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import ErrorIcon from '@material-ui/icons/Error'
 import { Field, Form, Formik } from 'formik'
 import React from 'react'
-import styled from 'styled-components'
 import * as yup from 'yup'
-import { useAuth } from './AuthProvider'
 import { TextFormField } from '../common/FormFields'
+import LoadingButton from '../common/LoadingButton'
 import Snackbar from '../common/Snackbar'
-
-const LoadingButtonContainer = styled.div`
-  position: relative;
-`
-const ButtonProgress = styled(CircularProgress)`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-top: -12px;
-  margin-left: -12px;
-`
+import { useAuth } from './AuthProvider'
 
 const schema = yup.object({
   email: yup
@@ -76,12 +63,13 @@ const AuthDialog = () => {
                 />
               </DialogContent>
               <DialogActions>
-                <LoadingButtonContainer>
-                  <Button type="submit" color="primary" disabled={isSubmitting}>
-                    התחבר
-                  </Button>
-                  {isSubmitting && <ButtonProgress size={24} />}
-                </LoadingButtonContainer>
+                <LoadingButton
+                  loading={isSubmitting}
+                  type="submit"
+                  color="primary"
+                  size="large">
+                  התחבר
+                </LoadingButton>
               </DialogActions>
             </Form>
           )}

@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import DishList from './DishList'
 import TimeLeft from './TimeLeft'
 
-export const StyledSection = styled.section`
+export const StyledDishesSection = styled.section`
   padding-bottom: ${p => p.theme.spacing(5)}px;
 
   ${p => p.theme.breakpoints.up('sm')} {
@@ -13,7 +13,7 @@ export const StyledSection = styled.section`
 `
 
 const TodayDishes = ({ dishes }) => (
-  <StyledSection>
+  <StyledDishesSection>
     {dishes.length ? (
       <>
         <TimeLeft />
@@ -24,7 +24,7 @@ const TodayDishes = ({ dishes }) => (
         אין מנות להיום
       </Typography>
     )}
-  </StyledSection>
+  </StyledDishesSection>
 )
 
 export default TodayDishes

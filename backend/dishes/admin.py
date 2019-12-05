@@ -1,3 +1,5 @@
+import datetime
+
 from django import forms
 from django.contrib import admin
 from django.utils import timezone
@@ -41,18 +43,17 @@ class ScheduledDishInline(admin.TabularInline):
 @admin.register(Dish)
 class DishAdmin(admin.ModelAdmin):
     list_display = ("name", "description", "image")
-    actions = ["schedule_for_today"]
+    actions = ["schedule_for_today", "schedule_for_tomorrow"]
     form = DishAdminForm
     inlines = [AddScheduledDishInline, ScheduledDishInline]
 
-    def schedule_for_today(self, request, queryset):
+    def schedule_for(self, dishes, date, request):
+        """Create a ScheduledDish for today for each dish"""
+
         scheduled_dishes_created = 0
 
-        # Iterate over the selected dishes and create a scheduled dish for each one
-        for dish in queryset:
-            _, created = ScheduledDish.objects.get_or_create(
-                dish=dish, date=timezone.now().date()
-            )
+        for dish in dishes:
+            _, created = ScheduledDish.objects.get_or_create(dish=dish, date=date)
             if created:
                 scheduled_dishes_created += 1
 
@@ -62,7 +63,17 @@ class DishAdmin(admin.ModelAdmin):
             message_bit = f"{scheduled_dishes_created} dishes were"
         self.message_user(request, f"{message_bit} scheduled for today.")
 
-    schedule_for_today.short_description = "Schedule selected dishes for today"
+    def schedule_for_today(self, request, queryset):
+        today = timezone.now().date()
+        self.schedule_for(queryset, today, request)
+
+    schedule_for_today.short_description = "Schedule for today"
+
+    def schedule_for_tomorrow(self, request, queryset):
+        tomorrow = timezone.now().date() + datetime.timedelta(days=1)
+        self.schedule_for(queryset, tomorrow, request)
+
+    schedule_for_tomorrow.short_description = "Schedule for tomorrow"
 
 
 @admin.register(ScheduledDish)

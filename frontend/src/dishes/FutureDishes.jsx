@@ -1,6 +1,7 @@
 import Typography from '@material-ui/core/Typography'
 import React from 'react'
 import DishList from './DishList'
+import { getPrettyWeekday } from './helpers'
 import { StyledDishesSection } from './TodayDishes'
 
 const FutureDishes = ({ dishes }) => {
@@ -12,14 +13,10 @@ const FutureDishes = ({ dishes }) => {
     {}
   )
 
-  return Object.entries(dishesPerDate).map(([date, dishesForDate]) => (
-    <StyledDishesSection key={date}>
+  return Object.entries(dishesPerDate).map(([dateStr, dishesForDate]) => (
+    <StyledDishesSection key={dateStr}>
       <Typography variant="h4" component="h2" align="center">
-        {new Date(date).toLocaleDateString('he', {
-          weekday: 'short',
-          month: 'long',
-          day: 'numeric',
-        })}
+        מנות ל{getPrettyWeekday(dateStr)}
       </Typography>
       <DishList dishes={dishesForDate} />
     </StyledDishesSection>

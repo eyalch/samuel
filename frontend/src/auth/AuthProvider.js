@@ -1,6 +1,5 @@
+import axios from 'axios'
 import React, { createContext, useContext, useState } from 'react'
-import endpoints from '../api/endpoints'
-import { POST } from '../api/httpHelpers'
 
 const ACCESS_TOKEN_KEY = 'access_token'
 const REFRESH_TOKEN_KEY = 'refresh_token'
@@ -20,16 +19,17 @@ export const AuthProvider = ({ children }) => {
     // Hide the error
     setShowWrongCredentialsError(false)
 
-    const res = await POST(endpoints.TOKEN, { email, password })
-    const data = await res.json()
+    try {
+      const { data } = await axios.post('token', { email, password })
 
-    if (res.ok) {
       localStorage.setItem(ACCESS_TOKEN_KEY, data.access)
       localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh)
 
       setShowAuthDialog(false)
-    } else if (data.code === 'authentication_failed') {
-      setShowWrongCredentialsError(true)
+    } catch ({ response }) {
+      if (response.data.code === 'authentication_failed') {
+        setShowWrongCredentialsError(true)
+      }
     }
   }
 
@@ -61,22 +61,22 @@ export const refreshToken = async () => {
 
   const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY)
 
-  refreshTokenPromise = POST(endpoints.REFRESH_TOKEN, { refresh: refreshToken })
-    .then(res => res.json())
-    .then(data => {
-      refreshTokenPromise = null
-
-      // If the refresh token is invalid, we remove it
-      if (data.code === 'token_not_valid') {
-        localStorage.removeItem(REFRESH_TOKEN_KEY)
-        return false
-      }
-
+  refreshTokenPromise = axios
+    .post('token/refresh', { refresh: refreshToken })
+    .then(({ data }) => {
       // Update both tokens
       localStorage.setItem(ACCESS_TOKEN_KEY, data.access)
       localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh)
-
-      return true
+    })
+    .catch(err => {
+      // If the refresh token is invalid, we remove it
+      if (err.response.data.code === 'token_not_valid') {
+        localStorage.removeItem(REFRESH_TOKEN_KEY)
+      }
+      throw err
+    })
+    .finally(() => {
+      refreshTokenPromise = null
     })
 
   return refreshTokenPromise

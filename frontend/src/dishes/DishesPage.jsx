@@ -40,10 +40,9 @@ const DishesPage = () => {
 
   const isAuthenticated = checkIsAuthenticated()
 
-  const fetchDishes = useCallback(async () => {
+  const fetchDishes = useCallback(() => {
     setLoading(true)
-    await _fetchDishes()
-    setLoading(false)
+    _fetchDishes().then(() => setLoading(false))
   }, [_fetchDishes])
 
   // Fetch dishes for the first time and when the user authenticates

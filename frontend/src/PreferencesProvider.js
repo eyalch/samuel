@@ -1,6 +1,5 @@
-import React, { createContext, useState, useContext, useEffect } from 'react'
-import { GET } from './api/httpHelpers'
-import endpoints from './api/endpoints'
+import axios from 'axios'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 
 const PreferencesContext = createContext()
 
@@ -8,13 +7,13 @@ export const PreferencesProvider = ({ children }) => {
   const [preferences, setPreferences] = useState({})
 
   useEffect(() => {
-    GET(endpoints.PREFERENCES)
-      .then(res => res.json())
-      .then(data =>
-        setPreferences(
-          data.reduce((acc, { key, value }) => ({ ...acc, [key]: value }), {})
-        )
+    axios.get('preferences').then(res => {
+      const _preferences = res.data.reduce(
+        (acc, { key, value }) => ({ ...acc, [key]: value }),
+        {}
       )
+      setPreferences(_preferences)
+    })
   }, [])
 
   return (

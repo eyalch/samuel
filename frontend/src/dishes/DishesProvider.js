@@ -1,3 +1,4 @@
+import axios from 'axios'
 import React, {
   createContext,
   useCallback,
@@ -5,8 +6,6 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import endpoints from '../api/endpoints'
-import { DELETE, GET, POST } from '../api/httpHelpers'
 import { useAuth } from '../auth/AuthProvider'
 import { usePreferences } from '../PreferencesProvider'
 
@@ -39,9 +38,8 @@ export const DishesProvider = ({ children }) => {
   }
 
   const fetchDishes = useCallback(async () => {
-    const res = await GET(endpoints.DISHES)
-    const _dishes = await res.json()
-    setDishes(_dishes)
+    const { data } = await axios.get('dishes')
+    setDishes(data)
   }, [])
 
   const updateDish = updatedDish =>
@@ -63,31 +61,27 @@ export const DishesProvider = ({ children }) => {
 
     hideAllSnackbars()
 
-    const res = await POST(endpoints.ORDER_DISH(dishId))
-    const data = await res.json()
+    try {
+      const { data } = await axios.post(`dishes/${dishId}/order`)
 
-    if (!res.ok) {
-      handleErrors(data.code)
-      return
+      setOrderSuccess(true)
+      updateDish(data)
+    } catch ({ response }) {
+      handleErrors(response.data.code)
     }
-
-    setOrderSuccess(true)
-    updateDish(data)
   }
 
   const cancelOrder = async dishId => {
     hideAllSnackbars()
 
-    const res = await DELETE(endpoints.ORDER_DISH(dishId))
-    const data = await res.json()
+    try {
+      const { data } = await axios.delete(`dishes/${dishId}/order`)
 
-    if (!res.ok) {
-      handleErrors(data.code)
-      return
+      setCancelOrderSuccess(true)
+      updateDish(data)
+    } catch ({ response }) {
+      handleErrors(response.data.code)
     }
-
-    setCancelOrderSuccess(true)
-    updateDish(data)
   }
 
   const allowOrdersUntil = useMemo(() => {

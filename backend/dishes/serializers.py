@@ -26,7 +26,7 @@ class ScheduledDishSerializer(serializers.ModelSerializer):
         user = self.context["request"].user
         if user.is_authenticated:
             self.user_future_orders = Order.objects.filter(
-                user=user, created_at__date__gte=timezone.now().date()
+                user=user, scheduled_dish__date__gte=timezone.now().date()
             )
 
     def get_orders_count(self, scheduled_dish):

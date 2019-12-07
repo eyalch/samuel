@@ -10,6 +10,7 @@ import {
   ThemeProvider as StyledThemeProvider,
 } from 'styled-components'
 import App from './App'
+import './axios'
 import * as serviceWorker from './serviceWorker'
 
 const theme = createMuiTheme({

@@ -2,7 +2,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import BlockIcon from '@material-ui/icons/Block'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import TimerOffIcon from '@material-ui/icons/TimerOff'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { useAuth } from '../auth/AuthProvider'
 import Snackbar from '../common/Snackbar'
@@ -22,7 +22,7 @@ const DishesPage = () => {
 
   const {
     dishes,
-    fetchDishes,
+    fetchDishes: _fetchDishes,
     orderSuccess,
     hideOrderSuccess,
     allowOrdersUntil,
@@ -40,11 +40,20 @@ const DishesPage = () => {
 
   const isAuthenticated = checkIsAuthenticated()
 
-  // Fetch dishes for the first time and when the user authenticates
-  useEffect(() => {
+  const fetchDishes = useCallback(async () => {
     setLoading(true)
-    fetchDishes().then(() => setLoading(false))
-  }, [fetchDishes, isAuthenticated])
+    await _fetchDishes()
+    setLoading(false)
+  }, [_fetchDishes])
+
+  // Fetch dishes for the first time and when the user authenticates
+  useEffect(fetchDishes, [fetchDishes, isAuthenticated])
+
+  // Refresh the dishes every 30 minutes
+  useEffect(() => {
+    const interval = setInterval(fetchDishes, 1000 * 60 * 30)
+    return () => clearInterval(interval)
+  }, [fetchDishes])
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const todayDate = useMemo(() => getLocalDateISOString(), [hasTimeLeft])

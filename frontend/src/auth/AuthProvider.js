@@ -49,24 +49,35 @@ export const useAuth = () => useContext(AuthContext)
 
 export const getAccessToken = () => localStorage.getItem(ACCESS_TOKEN_KEY)
 
+let refreshTokenPromise = null
+
 export const refreshToken = async () => {
+  // If we've already sent a request to refresh the token then there's no need
+  // to send another one, so we just return the initial promise
+  if (refreshTokenPromise) return refreshTokenPromise
+
   // Remove the invalid access token
   localStorage.removeItem(ACCESS_TOKEN_KEY)
 
   const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY)
 
-  const res = await POST(endpoints.REFRESH_TOKEN, { refresh: refreshToken })
-  const data = await res.json()
+  refreshTokenPromise = POST(endpoints.REFRESH_TOKEN, { refresh: refreshToken })
+    .then(res => res.json())
+    .then(data => {
+      refreshTokenPromise = null
 
-  // If the refresh token is invalid, we remove it
-  if (data.code === 'token_not_valid') {
-    localStorage.removeItem(REFRESH_TOKEN_KEY)
-    return false
-  }
+      // If the refresh token is invalid, we remove it
+      if (data.code === 'token_not_valid') {
+        localStorage.removeItem(REFRESH_TOKEN_KEY)
+        return false
+      }
 
-  // Update both tokens
-  localStorage.setItem(ACCESS_TOKEN_KEY, data.access)
-  localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh)
+      // Update both tokens
+      localStorage.setItem(ACCESS_TOKEN_KEY, data.access)
+      localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh)
 
-  return true
+      return true
+    })
+
+  return refreshTokenPromise
 }

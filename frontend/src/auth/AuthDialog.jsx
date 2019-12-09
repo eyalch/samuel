@@ -24,8 +24,8 @@ const AuthDialog = () => {
     showAuthDialog,
     setShowAuthDialog,
     authenticate,
-    showWrongCredentialsError,
-    hideWrongCredentialsError,
+    showCredentialsError,
+    hideCredentialsError,
   } = useAuth()
 
   const handleSubmit = async (values, actions) => {
@@ -77,8 +77,8 @@ const AuthDialog = () => {
       </Dialog>
 
       <Snackbar
-        open={showWrongCredentialsError}
-        onClose={hideWrongCredentialsError}
+        open={showCredentialsError}
+        onClose={hideCredentialsError}
         messageId="wrong-credentials-message"
         icon={ErrorIcon}
         message='דוא"ל או סיסמה שגויים'

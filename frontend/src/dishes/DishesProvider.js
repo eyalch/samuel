@@ -22,8 +22,8 @@ export const DishesProvider = ({ children }) => {
   const [cancelOrderSuccess, setCancelOrderSuccess] = useState(false)
   const [maxOrdersError, setMaxOrdersError] = useState(false)
 
-  const { checkIsAuthenticated, setShowAuthDialog } = useAuth()
-  const { allow_orders_until } = usePreferences()
+  const { isAuthenticated, setShowAuthDialog } = useAuth()
+  const { allow_orders_until, max_orders_per_day } = usePreferences()
 
   const hideAllSnackbars = () => {
     setOrderSuccess(false)
@@ -52,17 +52,30 @@ export const DishesProvider = ({ children }) => {
       ]
     })
 
-  const orderDishOrAuthenticate = async dishId => {
-    // If the user isn't authenticated, open the authentication dialog
-    if (!checkIsAuthenticated()) {
+  // Find how many orders the user has made for a given date
+  const getOrdersCountForDate = useCallback(
+    date =>
+      dishes
+        .filter(dish => dish.date === date)
+        .reduce((count, dish) => count + dish.orders_count, 0),
+    [dishes]
+  )
+
+  const orderDishOrAuthenticate = async dish => {
+    if (!isAuthenticated) {
       setShowAuthDialog(true)
+      return
+    }
+
+    if (getOrdersCountForDate(dish.date) === max_orders_per_day) {
+      setMaxOrdersError(true)
       return
     }
 
     hideAllSnackbars()
 
     try {
-      const { data } = await axios.post(`dishes/${dishId}/order`)
+      const { data } = await axios.post(`dishes/${dish.id}/order`)
 
       setOrderSuccess(true)
       updateDish(data)
@@ -71,11 +84,11 @@ export const DishesProvider = ({ children }) => {
     }
   }
 
-  const cancelOrder = async dishId => {
+  const cancelOrder = async dish => {
     hideAllSnackbars()
 
     try {
-      const { data } = await axios.delete(`dishes/${dishId}/order`)
+      const { data } = await axios.delete(`dishes/${dish.id}/order`)
 
       setCancelOrderSuccess(true)
       updateDish(data)
@@ -108,6 +121,7 @@ export const DishesProvider = ({ children }) => {
     hideCancelOrderSuccess: () => setCancelOrderSuccess(false),
     maxOrdersError,
     hideMaxOrdersError: () => setMaxOrdersError(false),
+    didOrderForDate: date => getOrdersCountForDate(date) > 0,
   }
 
   return (

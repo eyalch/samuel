@@ -18,27 +18,34 @@ axios.interceptors.request.use(
   }
 )
 
-axios.interceptors.response.use(
-  res => res,
-  async err => {
-    const { data, config } = err.response
+export const setupAuthInterceptor = (setIsAuthenticated, showAuthDialog) =>
+  axios.interceptors.response.use(
+    res => res,
+    async err => {
+      const { status, data, config } = err.response
 
-    // If the token is invalid we refresh it and retry the request
-    // (unless the refresh token is invalid)
-    if (
-      data.code === 'token_not_valid' &&
-      !config.url.includes('token/refresh')
-    ) {
-      try {
-        // Try to refresh the token
-        await refreshToken()
+      // If the token is invalid we refresh it and retry the request
+      // (unless the refresh token is invalid)
+      if (
+        status === 401 &&
+        data.code === 'token_not_valid' &&
+        !config.url.includes('token/refresh')
+      ) {
+        try {
+          // Try to refresh the token
+          await refreshToken()
 
-        // Retry the request if the token was successfully refreshed
-        config.baseURL = ''
-        return axios.request(config)
-      } catch (err) {}
+          setIsAuthenticated(true)
+
+          // Retry the request if the token was successfully refreshed
+          config.baseURL = ''
+          return axios.request(config)
+        } catch (err) {
+          setIsAuthenticated(false)
+          showAuthDialog()
+        }
+      }
+
+      throw err
     }
-
-    throw err
-  }
-)
+  )

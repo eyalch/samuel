@@ -35,15 +35,15 @@ const DishesPage = () => {
     hasTimeLeft,
   } = useDishes()
 
-  const { checkIsAuthenticated } = useAuth()
+  const { isAuthenticated, isInitialAuthentication } = useAuth()
   const { max_orders_per_day } = usePreferences()
 
-  const isAuthenticated = checkIsAuthenticated()
-
   const fetchDishes = useCallback(() => {
+    if (isInitialAuthentication) return
+
     setLoading(true)
     _fetchDishes().then(() => setLoading(false))
-  }, [_fetchDishes])
+  }, [_fetchDishes, isInitialAuthentication])
 
   // Fetch dishes for the first time and when the user authenticates
   useEffect(fetchDishes, [fetchDishes, isAuthenticated])
@@ -54,8 +54,7 @@ const DishesPage = () => {
     return () => clearInterval(interval)
   }, [fetchDishes])
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const todayDate = useMemo(() => getLocalDateISOString(), [hasTimeLeft])
+  const todayDate = useMemo(getLocalDateISOString, [hasTimeLeft])
 
   // Split the dishes into the arrays: dishes for today & future dishes
   const [todayDishes, futureDishes] = dishes.reduce(

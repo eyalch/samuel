@@ -7,7 +7,7 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import React from 'react'
 import { getPrettyWeekday } from './helpers'
 
-const ConfirmSecondOrderDialog = ({ open, dishDate, onClose, onAgree }) => (
+const ConfirmOrderDialog = ({ open, dishDate, onClose, onAgree }) => (
   <Dialog
     open={open}
     onClose={onClose}
@@ -32,4 +32,4 @@ const ConfirmSecondOrderDialog = ({ open, dishDate, onClose, onAgree }) => (
   </Dialog>
 )
 
-export default ConfirmSecondOrderDialog
+export default ConfirmOrderDialog

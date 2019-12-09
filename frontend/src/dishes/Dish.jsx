@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography'
 import DoneOutlineIcon from '@material-ui/icons/DoneOutline'
 import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
-import ConfirmSecondOrderDialog from './ConfirmSecondOrderDialog'
+import ConfirmOrderDialog from './ConfirmOrderDialog'
 import { useDishes } from './DishesProvider'
 import { getLocalDateISOString } from './helpers'
 import placeholderImage from './placeholder.png'
@@ -56,12 +56,9 @@ const StyledLoadingOverlay = styled.div`
 
 const Dish = ({ dish }) => {
   const [loading, setLoading] = useState(false)
-  const [
-    showConfirmSecondOrderDialog,
-    setShowConfirmSecondOrderDialog,
-  ] = useState(false)
+  const [showConfirmOrderDialog, setShowConfirmOrderDialog] = useState(false)
 
-  const { dishes, orderDish, cancelOrder, hasTimeLeft } = useDishes()
+  const { orderDish, cancelOrder, hasTimeLeft, didOrderForDate } = useDishes()
 
   // If there's time left to order today OR the dish is not for today,
   // then the user is allowed to order
@@ -73,29 +70,24 @@ const Dish = ({ dish }) => {
   const onOrder = async () => {
     if (!isAllowedToOrder) return
 
-    // Check if the user has already made an order that (dish's) day
-    const didAlreadyOrderForTheDay = dishes.some(
-      d => d.date === dish.date && d.orders_count !== 0
-    )
-
     // Show a confirm dialog if the user has already made an order
-    if (didAlreadyOrderForTheDay && !showConfirmSecondOrderDialog) {
-      setShowConfirmSecondOrderDialog(true)
+    if (didOrderForDate(dish.date) && !showConfirmOrderDialog) {
+      setShowConfirmOrderDialog(true)
       return
-    } else if (showConfirmSecondOrderDialog) {
-      setShowConfirmSecondOrderDialog(false)
+    } else if (showConfirmOrderDialog) {
+      setShowConfirmOrderDialog(false)
     }
 
     setLoading(true)
-    await orderDish(dish.id)
+    await orderDish(dish)
     setLoading(false)
   }
 
-  const onDelete = async () => {
+  const onCancel = async () => {
     if (!isAllowedToOrder) return
 
     setLoading(true)
-    await cancelOrder(dish.id)
+    await cancelOrder(dish)
     setLoading(false)
   }
 
@@ -141,7 +133,7 @@ const Dish = ({ dish }) => {
               <Button
                 color="primary"
                 size="large"
-                onClick={onDelete}
+                onClick={onCancel}
                 disabled={loading}>
                 ביטול
               </Button>
@@ -156,10 +148,10 @@ const Dish = ({ dish }) => {
         )}
       </StyledCard>
 
-      <ConfirmSecondOrderDialog
-        open={showConfirmSecondOrderDialog}
+      <ConfirmOrderDialog
+        open={showConfirmOrderDialog}
         dishDate={dish.date}
-        onClose={() => setShowConfirmSecondOrderDialog(false)}
+        onClose={() => setShowConfirmOrderDialog(false)}
         onAgree={onOrder}
       />
     </>

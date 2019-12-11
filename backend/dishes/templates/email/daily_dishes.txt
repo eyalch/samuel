@@ -1,0 +1,12 @@
+{% if test %}בדיקה{% endif %}
+
+תפריט ל{{ weekday }}
+({{ date }})
+
+{% for dish in dishes %}
+{{ dish.name }}
+{{ dish.description }}
+
+{% endfor %}
+
+להזמנה: {{ base_url }}

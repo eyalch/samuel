@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6597d9702b46990a25afbb31f955c5628381f376e99a101a2d3daa383aeb38ec"
+            "sha256": "6064f497603ee0cbd67faf2084bdb75806d7ff66c67ad3386e35248f9dfefdaf"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,13 +16,21 @@
         ]
     },
     "default": {
-        "django": {
+        "babel": {
             "hashes": [
-                "sha256:16040e1288c6c9f68c6da2fe75ebde83c0a158f6f5d54f4c5177b0c1478c5b86",
-                "sha256:89c2007ca4fa5b351a51a279eccff298520783b713bf28efb89dfb81c80ea49b"
+                "sha256:af92e6106cb7c55286b25b38ad7695f8b4efb36a90ba483d7f7a6628c46158ab",
+                "sha256:e86135ae101e31e2c8ec20a4e0c5220f4eed12487d5cf3f78be7e98d3a57fc28"
             ],
             "index": "pypi",
-            "version": "==2.2.7"
+            "version": "==2.7.0"
+        },
+        "django": {
+            "hashes": [
+                "sha256:a4ad4f6f9c6a4b7af7e2deec8d0cbff28501852e5010d6c2dc695d3d1fae7ca0",
+                "sha256:fa98ec9cc9bf5d72a08ebf3654a9452e761fbb8566e3f80de199cbc15477e891"
+            ],
+            "index": "pypi",
+            "version": "==2.2.8"
         },
         "django-auth-ldap": {
             "hashes": [

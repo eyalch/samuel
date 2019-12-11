@@ -28,9 +28,9 @@ class MaxOrdersError(exceptions.APIException):
     code = "max_orders"
 
 
-def check_if_time_is_up():
+def check_if_time_is_up_for_today():
     """
-    Check if there's time left for orders; raise an error if not
+    Check if there's time left to order today; raise an error if not
     """
     now = timezone.now()
     allow_orders_until_time = global_preferences["allow_orders_until"]
@@ -61,7 +61,7 @@ class ScheduledDishViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericViewS
 
         today = timezone.now().date()
         if scheduled_dish.date == today:
-            check_if_time_is_up()
+            check_if_time_is_up_for_today()
 
         # Check whether the user has ordered the maximum allowed dishes for the day
         max_orders_per_day = global_preferences["max_orders_per_day"]
@@ -84,7 +84,7 @@ class ScheduledDishViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericViewS
 
         today = timezone.now().date()
         if scheduled_dish.date == today:
-            check_if_time_is_up()
+            check_if_time_is_up_for_today()
 
         order = Order.objects.filter(
             user=request.user, scheduled_dish=scheduled_dish

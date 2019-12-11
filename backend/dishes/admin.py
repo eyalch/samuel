@@ -1,10 +1,20 @@
 import datetime
 
+from babel.dates import format_date
 from django import forms
-from django.contrib import admin
+from django.conf import settings
+from django.contrib import admin, messages
+from django.core.mail import send_mail
+from django.http import HttpResponseRedirect
+from django.template.loader import get_template
+from django.urls import path
 from django.utils import timezone
 
 from .models import Dish, Order, ScheduledDish
+from .views import TimeIsUpError, check_if_time_is_up_for_today
+
+plaintext_template = get_template("email/daily_dishes.txt")
+html_template = get_template("email/daily_dishes.html")
 
 
 class DishAdminForm(forms.ModelForm):
@@ -46,6 +56,7 @@ class DishAdmin(admin.ModelAdmin):
     actions = ["schedule_for_today", "schedule_for_tomorrow"]
     form = DishAdminForm
     inlines = [AddScheduledDishInline, ScheduledDishInline]
+    change_list_template = "admin/dishes_changelist.html"
 
     def schedule_for(self, dishes, date, request):
         """Create a ScheduledDish for today for each dish"""
@@ -74,6 +85,53 @@ class DishAdmin(admin.ModelAdmin):
         self.schedule_for(queryset, tomorrow, request)
 
     schedule_for_tomorrow.short_description = "Schedule for tomorrow"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path("send_email/", self.send_email),
+            path("send_email_test/", self.send_email, {"test": True}),
+        ]
+        return my_urls + urls
+
+    def send_email(self, request, test=False):
+        """
+        Send an email with today's dishes. If the time is up for today, then send
+        tomorrow's dishes. The email will be sent only if there are scheduled dishes.
+        """
+        date = timezone.now().date()
+        try:
+            check_if_time_is_up_for_today()
+        except TimeIsUpError:
+            date += datetime.timedelta(days=1)
+
+        scheduled_dishes = ScheduledDish.objects.filter(date=date)
+
+        if len(scheduled_dishes) == 0:
+            self.message_user(
+                request, "No scheduled dishes. Not sending an email.", messages.WARNING
+            )
+            return HttpResponseRedirect("../")
+
+        dishes = [scheduled_dish.dish for scheduled_dish in scheduled_dishes]
+        context = {
+            "dishes": dishes,
+            "base_url": settings.BASE_URL,
+            "weekday": format_date(date, "EEE", locale="he"),
+            "date": format_date(date, "dd בMMMM", locale="he"),
+            "test": test,
+        }
+
+        send_mail(
+            "סמואל",
+            plaintext_template.render(context),
+            settings.DEFAULT_FROM_EMAIL,
+            settings.EMAIL_TEST_RECIPIENTS if test else settings.EMAIL_RECIPIENTS,
+            html_message=html_template.render(context),
+        )
+
+        self.message_user(request, "Successfully sent an email.", messages.SUCCESS)
+        return HttpResponseRedirect("../")
 
 
 @admin.register(ScheduledDish)

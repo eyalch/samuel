@@ -16,17 +16,20 @@ RUN apk update \
     # Time Zone Database
     && apk add --no-cache tzdata
 
+# Set time zone
+ARG TIME_ZONE
+RUN ln -snf /usr/share/zoneinfo/$TIME_ZONE /etc/localtime \
+    && echo $TIME_ZONE > /etc/timezone
+
+# Upgrade pip
+RUN pip install --upgrade pip
+
 # Install pipenv
 RUN pip install pipenv
 
 # Install dependencies
 COPY Pipfile Pipfile.lock ./
 RUN pipenv install --system --deploy
-
-# Set time zone
-ARG TIME_ZONE
-RUN ln -snf /usr/share/zoneinfo/$TIME_ZONE /etc/localtime \
-    && echo $TIME_ZONE > /etc/timezone
 
 # Copy source-code
 COPY . .

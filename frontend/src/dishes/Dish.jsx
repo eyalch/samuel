@@ -125,6 +125,7 @@ const Dish = ({ dish }) => {
             <Button
               color="primary"
               size="large"
+              variant={isOrdered ? 'outlined' : 'contained'}
               onClick={onOrder}
               disabled={loading}>
               {isOrdered ? 'להזמנה נוספת' : 'להזמנה'}

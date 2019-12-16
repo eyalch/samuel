@@ -17,12 +17,12 @@ const StyledDishes = styled.ul`
   }
 `
 
-const DishList = ({ dishes }) => (
-  <StyledDishes>
-    {dishes.map(dish => (
-      <Dish key={dish.id} dish={dish} />
-    ))}
-  </StyledDishes>
-)
-
-export default DishList
+export default function DishList({ dishes }) {
+  return (
+    <StyledDishes>
+      {dishes.map(dish => (
+        <Dish key={dish.id} dish={dish} />
+      ))}
+    </StyledDishes>
+  )
+}

@@ -12,19 +12,19 @@ export const StyledDishesSection = styled.section`
   }
 `
 
-const TodayDishes = ({ dishes }) => (
-  <StyledDishesSection>
-    {dishes.length ? (
-      <>
-        <TimeLeft />
-        <DishList dishes={dishes} />
-      </>
-    ) : (
-      <Typography variant="h4" component="p" align="center">
-        אין מנות להיום
-      </Typography>
-    )}
-  </StyledDishesSection>
-)
-
-export default TodayDishes
+export default function TodayDishes({ dishes }) {
+  return (
+    <StyledDishesSection>
+      {dishes.length ? (
+        <>
+          <TimeLeft />
+          <DishList dishes={dishes} />
+        </>
+      ) : (
+        <Typography variant="h4" component="p" align="center">
+          אין מנות להיום
+        </Typography>
+      )}
+    </StyledDishesSection>
+  )
+}

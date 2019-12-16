@@ -19,7 +19,7 @@ const schema = yup.object({
   password: yup.string().required('שדה חובה'),
 })
 
-const AuthDialog = () => {
+export default function AuthDialog() {
   const {
     showAuthDialog,
     setShowAuthDialog,
@@ -86,5 +86,3 @@ const AuthDialog = () => {
     </>
   )
 }
-
-export default AuthDialog

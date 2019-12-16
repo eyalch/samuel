@@ -1,10 +1,10 @@
-export const getLocalDateISOString = (date = new Date()) => {
+export function getLocalDateISOString(date = new Date()) {
   const offsetInMillis = date.getTimezoneOffset() * 60 * 1000
   const localDate = new Date(date - offsetInMillis)
   return localDate.toISOString().slice(0, 10)
 }
 
-export const getPrettyWeekday = targetDateStr => {
+export function getPrettyWeekday(targetDateStr) {
   const targetDate = new Date(targetDateStr)
   const targetDateISO = getLocalDateISOString(targetDate)
 

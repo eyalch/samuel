@@ -15,7 +15,7 @@ export const getAccessToken = () => localStorage.getItem(KEY_ACCESS_TOKEN)
 
 const AuthContext = createContext()
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [showAuthDialog, setShowAuthDialog] = useState(false)
   const [showCredentialsError, setShowCredentialsError] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -75,7 +75,7 @@ export const useAuth = () => useContext(AuthContext)
 
 let refreshTokenPromise = null
 
-export const refreshToken = async () => {
+export async function refreshToken() {
   // If we've already sent a request to refresh the token then there's no need
   // to send another one, so we just return the initial promise
   if (refreshTokenPromise) return refreshTokenPromise
@@ -104,7 +104,7 @@ export const refreshToken = async () => {
   }
 }
 
-const isTokenExpired = token => {
+function isTokenExpired(token) {
   const decoded = jwt.decode(token)
   return Date.now() >= decoded.exp * 1000
 }

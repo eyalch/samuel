@@ -1,24 +1,14 @@
 import axios from 'axios'
 import React, { useEffect } from 'react'
 import AuthDialog from './auth/AuthDialog'
-import { AuthProvider, useAuth } from './auth/AuthProvider'
+import { useAuth } from './auth/AuthProvider'
 import { setupAuthInterceptor } from './axios'
 import DishesPage from './dishes/DishesPage'
-import { DishesProvider } from './dishes/DishesProvider'
 import Layout from './layout/Layout'
-import { PreferencesProvider, usePreferences } from './PreferencesProvider'
+import { usePreferences } from './PreferencesProvider'
+import withProviders from './withProviders'
 
-const withProviders = App => () => (
-  <PreferencesProvider>
-    <AuthProvider>
-      <DishesProvider>
-        <App />
-      </DishesProvider>
-    </AuthProvider>
-  </PreferencesProvider>
-)
-
-const App = withProviders(() => {
+export default withProviders(function App() {
   const { fetchPreferences } = usePreferences()
   const { setIsAuthenticated, setShowAuthDialog } = useAuth()
 
@@ -40,5 +30,3 @@ const App = withProviders(() => {
     </Layout>
   )
 })
-
-export default App

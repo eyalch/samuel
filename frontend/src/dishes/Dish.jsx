@@ -54,7 +54,7 @@ const StyledLoadingOverlay = styled.div`
   padding: 0 ${p => p.theme.spacing(1)}px;
 `
 
-const Dish = ({ dish }) => {
+export default function Dish({ dish }) {
   const [loading, setLoading] = useState(false)
   const [showConfirmOrderDialog, setShowConfirmOrderDialog] = useState(false)
 
@@ -158,5 +158,3 @@ const Dish = ({ dish }) => {
     </>
   )
 }
-
-export default Dish

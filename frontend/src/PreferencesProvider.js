@@ -9,7 +9,7 @@ import React, {
 
 const PreferencesContext = createContext()
 
-export const PreferencesProvider = ({ children }) => {
+export function PreferencesProvider({ children }) {
   const [preferences, setPreferences] = useState({})
 
   const fetchPreferences = useCallback(async () => {

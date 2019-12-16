@@ -16,7 +16,7 @@ const StyledContainer = styled.div`
   }
 `
 
-const TimeLeft = () => {
+export default function TimeLeft() {
   const { allowOrdersUntil, hasTimeLeft, setHasTimeLeft } = useDishes()
 
   const [timeLeftToOrderInMillis, setTimeLeftToOrderInMillis] = useState(
@@ -56,5 +56,3 @@ const TimeLeft = () => {
     </StyledContainer>
   )
 }
-
-export default TimeLeft

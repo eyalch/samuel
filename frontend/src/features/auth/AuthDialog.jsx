@@ -1,15 +1,22 @@
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Field, Form, Formik } from 'formik'
+import * as yup from 'yup'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import ErrorIcon from '@material-ui/icons/Error'
-import { Field, Form, Formik } from 'formik'
-import React from 'react'
-import * as yup from 'yup'
-import { TextFormField } from '../common/FormFields'
-import LoadingButton from '../common/LoadingButton'
-import Snackbar from '../common/Snackbar'
-import { useAuth } from './AuthProvider'
+
+import {
+  authenticate,
+  setShowAuthDialog,
+  hideCredentialsError,
+} from './authSlice'
+
+import { TextFormField } from 'common/FormFields'
+import LoadingButton from 'common/LoadingButton'
+import Snackbar from 'common/Snackbar'
 
 const schema = yup.object({
   email: yup
@@ -19,25 +26,21 @@ const schema = yup.object({
   password: yup.string().required('שדה חובה'),
 })
 
-export default function AuthDialog() {
-  const {
-    showAuthDialog,
-    setShowAuthDialog,
-    authenticate,
-    showCredentialsError,
-    hideCredentialsError,
-  } = useAuth()
+const AuthDialog = () => {
+  const dispatch = useDispatch()
 
   const handleSubmit = async (values, actions) => {
-    await authenticate(values.email, values.password)
+    await dispatch(authenticate(values.email, values.password))
     actions.setSubmitting(false)
   }
+
+  const { showAuthDialog, credentialsError } = useSelector(state => state.auth)
 
   return (
     <>
       <Dialog
         open={showAuthDialog}
-        onClose={() => setShowAuthDialog(false)}
+        onClose={() => dispatch(setShowAuthDialog(false))}
         aria-labelledby="auth-dialog-title">
         <Formik
           validationSchema={schema}
@@ -77,8 +80,8 @@ export default function AuthDialog() {
       </Dialog>
 
       <Snackbar
-        open={showCredentialsError}
-        onClose={hideCredentialsError}
+        open={credentialsError}
+        onClose={() => dispatch(hideCredentialsError())}
         messageId="wrong-credentials-message"
         icon={ErrorIcon}
         message='דוא"ל או סיסמה שגויים'
@@ -86,3 +89,5 @@ export default function AuthDialog() {
     </>
   )
 }
+
+export default AuthDialog

@@ -8,7 +8,6 @@ import Typography from '@material-ui/core/Typography'
 import DoneOutlineIcon from '@material-ui/icons/DoneOutline'
 import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
-import ConfirmOrderDialog from './ConfirmOrderDialog'
 import { useDishes } from './DishesProvider'
 import { getLocalDateISOString } from './helpers'
 import placeholderImage from './placeholder.png'
@@ -56,9 +55,8 @@ const StyledLoadingOverlay = styled.div`
 
 export default function Dish({ dish }) {
   const [loading, setLoading] = useState(false)
-  const [showConfirmOrderDialog, setShowConfirmOrderDialog] = useState(false)
 
-  const { orderDish, cancelOrder, hasTimeLeft, didOrderForDate } = useDishes()
+  const { orderDish, cancelOrder, hasTimeLeft } = useDishes()
 
   // If there's time left to order today OR the dish is not for today,
   // then the user is allowed to order
@@ -69,14 +67,6 @@ export default function Dish({ dish }) {
 
   const onOrder = async () => {
     if (!isAllowedToOrder) return
-
-    // Show a confirm dialog if the user has already made an order
-    if (didOrderForDate(dish.date) && !showConfirmOrderDialog) {
-      setShowConfirmOrderDialog(true)
-      return
-    } else if (showConfirmOrderDialog) {
-      setShowConfirmOrderDialog(false)
-    }
 
     setLoading(true)
     await orderDish(dish)
@@ -94,67 +84,58 @@ export default function Dish({ dish }) {
   const isOrdered = dish.orders_count > 0
 
   return (
-    <>
-      <StyledCard component="li">
-        <StyledCardMedia
-          image={dish.image || placeholderImage}
-          isPlaceholder={!dish.image}>
+    <StyledCard component="li">
+      <StyledCardMedia
+        image={dish.image || placeholderImage}
+        isPlaceholder={!dish.image}>
+        {isOrdered && (
+          <StyledIndicatorsOverlay>
+            {// Show an icon for every order of the dish
+            Array(dish.orders_count)
+              .fill()
+              .map((_, i) => (
+                <DoneOutlineIcon key={i} style={{ fontSize: 56 }} />
+              ))}
+          </StyledIndicatorsOverlay>
+        )}
+      </StyledCardMedia>
+
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="h3">
+          {dish.name}
+        </Typography>
+        <Typography variant="body2" color="textSecondary" component="p">
+          {dish.description}
+        </Typography>
+      </CardContent>
+
+      {isAllowedToOrder && (
+        <StyledCardActions>
+          <Button
+            color="primary"
+            size="large"
+            variant={isOrdered ? 'outlined' : 'contained'}
+            onClick={onOrder}
+            disabled={loading}>
+            {isOrdered ? 'להזמנה נוספת' : 'להזמנה'}
+          </Button>
           {isOrdered && (
-            <StyledIndicatorsOverlay>
-              {// Show an icon for every order of the dish
-              Array(dish.orders_count)
-                .fill()
-                .map((_, i) => (
-                  <DoneOutlineIcon key={i} style={{ fontSize: 56 }} />
-                ))}
-            </StyledIndicatorsOverlay>
-          )}
-        </StyledCardMedia>
-
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h3">
-            {dish.name}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            {dish.description}
-          </Typography>
-        </CardContent>
-
-        {isAllowedToOrder && (
-          <StyledCardActions>
             <Button
               color="primary"
               size="large"
-              variant={isOrdered ? 'outlined' : 'contained'}
-              onClick={onOrder}
+              onClick={onCancel}
               disabled={loading}>
-              {isOrdered ? 'להזמנה נוספת' : 'להזמנה'}
+              ביטול
             </Button>
-            {isOrdered && (
-              <Button
-                color="primary"
-                size="large"
-                onClick={onCancel}
-                disabled={loading}>
-                ביטול
-              </Button>
-            )}
-          </StyledCardActions>
-        )}
+          )}
+        </StyledCardActions>
+      )}
 
-        {loading && (
-          <StyledLoadingOverlay>
-            <CircularProgress size={72} />
-          </StyledLoadingOverlay>
-        )}
-      </StyledCard>
-
-      <ConfirmOrderDialog
-        open={showConfirmOrderDialog}
-        dishDate={dish.date}
-        onClose={() => setShowConfirmOrderDialog(false)}
-        onAgree={onOrder}
-      />
-    </>
+      {loading && (
+        <StyledLoadingOverlay>
+          <CircularProgress size={72} />
+        </StyledLoadingOverlay>
+      )}
+    </StyledCard>
   )
 }

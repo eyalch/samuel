@@ -1,5 +1,5 @@
 import Typography from '@material-ui/core/Typography'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import styled from 'styled-components'
 import { useDishes } from './DishesProvider'
 
@@ -23,21 +23,24 @@ export default function TimeLeft() {
     allowOrdersUntil - new Date()
   )
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const millisLeft = allowOrdersUntil - new Date()
+  const updateTimeLeft = useCallback(() => {
+    const millisLeft = allowOrdersUntil - new Date()
 
-      setTimeLeftToOrderInMillis(millisLeft)
+    setTimeLeftToOrderInMillis(millisLeft)
 
-      if (!hasTimeLeft && millisLeft > 0) {
-        setHasTimeLeft(true)
-      } else if (hasTimeLeft && millisLeft <= 0) {
-        setHasTimeLeft(false)
-      }
-    }, 1000)
-
-    return () => clearInterval(interval)
+    if (!hasTimeLeft && millisLeft > 0) {
+      setHasTimeLeft(true)
+    } else if (hasTimeLeft && millisLeft <= 0) {
+      setHasTimeLeft(false)
+    }
   }, [allowOrdersUntil, hasTimeLeft, setHasTimeLeft])
+
+  useEffect(updateTimeLeft, [])
+
+  useEffect(() => {
+    const interval = setInterval(updateTimeLeft, 1000)
+    return () => clearInterval(interval)
+  }, [updateTimeLeft])
 
   return (
     <StyledContainer>

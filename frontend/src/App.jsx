@@ -1,26 +1,20 @@
-import axios from 'axios'
 import React, { useEffect } from 'react'
-import AuthDialog from './auth/AuthDialog'
-import { useAuth } from './auth/AuthProvider'
-import { setupAuthInterceptor } from './axios'
+import { useDispatch } from 'react-redux'
+
+import { fetchPreferences } from 'features/preferences/preferencesSlice'
+import { checkTokenExpired } from 'features/auth/authSlice'
+
+import AuthDialog from './features/auth/AuthDialog'
 import DishesPage from './dishes/DishesPage'
 import Layout from './layout/Layout'
-import { usePreferences } from './PreferencesProvider'
-import withProviders from './withProviders'
 
-export default withProviders(function App() {
-  const { fetchPreferences } = usePreferences()
-  const { setIsAuthenticated, setShowAuthDialog } = useAuth()
+const App = () => {
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    const interceptor = setupAuthInterceptor(setIsAuthenticated, () =>
-      setShowAuthDialog(true)
-    )
-
-    fetchPreferences()
-
-    return () => axios.interceptors.response.eject(interceptor)
-  }, [fetchPreferences, setIsAuthenticated, setShowAuthDialog])
+    dispatch(fetchPreferences())
+    dispatch(checkTokenExpired())
+  }, [dispatch])
 
   return (
     <Layout>
@@ -29,4 +23,6 @@ export default withProviders(function App() {
       <AuthDialog />
     </Layout>
   )
-})
+}
+
+export default App

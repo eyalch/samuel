@@ -7,13 +7,10 @@ import './api/axios'
 import * as serviceWorker from './serviceWorker'
 import store from './store'
 import withStyleProviders from './withStyleProviders'
-import { DishesProvider } from './dishes/DishesProvider'
 
 const app = () => (
   <Provider store={store}>
-    <DishesProvider>
-      <App />
-    </DishesProvider>
+    <App />
   </Provider>
 )
 

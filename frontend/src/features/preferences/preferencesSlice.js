@@ -6,8 +6,8 @@ const preferences = createSlice({
   name: 'preferences',
   initialState: {},
   reducers: {
-    fetchPreferencesSuccess(state, action) {
-      const preferencesObj = action.payload.reduce(
+    fetchPreferencesSuccess(state, { payload }) {
+      const preferencesObj = payload.reduce(
         (acc, { key, value }) => ({ ...acc, [key]: value }),
         {}
       )

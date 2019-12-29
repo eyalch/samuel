@@ -18,10 +18,17 @@
     "styled-components": "^4.4.0",
     "yup": "^0.27.0"
   },
+  "devDependencies": {
+    "@types/styled-components": "^4.1.19",
+    "@types/yup": "^0.26.24",
+    "babel-plugin-import": "^1.13.0",
+    "customize-cra": "^0.9.1",
+    "react-app-rewired": "^2.1.5"
+  },
   "scripts": {
-    "start": "BROWSER=none react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "BROWSER=none react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -39,9 +46,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://pluto:8000/",
-  "devDependencies": {
-    "@types/styled-components": "^4.1.19",
-    "@types/yup": "^0.26.24"
-  }
+  "proxy": "http://pluto:8000/"
 }

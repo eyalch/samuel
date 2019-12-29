@@ -9,7 +9,6 @@ import {
   getRefreshToken,
   removeAccessToken,
 } from './authHelpers'
-import { wait } from 'wait'
 
 const initialState = {
   showAuthDialog: false,
@@ -22,53 +21,41 @@ const auth = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setShowAuthDialog(state, action) {
-      state.showAuthDialog = action.payload
+    setShowAuthDialog(state, { payload: show }) {
+      state.showAuthDialog = show
     },
-    hideCredentialsError(state, action) {
+    hideCredentialsError(state) {
       state.credentialsError = false
     },
 
-    authenticateStart(state, action) {
-      state.credentialsError = false
-    },
-    authenticateSuccess(state, action) {
-      updateTokens(action.payload)
+    authenticateSuccess(state, { payload: tokens }) {
+      updateTokens(tokens)
       state.authenticated = true
       state.showAuthDialog = false
     },
-    authenticateFailure(state, action) {
-      if (action.payload.code === 'authentication_failed') {
+    authenticateFailure(state, { payload: res }) {
+      if (res.code === 'authentication_failed') {
         state.credentialsError = true
       }
     },
 
-    refreshTokenSuccess(state, action) {
-      updateTokens(action.payload)
-    },
-    refreshTokenFailure(state, action) {
-      if (action.payload.code === 'token_not_valid') {
-        // Remove the invalid refresh token
-        removeRefreshToken()
-      }
+    refreshTokenFailure(state) {
       state.showAuthDialog = true
     },
 
-    setAuthenticated(state, action) {
-      state.authenticated = action.payload
+    setAuthenticated(state, { payload: authenticated }) {
+      state.authenticated = authenticated
     },
 
-    checkTokenExpiredEnd(state, action) {
+    checkTokenExpiredEnd(state) {
       state.initialAuthentication = false
     },
   },
 })
 
 const {
-  authenticateStart,
   authenticateSuccess,
   authenticateFailure,
-  refreshTokenSuccess,
   refreshTokenFailure,
   setAuthenticated,
   checkTokenExpiredEnd,
@@ -79,7 +66,7 @@ export const { setShowAuthDialog, hideCredentialsError } = auth.actions
 export default auth.reducer
 
 export const authenticate = (email, password) => async dispatch => {
-  dispatch(authenticateStart())
+  dispatch(hideCredentialsError())
   try {
     const { access, refresh } = await getToken(email, password)
     dispatch(authenticateSuccess({ access, refresh }))
@@ -91,10 +78,14 @@ export const authenticate = (email, password) => async dispatch => {
 export const refreshToken = () => async dispatch => {
   try {
     const { access, refresh } = await getNewTokens(getRefreshToken())
-    await wait(3000)
-    dispatch(refreshTokenSuccess({ access, refresh }))
+    updateTokens({ access, refresh })
   } catch (res) {
-    dispatch(refreshTokenFailure(res))
+    if (res.code === 'token_not_valid') {
+      // Remove the invalid refresh token
+      removeRefreshToken()
+    }
+
+    dispatch(refreshTokenFailure())
   }
 }
 

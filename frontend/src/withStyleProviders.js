@@ -1,9 +1,9 @@
-import CssBaseline from '@material-ui/core/CssBaseline'
+import React from 'react'
+import { CssBaseline } from '@material-ui/core'
 import { createMuiTheme } from '@material-ui/core/styles'
 import { jssPreset, StylesProvider, ThemeProvider } from '@material-ui/styles'
 import { create as createJss } from 'jss'
 import rtl from 'jss-rtl'
-import React from 'react'
 import {
   createGlobalStyle,
   ThemeProvider as StyledThemeProvider,

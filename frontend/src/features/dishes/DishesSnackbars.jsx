@@ -1,17 +1,15 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
-import BlockIcon from '@material-ui/icons/Block'
-import CheckCircleIcon from '@material-ui/icons/CheckCircle'
-import TimerOffIcon from '@material-ui/icons/TimerOff'
+import { useSelector, useDispatch } from 'react-redux'
+import { Block, CheckCircle, TimerOff } from '@material-ui/icons'
 
-import Snackbar from '../common/Snackbar'
-import { messages, useDishes } from './DishesProvider'
+import Snackbar from 'common/Snackbar'
+import { resetMessage, messages } from './dishesSlice'
 
 const iconsMap = {
-  [messages.ORDER_SUCCESS]: CheckCircleIcon,
-  [messages.CANCEL_ORDER_SUCCESS]: CheckCircleIcon,
-  [messages.TIME_IS_UP]: TimerOffIcon,
-  [messages.MAX_ORDERS]: BlockIcon,
+  [messages.ORDER_SUCCESS]: CheckCircle,
+  [messages.CANCEL_ORDER_SUCCESS]: CheckCircle,
+  [messages.TIME_IS_UP]: TimerOff,
+  [messages.MAX_ORDERS]: Block,
 }
 
 const getMessageText = (message, maxOrders) =>
@@ -26,14 +24,14 @@ const getMessageText = (message, maxOrders) =>
   }[message])
 
 export default function DishesSnackbars() {
-  const { message, resetMessage } = useDishes()
-
+  const { message } = useSelector(state => state.dishes)
   const { max_orders_per_day } = useSelector(state => state.preferences)
+  const dispatch = useDispatch()
 
   return (
     <Snackbar
       open={message !== null}
-      onClose={resetMessage}
+      onClose={() => dispatch(resetMessage())}
       messageId="dishes-message"
       icon={iconsMap[message]}
       message={getMessageText(message, max_orders_per_day)}

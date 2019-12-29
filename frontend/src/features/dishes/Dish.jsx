@@ -1,15 +1,20 @@
-import Button from '@material-ui/core/Button'
-import Card from '@material-ui/core/Card'
-import CardActions from '@material-ui/core/CardActions'
-import CardContent from '@material-ui/core/CardContent'
-import CardMedia from '@material-ui/core/CardMedia'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import Typography from '@material-ui/core/Typography'
-import DoneOutlineIcon from '@material-ui/icons/DoneOutline'
-import React, { useMemo, useState } from 'react'
+import React, { useState, useCallback } from 'react'
+import { createSelector } from '@reduxjs/toolkit'
+import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
-import { useDishes } from './DishesProvider'
-import { getLocalDateISOString } from './helpers'
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  CircularProgress,
+  Typography,
+} from '@material-ui/core'
+import { DoneOutline } from '@material-ui/icons'
+
+import { orderDish, cancelOrder } from './dishesSlice'
+import { getLocalDateISOString } from './dishesHelpers'
 import placeholderImage from './placeholder.png'
 
 const StyledCard = styled(Card)`
@@ -53,33 +58,37 @@ const StyledLoadingOverlay = styled.div`
   padding: 0 ${p => p.theme.spacing(1)}px;
 `
 
-export default function Dish({ dish }) {
-  const [loading, setLoading] = useState(false)
+const selectIsAllowedToOrder = createSelector(
+  state => state.dishes.hasTimeLeft,
+  (_, dishDate) => dishDate,
+  (hasTimeLeft, dishDate) => {
+    const isDishForToday = getLocalDateISOString() === dishDate
+    return hasTimeLeft || !isDishForToday
+  }
+)
 
-  const { orderDish, cancelOrder, hasTimeLeft } = useDishes()
+const Dish = ({ dish }) => {
+  const [loading, setLoading] = useState(false)
 
   // If there's time left to order today OR the dish is not for today,
   // then the user is allowed to order
-  const isAllowedToOrder = useMemo(() => {
-    const isDishForToday = getLocalDateISOString() === dish.date
-    return hasTimeLeft || !isDishForToday
-  }, [dish.date, hasTimeLeft])
+  const isAllowedToOrder = useSelector(state =>
+    selectIsAllowedToOrder(state, dish.date)
+  )
+  const dispatch = useDispatch()
 
-  const onOrder = async () => {
-    if (!isAllowedToOrder) return
+  const onAction = useCallback(
+    async action => {
+      if (!isAllowedToOrder) return
 
-    setLoading(true)
-    await orderDish(dish)
-    setLoading(false)
-  }
-
-  const onCancel = async () => {
-    if (!isAllowedToOrder) return
-
-    setLoading(true)
-    await cancelOrder(dish)
-    setLoading(false)
-  }
+      setLoading(true)
+      await dispatch(action(dish))
+      setLoading(false)
+    },
+    [dish, dispatch, isAllowedToOrder]
+  )
+  const onOrder = useCallback(() => onAction(orderDish), [onAction])
+  const onCancel = useCallback(() => onAction(cancelOrder), [onAction])
 
   const isOrdered = dish.orders_count > 0
 
@@ -94,7 +103,7 @@ export default function Dish({ dish }) {
             Array(dish.orders_count)
               .fill()
               .map((_, i) => (
-                <DoneOutlineIcon key={i} style={{ fontSize: 56 }} />
+                <DoneOutline key={i} style={{ fontSize: 56 }} />
               ))}
           </StyledIndicatorsOverlay>
         )}
@@ -139,3 +148,5 @@ export default function Dish({ dish }) {
     </StyledCard>
   )
 }
+
+export default Dish

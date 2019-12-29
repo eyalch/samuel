@@ -2,18 +2,19 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Field, Form, Formik } from 'formik'
 import * as yup from 'yup'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import ErrorIcon from '@material-ui/icons/Error'
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from '@material-ui/core'
+import { Error } from '@material-ui/icons'
 
 import {
   authenticate,
   setShowAuthDialog,
   hideCredentialsError,
 } from './authSlice'
-
 import { TextFormField } from 'common/FormFields'
 import LoadingButton from 'common/LoadingButton'
 import Snackbar from 'common/Snackbar'
@@ -83,7 +84,7 @@ const AuthDialog = () => {
         open={credentialsError}
         onClose={() => dispatch(hideCredentialsError())}
         messageId="wrong-credentials-message"
-        icon={ErrorIcon}
+        icon={Error}
         message='דוא"ל או סיסמה שגויים'
       />
     </>

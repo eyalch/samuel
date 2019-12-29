@@ -1,7 +1,6 @@
-import Button from '@material-ui/core/Button'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import React from 'react'
 import styled from 'styled-components'
+import { Button, CircularProgress } from '@material-ui/core'
 
 const LoadingButtonContainer = styled.div`
   position: relative;

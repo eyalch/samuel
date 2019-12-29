@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+
 import Dish from './Dish'
 
 const StyledDishes = styled.ul`
@@ -17,12 +18,12 @@ const StyledDishes = styled.ul`
   }
 `
 
-export default function DishList({ dishes }) {
-  return (
-    <StyledDishes>
-      {dishes.map(dish => (
-        <Dish key={dish.id} dish={dish} />
-      ))}
-    </StyledDishes>
-  )
-}
+const DishList = ({ dishes }) => (
+  <StyledDishes>
+    {dishes.map(dish => (
+      <Dish key={dish.id} dish={dish} />
+    ))}
+  </StyledDishes>
+)
+
+export default DishList

@@ -1,7 +1,6 @@
-import Slide from '@material-ui/core/Slide'
-import MSnackbar from '@material-ui/core/Snackbar'
 import React from 'react'
 import styled from 'styled-components'
+import { Snackbar as MuiSnackbar, Slide } from '@material-ui/core'
 
 const StyledSnackbarMessage = styled.span`
   display: flex;
@@ -24,7 +23,7 @@ const Snackbar = ({
     : null
 
   return (
-    <MSnackbar
+    <MuiSnackbar
       anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       open={open}
       autoHideDuration={5000}

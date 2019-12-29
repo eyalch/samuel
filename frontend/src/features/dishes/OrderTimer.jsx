@@ -1,7 +1,10 @@
-import Typography from '@material-ui/core/Typography'
 import React, { useEffect, useState, useCallback } from 'react'
+import { createSelector } from '@reduxjs/toolkit'
+import { useSelector, useDispatch } from 'react-redux'
 import styled from 'styled-components'
-import { useDishes } from './DishesProvider'
+import { Typography } from '@material-ui/core'
+
+import { setHasTimeLeft } from './dishesSlice'
 
 const StyledContainer = styled.div`
   margin-top: -${p => p.theme.spacing(1)}px;
@@ -16,8 +19,21 @@ const StyledContainer = styled.div`
   }
 `
 
-export default function TimeLeft() {
-  const { allowOrdersUntil, hasTimeLeft, setHasTimeLeft } = useDishes()
+export const selectAllowOrdersUntil = createSelector(
+  state => state.preferences.allow_orders_until,
+  allow_orders_until => {
+    if (!allow_orders_until) return
+
+    const endTime = new Date()
+    endTime.setHours(...allow_orders_until.split(':'))
+    return endTime
+  }
+)
+
+const OrderTimer = () => {
+  const { hasTimeLeft } = useSelector(state => state.dishes)
+  const allowOrdersUntil = useSelector(selectAllowOrdersUntil)
+  const dispatch = useDispatch()
 
   const [timeLeftToOrderInMillis, setTimeLeftToOrderInMillis] = useState(
     allowOrdersUntil - new Date()
@@ -29,11 +45,11 @@ export default function TimeLeft() {
     setTimeLeftToOrderInMillis(millisLeft)
 
     if (!hasTimeLeft && millisLeft > 0) {
-      setHasTimeLeft(true)
+      dispatch(setHasTimeLeft(true))
     } else if (hasTimeLeft && millisLeft <= 0) {
-      setHasTimeLeft(false)
+      dispatch(setHasTimeLeft(false))
     }
-  }, [allowOrdersUntil, hasTimeLeft, setHasTimeLeft])
+  }, [allowOrdersUntil, dispatch, hasTimeLeft])
 
   useEffect(updateTimeLeft, [])
 
@@ -59,3 +75,5 @@ export default function TimeLeft() {
     </StyledContainer>
   )
 }
+
+export default OrderTimer

@@ -1,27 +1,31 @@
-import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import React from 'react'
+import React, { useCallback } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from '@material-ui/core'
 
-import { useDishes } from './DishesProvider'
-import { getPrettyWeekday } from './helpers'
+import { resetConfirmPendingDish, orderPendingDish } from './dishesSlice'
+import { getPrettyWeekday } from './dishesHelpers'
 
-export default function ConfirmOrderDialog() {
-  const {
-    pendingDish,
-    showConfirmOrderDialog,
-    hideConfirmOrderDialog,
-    orderPendingDish,
-  } = useDishes()
+const ConfirmOrderDialog = () => {
+  const { confirmOrderDialog, pendingDish } = useSelector(state => state.dishes)
+  const dispatch = useDispatch()
+
+  const hideConfirmOrderDialog = useCallback(
+    () => dispatch(resetConfirmPendingDish()),
+    [dispatch]
+  )
 
   const prettyWeekday = pendingDish ? getPrettyWeekday(pendingDish.date) : ''
 
   return (
     <Dialog
-      open={showConfirmOrderDialog}
+      open={confirmOrderDialog}
       onClose={hideConfirmOrderDialog}
       aria-labelledby="confirm-second-order-dialog-title"
       aria-describedby="confirm-second-order-dialog-description">
@@ -37,10 +41,12 @@ export default function ConfirmOrderDialog() {
         <Button onClick={hideConfirmOrderDialog} color="primary">
           לא
         </Button>
-        <Button onClick={orderPendingDish} color="primary">
+        <Button onClick={() => dispatch(orderPendingDish())} color="primary">
           כן
         </Button>
       </DialogActions>
     </Dialog>
   )
 }
+
+export default ConfirmOrderDialog

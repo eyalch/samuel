@@ -5,7 +5,7 @@ import { fetchPreferences } from 'features/preferences/preferencesSlice'
 import { checkTokenExpired } from 'features/auth/authSlice'
 
 import AuthDialog from './features/auth/AuthDialog'
-import DishesPage from './dishes/DishesPage'
+import DishesPage from './features/dishes/DishesPage'
 import Layout from './layout/Layout'
 
 const App = () => {

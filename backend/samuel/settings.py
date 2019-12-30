@@ -128,8 +128,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 MEDIA_URL = "/mediafiles/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "mediafiles")
 
-FILE_UPLOAD_PERMISSIONS = 0o644
-
 
 # User model
 

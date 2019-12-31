@@ -6,12 +6,28 @@ services:
       context: ./backend
       args:
         TIME_ZONE: $TIME_ZONE
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn samuel.wsgi:application --bind 0.0.0.0:8000
+    expose:
+      - 8000
     volumes:
-      - ./backend:/app
-      - /app/.venv/ # Don't copy the .venv directory
-    ports:
-      - 8000:8000
+      - backend_staticfiles:/app/staticfiles
+      - backend_mediafiles:/app/mediafiles
     env_file: .env
-    environment:
-      PYTHONDONTWRITEBYTECODE: 1
+    restart: always
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    volumes:
+      - backend_staticfiles:/staticfiles:ro
+      - backend_mediafiles:/mediafiles:ro
+    ports:
+      - 1337:80
+    depends_on:
+      - backend
+    restart: always
+
+volumes:
+  backend_staticfiles:
+  backend_mediafiles:

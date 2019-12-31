@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import { getPreferences } from 'api/preferences'
+import * as api from 'api/preferences'
 
 const preferences = createSlice({
   name: 'preferences',
@@ -21,6 +21,6 @@ const { fetchPreferencesSuccess } = preferences.actions
 export default preferences.reducer
 
 export const fetchPreferences = () => async dispatch => {
-  const res = await getPreferences()
-  dispatch(fetchPreferencesSuccess(res))
+  const { data } = await api.getPreferences()
+  dispatch(fetchPreferencesSuccess(data))
 }

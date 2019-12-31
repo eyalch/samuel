@@ -18,7 +18,7 @@ class ScheduledDishSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ScheduledDish
-        fields = ("id", "date", "orders_count", "dish")
+        fields = ("id", "date", "orders_count", "dish", "max_orders")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

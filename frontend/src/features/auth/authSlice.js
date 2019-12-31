@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import { getToken, getNewTokens } from 'api/auth'
+import * as api from 'api/auth'
 import {
   updateTokens,
   removeRefreshToken,
@@ -68,19 +68,21 @@ export default auth.reducer
 export const authenticate = (email, password) => async dispatch => {
   dispatch(hideCredentialsError())
   try {
-    const { access, refresh } = await getToken(email, password)
+    const { data } = await api.getToken(email, password)
+    const { access, refresh } = data
     dispatch(authenticateSuccess({ access, refresh }))
-  } catch (res) {
-    dispatch(authenticateFailure(res))
+  } catch (err) {
+    dispatch(authenticateFailure(err.response.data))
   }
 }
 
 export const refreshToken = () => async dispatch => {
   try {
-    const { access, refresh } = await getNewTokens(getRefreshToken())
+    const { data } = await api.getNewTokens(getRefreshToken())
+    const { access, refresh } = data
     updateTokens({ access, refresh })
-  } catch (res) {
-    if (res.code === 'token_not_valid') {
+  } catch (err) {
+    if (err.response.data.code === 'token_not_valid') {
       // Remove the invalid refresh token
       removeRefreshToken()
     }

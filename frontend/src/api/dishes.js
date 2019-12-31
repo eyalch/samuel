@@ -1,16 +1,7 @@
 import axios from 'axios'
 
-export async function getDishes() {
-  const { data } = await axios.get('dishes')
-  return data
-}
+export const getDishes = () => axios.get('dishes')
 
-export async function orderDish(dishId) {
-  const { data } = await axios.post(`dishes/${dishId}/order`)
-  return data
-}
+export const orderDish = dishId => axios.post(`dishes/${dishId}/order`)
 
-export async function cancelOrder(dishId) {
-  const { data } = await axios.delete(`dishes/${dishId}/order`)
-  return data
-}
+export const cancelOrder = dishId => axios.delete(`dishes/${dishId}/order`)

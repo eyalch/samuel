@@ -4,14 +4,16 @@ import * as api from 'api/dishes'
 import { setShowAuthDialog } from 'features/auth/authSlice'
 
 export const messages = {
-  ORDER_SUCCESS: 'ORDER_SUCCESS',
-  CANCEL_ORDER_SUCCESS: 'CANCEL_ORDER_SUCCESS',
-  TIME_IS_UP: 'TIME_IS_UP',
-  MAX_ORDERS: 'MAX_ORDERS',
+  ORDER_SUCCESS: 1,
+  CANCEL_ORDER_SUCCESS: 2,
+  TIME_IS_UP: 3,
+  MAX_ORDERS_FOR_DAY: 4,
+  NO_DISHES_LEFT: 5,
 }
 
 const ERR_TIME_IS_UP = 'time_is_up'
-const ERR_MAX_ORDERS = 'max_orders'
+const ERR_MAX_ORDERS_FOR_DAY = 'max_orders_for_day'
+const ERR_NO_DISHES_LEFT = 'no_dishes_left'
 
 const initialState = {
   dishes: [],
@@ -49,7 +51,8 @@ const dishes = createSlice({
       state.message =
         {
           [ERR_TIME_IS_UP]: messages.TIME_IS_UP,
-          [ERR_MAX_ORDERS]: messages.MAX_ORDERS,
+          [ERR_MAX_ORDERS_FOR_DAY]: messages.MAX_ORDERS_FOR_DAY,
+          [ERR_NO_DISHES_LEFT]: messages.NO_DISHES_LEFT,
         }[errorCode] || null
     },
 
@@ -114,8 +117,8 @@ export default dishes.reducer
 export const fetchDishes = () => async dispatch => {
   dispatch(fetchDishesStart())
   try {
-    const res = await api.getDishes()
-    dispatch(fetchDishesSuccess(res))
+    const { data } = await api.getDishes()
+    dispatch(fetchDishesSuccess(data))
   } finally {
     dispatch(fetchDishesEnd())
   }
@@ -137,7 +140,7 @@ export const orderDish = dish => async (dispatch, getState) => {
   const ordersCountForDate = getOrdersCountForDate(dishes, dish.date)
 
   if (ordersCountForDate === max_orders_per_day) {
-    dispatch(setMessage(messages.MAX_ORDERS))
+    dispatch(setMessage(messages.MAX_ORDERS_FOR_DAY))
     return
   }
 
@@ -152,10 +155,10 @@ export const orderDish = dish => async (dispatch, getState) => {
   dispatch(resetMessage())
 
   try {
-    const res = await api.orderDish(dish.id)
-    dispatch(orderDishSuccess(res))
-  } catch (res) {
-    handleErrors(res.code)
+    const { data } = await api.orderDish(dish.id)
+    dispatch(orderDishSuccess(data))
+  } catch (err) {
+    dispatch(handleErrors(err.response.data.code))
   }
 }
 
@@ -173,9 +176,9 @@ export const cancelOrder = dish => async dispatch => {
   dispatch(resetMessage())
 
   try {
-    const res = await api.cancelOrder(dish.id)
-    dispatch(cancelOrderSuccess(res))
-  } catch (res) {
-    handleErrors(res.code)
+    const { data } = await api.cancelOrder(dish.id)
+    dispatch(cancelOrderSuccess(data))
+  } catch (err) {
+    dispatch(handleErrors(err.response.data.code))
   }
 }

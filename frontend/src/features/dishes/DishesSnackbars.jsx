@@ -9,7 +9,8 @@ const iconsMap = {
   [messages.ORDER_SUCCESS]: CheckCircle,
   [messages.CANCEL_ORDER_SUCCESS]: CheckCircle,
   [messages.TIME_IS_UP]: TimerOff,
-  [messages.MAX_ORDERS]: Block,
+  [messages.MAX_ORDERS_FOR_DAY]: Block,
+  [messages.NO_DISHES_LEFT]: Block,
 }
 
 const getMessageText = (message, maxOrders) =>
@@ -17,10 +18,11 @@ const getMessageText = (message, maxOrders) =>
     [messages.ORDER_SUCCESS]: 'ההזמנה התקבלה!',
     [messages.CANCEL_ORDER_SUCCESS]: 'ההזמנה בוטלה',
     [messages.TIME_IS_UP]: 'לא נותר זמן לביצוע הזמנה!',
-    [messages.MAX_ORDERS]:
+    [messages.MAX_ORDERS_FOR_DAY]:
       maxOrders === 1
         ? 'ניתן להזמין מנה אחת ליום!'
         : `ניתן להזמין עד ${maxOrders} מנות ליום!`,
+    [messages.NO_DISHES_LEFT]: 'לא נותרו מנות!',
   }[message])
 
 export default function DishesSnackbars() {

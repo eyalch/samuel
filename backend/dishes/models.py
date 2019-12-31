@@ -17,6 +17,7 @@ class Dish(models.Model):
 class ScheduledDish(models.Model):
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
     date = models.DateField()
+    max_orders = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "scheduled dishes"

@@ -20,12 +20,18 @@ class TimeIsUpError(exceptions.APIException):
     code = "time_is_up"
 
 
-class MaxOrdersError(exceptions.APIException):
+class MaxOrdersForDayError(exceptions.APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = _(
         "User has already made the maximum amount of orders for a single day."
     )
-    code = "max_orders"
+    code = "max_orders_for_day"
+
+
+class NoDishesLeftError(exceptions.APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _("No more dishes left for the day.")
+    code = "no_dishes_left"
 
 
 def check_if_time_is_up_for_today():
@@ -69,7 +75,13 @@ class ScheduledDishViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericViewS
             user=request.user, scheduled_dish__date=scheduled_dish.date
         ).count()
         if user_orders_count_for_the_day == max_orders_per_day:
-            raise MaxOrdersError()
+            raise MaxOrdersForDayError()
+
+        # If there's an order limit, check whether there are dishes left
+        if scheduled_dish.max_orders is not None:
+            orders_count = Order.objects.filter(scheduled_dish=scheduled_dish).count()
+            if orders_count >= scheduled_dish.max_orders:
+                raise NoDishesLeftError()
 
         # Create a new order
         Order.objects.create(user=request.user, scheduled_dish=scheduled_dish)

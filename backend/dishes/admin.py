@@ -39,23 +39,12 @@ class AddScheduledDishInline(admin.TabularInline):
         return False
 
 
-class ScheduledDishInline(admin.TabularInline):
-    model = ScheduledDish
-    readonly_fields = ("date",)
-    extra = 0
-    can_delete = False
-    show_change_link = True
-
-    def has_add_permission(self, request, obj=None):
-        return False
-
-
 @admin.register(Dish)
 class DishAdmin(admin.ModelAdmin):
     list_display = ("name", "description", "image")
     actions = ["schedule_for_today", "schedule_for_tomorrow"]
     form = DishAdminForm
-    inlines = [AddScheduledDishInline, ScheduledDishInline]
+    inlines = [AddScheduledDishInline]
     change_list_template = "admin/dishes_changelist.html"
 
     def schedule_for(self, dishes, date, request):
@@ -136,7 +125,7 @@ class DishAdmin(admin.ModelAdmin):
 
 @admin.register(ScheduledDish)
 class ScheduledDishAdmin(admin.ModelAdmin):
-    list_display = ("dish", "date")
+    list_display = ("dish", "date", "max_orders")
     ordering = ("-date",)
     list_filter = ("dish", "date")
 
@@ -144,7 +133,7 @@ class ScheduledDishAdmin(admin.ModelAdmin):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ("scheduled_dish", "created_at")
-    list_filter = ("scheduled_dish",)
+    list_filter = ("created_at", "scheduled_dish")
     list_display_links = None
     ordering = ("-scheduled_dish__date",)
     actions = None  # Disable the "Delete selected" action

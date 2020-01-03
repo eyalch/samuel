@@ -3,9 +3,14 @@ from django.db import models
 
 
 class Dish(models.Model):
+    DishType = models.TextChoices("DishType", "MAIN SALAD")
+
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
     image = models.ImageField(upload_to="dishes/", blank=True)
+    dish_type = models.CharField(
+        max_length=5, choices=DishType.choices, default=DishType.MAIN
+    )
 
     class Meta:
         verbose_name_plural = "dishes"

@@ -142,6 +142,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.BasicAuthentication",
     ],
     "EXCEPTION_HANDLER": "samuel.exceptions.custom_exception_handler",
+    "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
 
 

@@ -7,17 +7,19 @@ import App from './App'
 import './api/axios'
 import * as serviceWorker from './serviceWorker'
 import store from './store'
-import withStyleProviders from './withStyleProviders'
+import StyleAndThemeProviders from './StyleAndThemeProviders'
 
 Sentry.init({ dsn: process.env.REACT_APP_SENTRY_DSN })
 
-const app = () => (
+const app = (
   <Provider store={store}>
-    <App />
+    <StyleAndThemeProviders>
+      <App />
+    </StyleAndThemeProviders>
   </Provider>
 )
 
-ReactDOM.render(withStyleProviders(app), document.getElementById('root'))
+ReactDOM.render(app, document.getElementById('root'))
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

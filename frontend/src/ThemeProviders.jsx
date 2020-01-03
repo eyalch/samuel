@@ -40,17 +40,17 @@ const GlobalStyles = createGlobalStyle`
   }
 `
 
-const withStyleProviders = App => (
+const StyleAndThemeProviders = ({ children }) => (
   <ThemeProvider theme={theme}>
     <StyledThemeProvider theme={theme}>
       <StylesProvider jss={jss}>
         <CssBaseline />
         <GlobalStyles />
 
-        <App />
+        {children}
       </StylesProvider>
     </StyledThemeProvider>
   </ThemeProvider>
 )
 
-export default withStyleProviders
+export default StyleAndThemeProviders

@@ -1,3 +1,6 @@
 import axios from 'axios'
 
-export const getPreferences = () => axios.get('preferences')
+export const getPreferences = async () => {
+  const res = await axios.get('preferences')
+  return res.data
+}

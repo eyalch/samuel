@@ -47,7 +47,7 @@ const auth = createSlice({
       state.authenticated = authenticated
     },
 
-    checkTokenExpiredEnd(state) {
+    checkForExpiredTokenEnd(state) {
       state.initialAuthentication = false
     },
   },
@@ -58,7 +58,7 @@ const {
   authenticateFailure,
   refreshTokenFailure,
   setAuthenticated,
-  checkTokenExpiredEnd,
+  checkForExpiredTokenEnd,
 } = auth.actions
 
 export const { setShowAuthDialog, hideCredentialsError } = auth.actions
@@ -68,9 +68,8 @@ export default auth.reducer
 export const authenticate = (email, password) => async dispatch => {
   dispatch(hideCredentialsError())
   try {
-    const { data } = await api.getToken(email, password)
-    const { access, refresh } = data
-    dispatch(authenticateSuccess({ access, refresh }))
+    const tokens = await api.getToken(email, password)
+    dispatch(authenticateSuccess(tokens))
   } catch (err) {
     dispatch(authenticateFailure(err.response.data))
   }
@@ -78,9 +77,8 @@ export const authenticate = (email, password) => async dispatch => {
 
 export const refreshToken = () => async dispatch => {
   try {
-    const { data } = await api.getNewTokens(getRefreshToken())
-    const { access, refresh } = data
-    updateTokens({ access, refresh })
+    const tokens = await api.getNewTokens(getRefreshToken())
+    updateTokens(tokens)
   } catch (err) {
     if (err.response.data.code === 'token_not_valid') {
       // Remove the invalid refresh token
@@ -91,7 +89,7 @@ export const refreshToken = () => async dispatch => {
   }
 }
 
-export const checkTokenExpired = () => async dispatch => {
+export const checkForExpiredToken = () => async dispatch => {
   const token = getAccessToken()
 
   if (token) {
@@ -105,5 +103,5 @@ export const checkTokenExpired = () => async dispatch => {
     }
   }
 
-  dispatch(checkTokenExpiredEnd())
+  dispatch(checkForExpiredTokenEnd())
 }

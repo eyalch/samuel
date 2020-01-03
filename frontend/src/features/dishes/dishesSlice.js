@@ -117,8 +117,8 @@ export default dishes.reducer
 export const fetchDishes = () => async dispatch => {
   dispatch(fetchDishesStart())
   try {
-    const { data } = await api.getDishes()
-    dispatch(fetchDishesSuccess(data))
+    const dishes = await api.getDishes()
+    dispatch(fetchDishesSuccess(dishes))
   } finally {
     dispatch(fetchDishesEnd())
   }
@@ -155,8 +155,8 @@ export const orderDish = dish => async (dispatch, getState) => {
   dispatch(resetMessage())
 
   try {
-    const { data } = await api.orderDish(dish.id)
-    dispatch(orderDishSuccess(data))
+    const updatedDish = await api.orderDish(dish.id)
+    dispatch(orderDishSuccess(updatedDish))
   } catch (err) {
     dispatch(handleErrors(err.response.data.code))
   }
@@ -176,8 +176,8 @@ export const cancelOrder = dish => async dispatch => {
   dispatch(resetMessage())
 
   try {
-    const { data } = await api.cancelOrder(dish.id)
-    dispatch(cancelOrderSuccess(data))
+    const updatedDish = await api.cancelOrder(dish.id)
+    dispatch(cancelOrderSuccess(updatedDish))
   } catch (err) {
     dispatch(handleErrors(err.response.data.code))
   }

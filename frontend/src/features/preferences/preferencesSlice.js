@@ -21,6 +21,6 @@ const { fetchPreferencesSuccess } = preferences.actions
 export default preferences.reducer
 
 export const fetchPreferences = () => async dispatch => {
-  const { data } = await api.getPreferences()
-  dispatch(fetchPreferencesSuccess(data))
+  const preferences = await api.getPreferences()
+  dispatch(fetchPreferencesSuccess(preferences))
 }

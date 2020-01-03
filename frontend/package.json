@@ -20,6 +20,7 @@
     "yup": "^0.27.0"
   },
   "devDependencies": {
+    "@types/react-redux": "^7.1.5",
     "@types/styled-components": "^4.1.19",
     "@types/yup": "^0.26.24",
     "babel-plugin-import": "^1.13.0",

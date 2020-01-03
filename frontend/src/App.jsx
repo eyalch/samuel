@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { fetchPreferences } from 'features/preferences/preferencesSlice'
-import { checkTokenExpired } from 'features/auth/authSlice'
+import { checkForExpiredToken } from 'features/auth/authSlice'
 
 import AuthDialog from './features/auth/AuthDialog'
 import DishesPage from './features/dishes/DishesPage'
@@ -13,7 +13,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(fetchPreferences())
-    dispatch(checkTokenExpired())
+    dispatch(checkForExpiredToken())
   }, [dispatch])
 
   return (

@@ -1,7 +1,11 @@
 import axios from 'axios'
 
-export const getToken = (email, password) =>
-  axios.post('token', { email, password })
+export const getToken = async (email, password) => {
+  const res = await axios.post('token', { email, password })
+  return res.data
+}
 
-export const getNewTokens = refreshToken =>
-  axios.post('token/refresh', { refresh: refreshToken })
+export const getNewTokens = async refreshToken => {
+  const res = await axios.post('token/refresh', { refresh: refreshToken })
+  return res.data
+}

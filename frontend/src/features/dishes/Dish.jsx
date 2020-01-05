@@ -11,7 +11,7 @@ import {
   CircularProgress,
   Typography,
 } from '@material-ui/core'
-import { DoneOutline } from '@material-ui/icons'
+import DoneOutline from '@material-ui/icons/DoneOutline'
 
 import { orderDish, cancelOrder } from './dishesSlice'
 import { getLocalDateISOString } from './dishesHelpers'
@@ -22,12 +22,13 @@ const StyledCard = styled(Card)`
   display: flex;
   flex-direction: column;
 `
-const StyledCardMedia = styled(({ isPlaceholder, ...props }) => (
-  <CardMedia {...props} />
-))`
+const StyledCardMedia = styled(CardMedia)`
   height: 240px;
-  background-size: ${p =>
-    p.isPlaceholder ? `auto calc(100% - ${p.theme.spacing(4)}px)` : 'cover'};
+  background-size: cover;
+
+  &.placeholder {
+    background-size: auto calc(100% - ${p => p.theme.spacing(4)}px);
+  }
 `
 const StyledIndicatorsOverlay = styled.div`
   height: 100%;
@@ -58,12 +59,17 @@ const StyledLoadingOverlay = styled.div`
   padding: 0 ${p => p.theme.spacing(1)}px;
 `
 
-const selectIsAllowedToOrder = createSelector(
-  state => state.dishes.hasTimeLeft,
-  (_, dishDate) => dishDate,
-  (hasTimeLeft, dishDate) => {
-    const isDishForToday = getLocalDateISOString() === dishDate
-    return hasTimeLeft || !isDishForToday
+const hasTimeLeftSelector = state => state.dishes.hasTimeLeft
+
+const isAllowedToOrderSelector = createSelector(
+  hasTimeLeftSelector,
+  (_, dish) => dish,
+  (hasTimeLeft, dish) => {
+    // User should be able to make his first order as long as there are dishes left
+    if (dish.orders_count === 0) return dish.has_dishes_left
+
+    const isDishForToday = getLocalDateISOString() === dish.date
+    return hasTimeLeft || !isDishForToday || dish.has_dishes_left
   }
 )
 
@@ -73,17 +79,23 @@ const Dish = ({ dish }) => {
   // If there's time left to order today OR the dish is not for today,
   // then the user is allowed to order
   const isAllowedToOrder = useSelector(state =>
-    selectIsAllowedToOrder(state, dish.date)
+    isAllowedToOrderSelector(state, dish)
   )
+  const hasTimeLeft = useSelector(hasTimeLeftSelector)
   const dispatch = useDispatch()
 
+  // A wrapper function for ordering & canceling.
+  // It checks whether ordering (or canceling) is allowed and handles loading.
   const onAction = useCallback(
     async action => {
       if (!isAllowedToOrder) return
 
       setLoading(true)
-      await dispatch(action(dish))
-      setLoading(false)
+      try {
+        await dispatch(action(dish))
+      } finally {
+        setLoading(false)
+      }
     },
     [dish, dispatch, isAllowedToOrder]
   )
@@ -96,15 +108,18 @@ const Dish = ({ dish }) => {
     <StyledCard component="li">
       <StyledCardMedia
         image={dish.image || placeholderImage}
-        isPlaceholder={!dish.image}>
+        className={dish.image ? '' : 'placeholder'}
+        data-testid="dish-image">
         {isOrdered && (
           <StyledIndicatorsOverlay>
             {// Show an icon for every order of the dish
-            Array(dish.orders_count)
-              .fill()
-              .map((_, i) => (
-                <DoneOutline key={i} style={{ fontSize: 56 }} />
-              ))}
+            [...Array(dish.orders_count)].map((_, i) => (
+              <DoneOutline
+                key={i}
+                style={{ fontSize: 56 }}
+                data-testid="check-mark"
+              />
+            ))}
           </StyledIndicatorsOverlay>
         )}
       </StyledCardMedia>
@@ -125,7 +140,7 @@ const Dish = ({ dish }) => {
             size="large"
             variant={isOrdered ? 'outlined' : 'contained'}
             onClick={onOrder}
-            disabled={loading}>
+            disabled={loading || !dish.has_dishes_left}>
             {isOrdered ? 'להזמנה נוספת' : 'להזמנה'}
           </Button>
           {isOrdered && (
@@ -133,7 +148,7 @@ const Dish = ({ dish }) => {
               color="primary"
               size="large"
               onClick={onCancel}
-              disabled={loading}>
+              disabled={loading || !hasTimeLeft}>
               ביטול
             </Button>
           )}

@@ -19,24 +19,32 @@ class DishesTests(APITestCase):
         cls.today = timezone.now().date()
         cls.tomorrow = cls.today + datetime.timedelta(days=1)
 
-    def test_scheduled_dishes(self):
+    def test_scheduled_dish(self):
         dish = Dish.objects.create(name="Dish 1")
         ScheduledDish.objects.create(dish=dish, date=self.today)
 
-        dishes = self.client.get(reverse("dishes-list")).json()
+        data = self.client.get(reverse("dishes-list")).json()
 
-        self.assertEqual(len(dishes), 1)
-        self.assertEqual(dishes[0]["name"], "Dish 1")
-        self.assertEqual(dishes[0]["date"], self.today.isoformat())
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]["name"], "Dish 1")
+        self.assertEqual(data[0]["date"], self.today.isoformat())
+        self.assertTrue(data[0]["has_dishes_left"])
 
+    def test_scheduled_dishes(self):
+        dish = Dish.objects.create(name="Dish 1")
+        ScheduledDish.objects.create(dish=dish, date=self.today)
         dish = Dish.objects.create(name="Dish 2")
         ScheduledDish.objects.create(dish=dish, date=self.tomorrow)
 
-        dishes = self.client.get(reverse("dishes-list")).json()
+        data = self.client.get(reverse("dishes-list")).json()
 
-        self.assertEqual(len(dishes), 2)
-        self.assertEqual(dishes[1]["name"], "Dish 2")
-        self.assertEqual(dishes[1]["date"], self.tomorrow.isoformat())
+        self.assertEqual(len(data), 2)
+        self.assertEqual(data[0]["name"], "Dish 1")
+        self.assertEqual(data[0]["date"], self.today.isoformat())
+        self.assertTrue(data[0]["has_dishes_left"])
+        self.assertEqual(data[1]["name"], "Dish 2")
+        self.assertEqual(data[1]["date"], self.tomorrow.isoformat())
+        self.assertTrue(data[1]["has_dishes_left"])
 
     def test_unable_to_schedule_dish_twice_for_the_same_date(self):
         dish = Dish.objects.create(name="Dish 1")
@@ -151,7 +159,7 @@ class OrdersTests(APITestCase):
         # Create, schedule and limit a dish to 1 order
         dish = Dish.objects.create(name="Dish")
         scheduled_dish = ScheduledDish.objects.create(
-            dish=dish, date=self.today, max_orders=1
+            dish=dish, date=self.today, orders_left=1
         )
 
         url = reverse("dishes-order", args=[scheduled_dish.id])
@@ -166,3 +174,22 @@ class OrdersTests(APITestCase):
         data = response.json()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(data["code"], NoDishesLeftError.code)
+
+    def test_has_dishes_left(self):
+        # Create, schedule and limit a dish to 1 order
+        dish = Dish.objects.create(name="Dish")
+        scheduled_dish = ScheduledDish.objects.create(
+            dish=dish, date=self.today, orders_left=1
+        )
+
+        url = reverse("dishes-order", args=[scheduled_dish.id])
+
+        # Place an order
+        data = self.client.post(url).json()
+        # No more dishes should be left
+        self.assertFalse(data["has_dishes_left"])
+
+        # Cancel the order
+        data = self.client.delete(url).json()
+        # Now there should be dishes left
+        self.assertTrue(data["has_dishes_left"])

@@ -1,7 +1,9 @@
 from django.utils import timezone
 from rest_framework import serializers
 
+from .errors import TimeIsUpError
 from .models import Dish, Order, ScheduledDish
+from .views import check_if_time_is_up_for_today
 
 
 class DishSerializer(serializers.ModelSerializer):
@@ -13,12 +15,13 @@ class DishSerializer(serializers.ModelSerializer):
 class ScheduledDishSerializer(serializers.ModelSerializer):
     dish = DishSerializer()
     orders_count = serializers.SerializerMethodField()
+    has_dishes_left = serializers.SerializerMethodField()
 
     user_future_orders = Order.objects.none()
 
     class Meta:
         model = ScheduledDish
-        fields = ("id", "date", "orders_count", "dish", "max_orders")
+        fields = ("id", "date", "orders_count", "dish", "has_dishes_left")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -31,6 +34,19 @@ class ScheduledDishSerializer(serializers.ModelSerializer):
 
     def get_orders_count(self, scheduled_dish):
         return self.user_future_orders.filter(scheduled_dish=scheduled_dish).count()
+
+    def get_has_dishes_left(self, scheduled_dish):
+        if scheduled_dish.orders_left is None:
+            try:
+                check_if_time_is_up_for_today()
+                return True
+            except TimeIsUpError:
+                return False
+
+        if scheduled_dish.orders_left > 0:
+            return True
+
+        return False
 
     def to_representation(self, instance):
         """Flatten dish's properties"""

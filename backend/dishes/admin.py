@@ -10,8 +10,9 @@ from django.template.loader import get_template
 from django.urls import path
 from django.utils import timezone
 
+from .errors import TimeIsUpError
 from .models import Dish, Order, ScheduledDish
-from .views import TimeIsUpError, check_if_time_is_up_for_today
+from .views import check_if_time_is_up_for_today
 
 plaintext_template = get_template("email/daily_dishes.txt")
 html_template = get_template("email/daily_dishes.html")
@@ -31,6 +32,7 @@ class AddScheduledDishInline(admin.TabularInline):
     max_num = 1
     can_delete = False
     verbose_name_plural = "new scheduled dish"
+    exclude = ("orders_left",)
 
     def has_view_permission(self, request, obj=None):
         return False
@@ -46,6 +48,10 @@ class DishAdmin(admin.ModelAdmin):
     form = DishAdminForm
     inlines = [AddScheduledDishInline]
     change_list_template = "admin/dishes_changelist.html"
+    actions_on_bottom = True
+    radio_fields = {"dish_type": admin.VERTICAL}
+    search_fields = ["name"]
+    ordering = ["name"]
 
     def schedule_for(self, dishes, date, request):
         """Create a ScheduledDish for today for each dish"""
@@ -107,7 +113,7 @@ class DishAdmin(admin.ModelAdmin):
             "dishes": dishes,
             "base_url": settings.BASE_URL,
             "weekday": format_date(date, "EEE", locale="he"),
-            "date": format_date(date, "dd בMMMM", locale="he"),
+            "date": format_date(date, "d בMMMM", locale="he"),
             "test": test,
         }
 
@@ -125,9 +131,11 @@ class DishAdmin(admin.ModelAdmin):
 
 @admin.register(ScheduledDish)
 class ScheduledDishAdmin(admin.ModelAdmin):
-    list_display = ("dish", "date", "max_orders")
+    list_display = ("__str__", "orders_left")
     ordering = ("-date",)
     list_filter = ("dish", "date")
+    date_hierarchy = "date"
+    autocomplete_fields = ["dish"]
 
 
 @admin.register(Order)
@@ -137,6 +145,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display_links = None
     ordering = ("-scheduled_dish__date",)
     actions = None  # Disable the "Delete selected" action
+    date_hierarchy = "created_at"
 
     def has_add_permission(self, request, obj=None):
         return False

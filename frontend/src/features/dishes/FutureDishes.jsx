@@ -12,7 +12,7 @@ const perDateReducer = (result, dish) => ({
   [dish.date]: [...(result[dish.date] || []), dish],
 })
 
-const selectFutureDishesPerDate = createSelector(
+const futureDishesPerDateSelector = createSelector(
   state => state.dishes.dishes,
   state => state.dishes.hasTimeLeft,
   dishes => {
@@ -23,7 +23,7 @@ const selectFutureDishesPerDate = createSelector(
 )
 
 const FutureDishes = () => {
-  const futureDishesPerDate = useSelector(selectFutureDishesPerDate)
+  const futureDishesPerDate = useSelector(futureDishesPerDateSelector)
 
   return futureDishesPerDate.map(([dateStr, dishesForDate]) => (
     <StyledDishesSection key={dateStr}>

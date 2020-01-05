@@ -8,7 +8,7 @@ import ConfirmOrderDialog from './ConfirmOrderDialog'
 import DishesSnackbars from './DishesSnackbars'
 import FutureDishes from './FutureDishes'
 import TodayDishes from './TodayDishes'
-import { selectAllowOrdersUntil } from './OrderTimer'
+import { allowOrdersUntilSelector } from './OrderTimer'
 
 const StyledProgress = styled(CircularProgress)`
   display: block;
@@ -20,7 +20,7 @@ const DishesPage = () => {
   const { authenticated, initialAuthentication } = useSelector(
     state => state.auth
   )
-  const allowOrdersUntil = useSelector(selectAllowOrdersUntil)
+  const allowOrdersUntil = useSelector(allowOrdersUntilSelector)
   const dispatch = useDispatch()
 
   const fetchDishes = useCallback(async () => {

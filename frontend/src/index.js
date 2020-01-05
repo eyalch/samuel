@@ -1,22 +1,18 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Provider } from 'react-redux'
 import * as Sentry from '@sentry/browser'
 
 import App from './App'
 import './api/axios'
 import * as serviceWorker from './serviceWorker'
-import store from './store'
-import StyleAndThemeProviders from './StyleAndThemeProviders'
+import Providers from './Providers'
 
 Sentry.init({ dsn: process.env.REACT_APP_SENTRY_DSN })
 
 const app = (
-  <Provider store={store}>
-    <StyleAndThemeProviders>
-      <App />
-    </StyleAndThemeProviders>
-  </Provider>
+  <Providers>
+    <App />
+  </Providers>
 )
 
 ReactDOM.render(app, document.getElementById('root'))

@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import { Typography } from '@material-ui/core'
 
 import { setHasTimeLeft } from './dishesSlice'
+import { todayDishesSelector } from './dishesSelectors'
 
 const StyledContainer = styled.div`
   margin-top: -${p => p.theme.spacing(1)}px;
@@ -19,7 +20,7 @@ const StyledContainer = styled.div`
   }
 `
 
-export const selectAllowOrdersUntil = createSelector(
+export const allowOrdersUntilSelector = createSelector(
   state => state.preferences.allow_orders_until,
   allow_orders_until => {
     if (!allow_orders_until) return
@@ -30,9 +31,15 @@ export const selectAllowOrdersUntil = createSelector(
   }
 )
 
+const hasDishesLeftForTodaySelector = createSelector(
+  todayDishesSelector,
+  todayDishes => todayDishes.some(dish => dish.has_dishes_left)
+)
+
 const OrderTimer = () => {
   const { hasTimeLeft } = useSelector(state => state.dishes)
-  const allowOrdersUntil = useSelector(selectAllowOrdersUntil)
+  const allowOrdersUntil = useSelector(allowOrdersUntilSelector)
+  const hasDishesLeftForToday = useSelector(hasDishesLeftForTodaySelector)
   const dispatch = useDispatch()
 
   const [timeLeftToOrderInMillis, setTimeLeftToOrderInMillis] = useState(
@@ -61,9 +68,16 @@ const OrderTimer = () => {
   return (
     <StyledContainer>
       {timeLeftToOrderInMillis < 0 ? (
-        <Typography variant="h4" component="h2">
-          ההזמנה להיום נסגרה
-        </Typography>
+        <>
+          <Typography variant="h4" component="h2">
+            ההזמנה להיום נסגרה
+          </Typography>
+          {hasDishesLeftForToday && (
+            <Typography variant="subtitle1" component="p">
+              (למעט מנות עודפות)
+            </Typography>
+          )}
+        </>
       ) : (
         <>
           <Typography variant="subtitle2">זמן שנותר לביצוע הזמנה:</Typography>

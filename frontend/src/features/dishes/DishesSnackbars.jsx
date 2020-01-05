@@ -1,6 +1,8 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Block, CheckCircle, TimerOff } from '@material-ui/icons'
+import Block from '@material-ui/icons/Block'
+import CheckCircle from '@material-ui/icons/CheckCircle'
+import TimerOff from '@material-ui/icons/TimerOff'
 
 import Snackbar from 'common/Snackbar'
 import { resetMessage, messages } from './dishesSlice'

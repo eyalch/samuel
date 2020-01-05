@@ -1,9 +1,19 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import axiosMock from 'axios'
+
+import { render } from 'test-utils'
 import App from './App'
 
-it('renders without crashing', () => {
-  const div = document.createElement('div')
-  ReactDOM.render(<App />, div)
-  ReactDOM.unmountComponentAtNode(div)
+import { preferencesResponse } from 'api/mocks/preferences'
+import { dishesResponse } from 'api/mocks/dishes'
+
+jest.mock('axios')
+
+test('should render App without crashing', () => {
+  // Mock the first 2 requests, which are `/preferences` and `/dishes`
+  axiosMock.get
+    .mockResolvedValueOnce(preferencesResponse)
+    .mockResolvedValueOnce(dishesResponse)
+
+  render(<App />)
 })

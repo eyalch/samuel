@@ -6,7 +6,7 @@ services:
       context: ./backend
       args:
         TIME_ZONE: $TIME_ZONE
-    command: gunicorn samuel.wsgi:application --bind 0.0.0.0:8000
+    command: daphne -b 0.0.0.0 -p 8000 samuel.asgi:application
     expose:
       - 8000
     volumes:

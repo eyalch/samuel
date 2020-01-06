@@ -14,7 +14,9 @@ RUN apk update \
     # OpenLDAP
     && apk add openldap-dev \
     # Time Zone Database
-    && apk add --no-cache tzdata
+    && apk add --no-cache tzdata \
+    # Daphne dependencies
+    && apk add libffi-dev
 
 # Set time zone
 ARG TIME_ZONE

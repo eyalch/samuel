@@ -9,6 +9,7 @@ export const messages = {
   TIME_IS_UP: 3,
   MAX_ORDERS_FOR_DAY: 4,
   NO_DISHES_LEFT: 5,
+  CANCEL_TIME_IS_UP: 6,
 }
 
 const ERR_TIME_IS_UP = 'time_is_up'
@@ -201,7 +202,14 @@ export const orderPendingDish = () => async (dispatch, getState) => {
   dispatch(orderDish(pendingDish))
 }
 
-export const cancelOrder = dish => async dispatch => {
+export const cancelOrder = dish => async (dispatch, getState) => {
+  const { hasTimeLeft } = getState().dishes
+
+  if (!hasTimeLeft) {
+    dispatch(setMessage(messages.CANCEL_TIME_IS_UP))
+    return
+  }
+
   dispatch(resetMessage())
 
   try {

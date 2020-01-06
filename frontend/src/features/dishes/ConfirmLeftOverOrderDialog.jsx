@@ -30,11 +30,11 @@ const ConfirmLeftOverOrderDialog = () => {
       aria-labelledby="confirm-left-over-order-dialog-title"
       aria-describedby="confirm-left-over-order-dialog-description">
       <DialogTitle id="confirm-left-over-order-dialog-title">
-        שים לב!
+        שימו לב!
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="confirm-left-over-order-dialog-description">
-          לא יהיה ניתן לבטל הזמנה של מנה זו. האם ברצונך להמשיך?
+          לא יהיה ניתן לבטל הזמנה של מנה זו. האם ברצונכם להמשיך?
         </DialogContentText>
       </DialogContent>
       <DialogActions>

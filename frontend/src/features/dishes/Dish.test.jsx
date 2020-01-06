@@ -83,14 +83,6 @@ describe('"Cancel" button', () => {
     store.dispatch(setHasTimeLeft(false))
     expect(queryByText('ביטול')).toBeInTheDocument()
   })
-
-  test('should be enabled only if there is time left', () => {
-    const { queryByText } = render(<Dish dish={orderedDish} />)
-
-    expect(queryByText('ביטול')).toBeEnabled()
-    store.dispatch(setHasTimeLeft(false))
-    expect(queryByText('ביטול')).toBeDisabled()
-  })
 })
 
 describe('"Order Another" button', () => {

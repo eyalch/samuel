@@ -32,7 +32,6 @@ class AddScheduledDishInline(admin.TabularInline):
     max_num = 1
     can_delete = False
     verbose_name_plural = "new scheduled dish"
-    exclude = ("orders_left",)
 
     def has_view_permission(self, request, obj=None):
         return False

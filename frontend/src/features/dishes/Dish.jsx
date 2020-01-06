@@ -59,10 +59,8 @@ const StyledLoadingOverlay = styled.div`
   padding: 0 ${p => p.theme.spacing(1)}px;
 `
 
-const hasTimeLeftSelector = state => state.dishes.hasTimeLeft
-
 const isAllowedToOrderSelector = createSelector(
-  hasTimeLeftSelector,
+  state => state.dishes.hasTimeLeft,
   (_, dish) => dish,
   (hasTimeLeft, dish) => {
     // User should be able to make his first order as long as there are dishes left
@@ -81,7 +79,6 @@ const Dish = ({ dish }) => {
   const isAllowedToOrder = useSelector(state =>
     isAllowedToOrderSelector(state, dish)
   )
-  const hasTimeLeft = useSelector(hasTimeLeftSelector)
   const dispatch = useDispatch()
 
   // A wrapper function for ordering & canceling.
@@ -148,7 +145,7 @@ const Dish = ({ dish }) => {
               color="primary"
               size="large"
               onClick={onCancel}
-              disabled={loading || !hasTimeLeft}>
+              disabled={loading}>
               ביטול
             </Button>
           )}

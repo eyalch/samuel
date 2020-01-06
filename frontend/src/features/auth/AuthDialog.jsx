@@ -52,14 +52,14 @@ const AuthDialog = () => {
               <DialogTitle id="auth-dialog-title">התחברות</DialogTitle>
               <DialogContent>
                 <Field
-                  label='דוא"ל'
+                  label='דוא"ל במשרד'
                   name="email"
                   component={TextFormField}
                   type="email"
                   inputProps={{ style: { direction: 'ltr' } }}
                 />
                 <Field
-                  label="סיסמה"
+                  label="סיסמה במחשב"
                   name="password"
                   component={TextFormField}
                   type="password"

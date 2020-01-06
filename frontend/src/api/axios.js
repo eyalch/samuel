@@ -3,6 +3,7 @@ import axios from 'axios'
 import store from 'store'
 import { getAccessToken, removeAccessToken } from 'features/auth/authHelpers'
 import { refreshToken } from 'features/auth/authSlice'
+import { setError } from 'features/network/networkSlice'
 
 axios.defaults.baseURL = '/api/'
 
@@ -26,6 +27,12 @@ let refreshTokenPromise = null
 axios.interceptors.response.use(
   res => res,
   async err => {
+    // Handle network errors
+    if (!err.response) {
+      store.dispatch(setError(true))
+      throw err
+    }
+
     const { status, data, config } = err.response
 
     // If the token is invalid we refresh it and retry the request

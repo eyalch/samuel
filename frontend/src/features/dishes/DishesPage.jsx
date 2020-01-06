@@ -5,6 +5,7 @@ import { CircularProgress } from '@material-ui/core'
 
 import { fetchDishes as _fetchDishes, orderPendingDish } from './dishesSlice'
 import ConfirmOrderDialog from './ConfirmOrderDialog'
+import ConfirmLeftOverOrderDialog from './ConfirmLeftOverOrderDialog'
 import DishesSnackbars from './DishesSnackbars'
 import FutureDishes from './FutureDishes'
 import TodayDishes from './TodayDishes'
@@ -53,6 +54,7 @@ const DishesPage = () => {
       )}
 
       <ConfirmOrderDialog />
+      <ConfirmLeftOverOrderDialog />
 
       <DishesSnackbars />
     </>

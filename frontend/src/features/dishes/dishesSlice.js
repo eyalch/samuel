@@ -22,6 +22,7 @@ const initialState = {
   confirmOrderDialog: false,
   message: null,
   hasTimeLeft: false,
+  confirmLeftOverOrderDialog: false,
 }
 
 // Find how many orders the user has made for a given date
@@ -83,6 +84,15 @@ const dishes = createSlice({
       state.confirmOrderDialog = false
     },
 
+    setConfirmLeftOverOrderDialog(state, { payload: dish }) {
+      state.confirmLeftOverOrderDialog = true
+      state.pendingDish = dish
+    },
+    resetConfirmLeftOverOrderDialog(state) {
+      state.pendingDish = null
+      state.confirmLeftOverOrderDialog = false
+    },
+
     cancelOrderSuccess(state, { payload: updatedDish }) {
       updateDish(state, updatedDish)
       state.message = messages.CANCEL_ORDER_SUCCESS
@@ -104,12 +114,14 @@ const {
   setMessage,
   handleErrors,
   cancelOrderSuccess,
+  setConfirmLeftOverOrderDialog,
 } = dishes.actions
 
 export const {
   resetConfirmPendingDish,
   resetMessage,
   setHasTimeLeft,
+  resetConfirmLeftOverOrderDialog,
 } = dishes.actions
 
 export default dishes.reducer
@@ -127,7 +139,12 @@ export const fetchDishes = () => async dispatch => {
 export const orderDish = dish => async (dispatch, getState) => {
   const {
     auth: { authenticated },
-    dishes: { dishes, confirmOrderDialog },
+    dishes: {
+      dishes,
+      confirmOrderDialog,
+      hasTimeLeft,
+      confirmLeftOverOrderDialog,
+    },
     preferences: { max_orders_per_day },
   } = getState()
 
@@ -145,11 +162,23 @@ export const orderDish = dish => async (dispatch, getState) => {
   }
 
   // Show a confirm dialog if the user has already made an order
-  if (ordersCountForDate > 0 && !confirmOrderDialog) {
+  if (
+    ordersCountForDate > 0 &&
+    !confirmOrderDialog &&
+    !confirmLeftOverOrderDialog
+  ) {
     dispatch(setConfirmPendingDish(dish))
     return
   } else if (confirmOrderDialog) {
     dispatch(resetConfirmPendingDish())
+  }
+
+  // Show a confirm dialog when trying to order a left-over dish which can't be canceled
+  if (!hasTimeLeft && !confirmLeftOverOrderDialog) {
+    dispatch(setConfirmLeftOverOrderDialog(dish))
+    return
+  } else if (confirmLeftOverOrderDialog) {
+    dispatch(resetConfirmLeftOverOrderDialog(dish))
   }
 
   dispatch(resetMessage())

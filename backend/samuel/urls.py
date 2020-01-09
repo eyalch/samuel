@@ -8,6 +8,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from dishes import views
 from global_preferences.views import CustomGlobalPreferencesViewSet
 
+admin.site.site_header = "Samuel administration"
+
 router = DefaultRouter()
 router.register("dishes", views.ScheduledDishViewSet, base_name="dishes")
 router.register("preferences", CustomGlobalPreferencesViewSet, base_name="preferences")

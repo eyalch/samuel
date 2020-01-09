@@ -1,8 +1,7 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import Error from '@material-ui/icons/Error'
 
-import Snackbar from 'common/Snackbar'
+import SnackbarAlert from 'common/SnackbarAlert'
 import { setError } from './networkSlice'
 
 const NetworkErrorSnackbar = () => {
@@ -10,12 +9,12 @@ const NetworkErrorSnackbar = () => {
   const dispatch = useDispatch()
 
   return (
-    <Snackbar
+    <SnackbarAlert
       open={networkError}
       onClose={() => dispatch(setError(false))}
       messageId="network-error-message"
-      icon={Error}
       message="שגיאת תקשורת!"
+      severity="info"
     />
   )
 }

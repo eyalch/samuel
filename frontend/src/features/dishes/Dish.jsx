@@ -142,7 +142,7 @@ const Dish = ({ dish }) => {
           </Button>
           {isOrdered && (
             <Button
-              color="primary"
+              color="secondary"
               size="large"
               onClick={onCancel}
               disabled={loading}>

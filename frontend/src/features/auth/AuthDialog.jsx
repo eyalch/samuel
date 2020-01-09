@@ -7,8 +7,8 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  DialogContentText,
 } from '@material-ui/core'
-import Error from '@material-ui/icons/Error'
 
 import {
   authenticate,
@@ -17,7 +17,7 @@ import {
 } from './authSlice'
 import { TextFormField } from 'common/FormFields'
 import LoadingButton from 'common/LoadingButton'
-import Snackbar from 'common/Snackbar'
+import SnackbarAlert from 'common/SnackbarAlert'
 
 const schema = yup.object({
   email: yup
@@ -42,6 +42,7 @@ const AuthDialog = () => {
       <Dialog
         open={showAuthDialog}
         onClose={() => dispatch(setShowAuthDialog(false))}
+        scroll="body"
         aria-labelledby="auth-dialog-title">
         <Formik
           validationSchema={schema}
@@ -51,15 +52,19 @@ const AuthDialog = () => {
             <Form>
               <DialogTitle id="auth-dialog-title">התחברות</DialogTitle>
               <DialogContent>
+                <DialogContentText>
+                  מלאו את פרטי ההזדהות המשמשים לכניסה למחשב בעבודה
+                </DialogContentText>
+
                 <Field
-                  label='דוא"ל במשרד'
+                  label='דוא"ל'
                   name="email"
                   component={TextFormField}
                   type="email"
                   inputProps={{ style: { direction: 'ltr' } }}
                 />
                 <Field
-                  label="סיסמה במחשב"
+                  label="סיסמה"
                   name="password"
                   component={TextFormField}
                   type="password"
@@ -70,9 +75,8 @@ const AuthDialog = () => {
                 <LoadingButton
                   loading={isSubmitting}
                   type="submit"
-                  color="primary"
                   size="large">
-                  התחבר
+                  כניסה
                 </LoadingButton>
               </DialogActions>
             </Form>
@@ -80,12 +84,12 @@ const AuthDialog = () => {
         </Formik>
       </Dialog>
 
-      <Snackbar
+      <SnackbarAlert
         open={credentialsError}
         onClose={() => dispatch(hideCredentialsError())}
         messageId="wrong-credentials-message"
-        icon={Error}
         message='דוא"ל או סיסמה שגויים'
+        severity="error"
       />
     </>
   )

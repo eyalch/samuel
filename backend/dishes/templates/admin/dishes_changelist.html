@@ -1,17 +1,20 @@
 {% extends 'admin/change_list.html' %}
 
 {% block object-tools %}
-    <div>
-        <form action="send_email/" method="POST" style="display: inline-block">
-            {% csrf_token %}
-            <button type="submit">Send email</button>
-        </form>
-        <form action="send_email_test/" method="POST" style="display: inline-block">
-            {% csrf_token %}
-            <button type="submit">Send email (test)</button>
-        </form>
-    </div>
-    <br />
+    <form name="email" action="send_email/" method="POST" style="margin-bottom: 15px">
+        {% csrf_token %}
+        <input type="submit" formaction="send_email_test/" value="Send test email" />
+        <input type="button" onclick="confirmSendEmail()" value="Send email"
+            style="margin-left: 5px" />
+    </form>
+
+    <script>
+        function confirmSendEmail() {
+            if (window.confirm('Do you really want to send an email?')) {
+                document.forms['email'].submit()
+            }
+        }
+    </script>
 
     {{ block.super }}
 {% endblock object-tools %}

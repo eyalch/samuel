@@ -40,45 +40,8 @@ class AddScheduledDishInline(admin.TabularInline):
         return False
 
 
-@admin.register(Dish)
-class DishAdmin(admin.ModelAdmin):
-    list_display = ("name", "description", "image")
-    actions = ["schedule_for_today", "schedule_for_tomorrow"]
-    form = DishAdminForm
-    inlines = [AddScheduledDishInline]
+class DishesEmailModelAdminMixin:
     change_list_template = "admin/dishes_changelist.html"
-    actions_on_bottom = True
-    radio_fields = {"dish_type": admin.VERTICAL}
-    search_fields = ["name"]
-    ordering = ["name"]
-
-    def schedule_for(self, dishes, date, request):
-        """Create a ScheduledDish for today for each dish"""
-
-        scheduled_dishes_created = 0
-
-        for dish in dishes:
-            _, created = ScheduledDish.objects.get_or_create(dish=dish, date=date)
-            if created:
-                scheduled_dishes_created += 1
-
-        if scheduled_dishes_created == 1:
-            message_bit = "1 dish was"
-        else:
-            message_bit = f"{scheduled_dishes_created} dishes were"
-        self.message_user(request, f"{message_bit} scheduled for today.")
-
-    def schedule_for_today(self, request, queryset):
-        today = timezone.now().date()
-        self.schedule_for(queryset, today, request)
-
-    schedule_for_today.short_description = "Schedule for today"
-
-    def schedule_for_tomorrow(self, request, queryset):
-        tomorrow = timezone.now().date() + datetime.timedelta(days=1)
-        self.schedule_for(queryset, tomorrow, request)
-
-    schedule_for_tomorrow.short_description = "Schedule for tomorrow"
 
     def get_urls(self):
         urls = super().get_urls()
@@ -124,12 +87,58 @@ class DishAdmin(admin.ModelAdmin):
             html_message=html_template.render(context),
         )
 
-        self.message_user(request, "Successfully sent an email.", messages.SUCCESS)
+        message = (
+            "Successfully sent an email."
+            if not test
+            else "Successfully sent a test email."
+        )
+
+        self.message_user(request, message, messages.SUCCESS)
         return HttpResponseRedirect("../")
 
 
+@admin.register(Dish)
+class DishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
+    list_display = ("name", "description", "image")
+    actions = ["schedule_for_today", "schedule_for_tomorrow"]
+    form = DishAdminForm
+    inlines = [AddScheduledDishInline]
+    actions_on_bottom = True
+    radio_fields = {"dish_type": admin.VERTICAL}
+    search_fields = ["name"]
+    ordering = ["name"]
+
+    def schedule_for(self, dishes, date, request):
+        """Create a ScheduledDish for today for each dish"""
+
+        scheduled_dishes_created = 0
+
+        for dish in dishes:
+            _, created = ScheduledDish.objects.get_or_create(dish=dish, date=date)
+            if created:
+                scheduled_dishes_created += 1
+
+        if scheduled_dishes_created == 1:
+            message_bit = "1 dish was"
+        else:
+            message_bit = f"{scheduled_dishes_created} dishes were"
+        self.message_user(request, f"{message_bit} scheduled for today.")
+
+    def schedule_for_today(self, request, queryset):
+        today = timezone.now().date()
+        self.schedule_for(queryset, today, request)
+
+    schedule_for_today.short_description = "Schedule for today"
+
+    def schedule_for_tomorrow(self, request, queryset):
+        tomorrow = timezone.now().date() + datetime.timedelta(days=1)
+        self.schedule_for(queryset, tomorrow, request)
+
+    schedule_for_tomorrow.short_description = "Schedule for tomorrow"
+
+
 @admin.register(ScheduledDish)
-class ScheduledDishAdmin(admin.ModelAdmin):
+class ScheduledDishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
     list_display = ("__str__", "orders_left")
     ordering = ("-date",)
     list_filter = ("dish", "date")

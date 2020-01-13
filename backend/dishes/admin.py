@@ -4,7 +4,7 @@ from babel.dates import format_date
 from django import forms
 from django.conf import settings
 from django.contrib import admin, messages
-from django.core.mail import send_mail
+from django.core.mail import send_mail, send_mass_mail
 from django.http import HttpResponseRedirect
 from django.template.loader import get_template
 from django.urls import path
@@ -82,7 +82,7 @@ class DishesEmailModelAdminMixin:
         send_mail(
             "סמואל",
             plaintext_template.render(context),
-            settings.DEFAULT_FROM_EMAIL,
+            None,
             settings.EMAIL_TEST_RECIPIENTS if test else settings.EMAIL_RECIPIENTS,
             html_message=html_template.render(context),
         )
@@ -97,10 +97,39 @@ class DishesEmailModelAdminMixin:
         return HttpResponseRedirect("../")
 
 
+def notify_ready_scheduled_dishes(modeladmin, request, scheduled_dishes):
+    today = timezone.now().date()
+
+    datatuple = []
+    for scheduled_dish in scheduled_dishes:
+        # Skip the ScheduledDish if it isn't for today
+        if scheduled_dish.date != today:
+            continue
+
+        # Get all ordering users' email addresses for that ScheduledDish
+        orders = Order.objects.select_related("user").filter(
+            scheduled_dish=scheduled_dish
+        )
+        email_addresses = [order.user.email for order in orders]
+
+        subject = f'המנה "{scheduled_dish.dish}" מוכנה!'
+        datatuple.append((subject, "", None, email_addresses))
+
+    messages_sent = send_mass_mail(datatuple)
+    if messages_sent > 0:
+        message_and_level = ("Messages sent successfully.", messages.SUCCESS)
+    else:
+        message_and_level = ("No messages sent.", messages.WARNING)
+    modeladmin.message_user(request, *message_and_level)
+
+
+notify_ready_scheduled_dishes.short_description = "Send ready dishes email"
+
+
 @admin.register(Dish)
 class DishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
     list_display = ("name", "description", "image")
-    actions = ["schedule_for_today", "schedule_for_tomorrow"]
+    actions = ["schedule_for_today", "schedule_for_tomorrow", "notify_ready"]
     form = DishAdminForm
     inlines = [AddScheduledDishInline]
     actions_on_bottom = True
@@ -109,7 +138,7 @@ class DishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
     ordering = ["name"]
 
     def schedule_for(self, dishes, date, request):
-        """Create a ScheduledDish for today for each dish"""
+        """Schedule the given dishes for the given date"""
 
         scheduled_dishes_created = 0
 
@@ -136,6 +165,21 @@ class DishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
 
     schedule_for_tomorrow.short_description = "Schedule for tomorrow"
 
+    def notify_ready(self, request, queryset):
+        today = timezone.now().date()
+
+        scheduled_dishes = []
+        for dish in queryset:
+            try:
+                scheduled_dish = ScheduledDish.objects.get(dish=dish, date=today)
+                scheduled_dishes.append(scheduled_dish)
+            except ScheduledDish.DoesNotExist:
+                continue
+
+        return notify_ready_scheduled_dishes(self, request, scheduled_dishes)
+
+    notify_ready.short_description = notify_ready_scheduled_dishes.short_description
+
 
 @admin.register(ScheduledDish)
 class ScheduledDishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
@@ -144,6 +188,7 @@ class ScheduledDishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
     list_filter = ("dish", "date")
     date_hierarchy = "date"
     autocomplete_fields = ["dish"]
+    actions = [notify_ready_scheduled_dishes]
 
 
 @admin.register(Order)

@@ -9,6 +9,7 @@ from django.http import HttpResponseRedirect
 from django.template.loader import get_template
 from django.urls import path
 from django.utils import timezone
+from django.utils.html import mark_safe
 
 from .errors import TimeIsUpError
 from .models import Dish, Order, ScheduledDish
@@ -16,15 +17,6 @@ from .views import check_if_time_is_up_for_today
 
 plaintext_template = get_template("email/daily_dishes.txt")
 html_template = get_template("email/daily_dishes.html")
-
-
-class DishAdminForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # Make the "name" and "description" fields RTL
-        self.fields["name"].widget.attrs.update({"style": "direction: rtl"})
-        self.fields["description"].widget.attrs.update({"style": "direction: rtl"})
 
 
 class AddScheduledDishInline(admin.TabularInline):
@@ -126,9 +118,20 @@ def notify_ready_scheduled_dishes(modeladmin, request, scheduled_dishes):
 notify_ready_scheduled_dishes.short_description = "Send ready dishes email"
 
 
+class DishAdminForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Make the "name" and "description" fields RTL
+        self.fields["name"].widget.attrs.update({"style": "direction: rtl"})
+        self.fields["description"].widget.attrs.update(
+            {"style": "direction: rtl; width: auto", "rows": 3}
+        )
+
+
 @admin.register(Dish)
 class DishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
-    list_display = ("name", "description", "image")
+    list_display = ("name", "description", "image_preview")
     actions = ["schedule_for_today", "schedule_for_tomorrow", "notify_ready"]
     form = DishAdminForm
     inlines = [AddScheduledDishInline]
@@ -136,6 +139,12 @@ class DishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
     radio_fields = {"dish_type": admin.VERTICAL}
     search_fields = ["name"]
     ordering = ["name"]
+    fields = ("name", "description", ("image", "image_preview"), "dish_type")
+    readonly_fields = ["image_preview"]
+
+    def image_preview(self, obj):
+        if obj.image:
+            return mark_safe(f'<img src="{obj.image.url}" height="120" />')
 
     def schedule_for(self, dishes, date, request):
         """Schedule the given dishes for the given date"""

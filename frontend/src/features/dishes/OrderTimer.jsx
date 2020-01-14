@@ -74,7 +74,7 @@ const OrderTimer = () => {
           </Typography>
           {hasDishesLeftForToday && (
             <Typography variant="subtitle1" component="p">
-              (למעט מנות עודפות)
+              (ניתן להזמין מנות עודפות)
             </Typography>
           )}
         </>

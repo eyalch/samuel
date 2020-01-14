@@ -1,4 +1,5 @@
 import React from 'react'
+import { createSelector } from '@reduxjs/toolkit'
 import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { Typography } from '@material-ui/core'
@@ -15,8 +16,21 @@ export const StyledDishesSection = styled.section`
   }
 `
 
+const showTodayDishesSelector = createSelector(
+  state => state.preferences.show_today_dishes_until,
+  show_today_dishes_until => {
+    const showDishesUntil = new Date()
+    showDishesUntil.setHours(...show_today_dishes_until.split(':'))
+
+    return new Date() < showDishesUntil
+  }
+)
+
 const TodayDishes = () => {
   const todayDishes = useSelector(todayDishesSelector)
+  const showTodayDishes = useSelector(showTodayDishesSelector)
+
+  if (!showTodayDishes) return null
 
   return (
     <StyledDishesSection>

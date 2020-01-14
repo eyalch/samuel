@@ -146,7 +146,7 @@ class DishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
         if obj.image:
             return mark_safe(f'<img src="{obj.image.url}" height="120" />')
 
-    def schedule_for(self, dishes, date, request):
+    def schedule_for(self, dishes, date, request, pretty_day):
         """Schedule the given dishes for the given date"""
 
         scheduled_dishes_created = 0
@@ -160,17 +160,17 @@ class DishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
             message_bit = "1 dish was"
         else:
             message_bit = f"{scheduled_dishes_created} dishes were"
-        self.message_user(request, f"{message_bit} scheduled for today.")
+        self.message_user(request, f"{message_bit} scheduled for {pretty_day}.")
 
     def schedule_for_today(self, request, queryset):
         today = timezone.now().date()
-        self.schedule_for(queryset, today, request)
+        self.schedule_for(queryset, today, request, "today")
 
     schedule_for_today.short_description = "Schedule for today"
 
     def schedule_for_tomorrow(self, request, queryset):
         tomorrow = timezone.now().date() + datetime.timedelta(days=1)
-        self.schedule_for(queryset, tomorrow, request)
+        self.schedule_for(queryset, tomorrow, request, "tomorrow")
 
     schedule_for_tomorrow.short_description = "Schedule for tomorrow"
 

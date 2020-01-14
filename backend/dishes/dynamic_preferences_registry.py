@@ -14,3 +14,9 @@ class AllowOrdersUntil(TimePreference):
 class MaxOrdersPerDay(IntegerPreference):
     name = "max_orders_per_day"
     default = 3
+
+
+@global_preferences_registry.register
+class ShowTodayDishesUntil(TimePreference):
+    name = "show_today_dishes_until"
+    default = time.fromisoformat("16:00")

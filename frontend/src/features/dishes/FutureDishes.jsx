@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { Typography } from '@material-ui/core'
 
 import DishList from './DishList'
-import { getPrettyWeekday, getLocalDateISOString } from './dishesHelpers'
+import { getPrettyWeekday } from './dishesHelpers'
 import { StyledDishesSection } from './TodayDishes'
 
 const perDateReducer = (result, dish) => ({
@@ -16,8 +16,10 @@ const futureDishesPerDateSelector = createSelector(
   state => state.dishes.dishes,
   state => state.dishes.hasTimeLeft,
   dishes => {
-    const todayDate = getLocalDateISOString()
-    const futureDishes = dishes.filter(dish => dish.date !== todayDate)
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
+    const futureDishes = dishes.filter(dish => new Date(dish.date) >= tomorrow)
     return Object.entries(futureDishes.reduce(perDateReducer, {}))
   }
 )

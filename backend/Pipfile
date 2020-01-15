@@ -15,7 +15,7 @@ django-auth-ldap = "==2.0.*"
 djangorestframework-simplejwt = "==4.3.*"
 django-dynamic-preferences = "==1.8.*"
 Babel = "==2.7.*"
-sentry-sdk = "==0.13.*"
+rollbar = "==0.14.*"
 
 [dev-packages]
 flake8 = "*"

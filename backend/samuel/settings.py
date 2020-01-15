@@ -1,11 +1,10 @@
-from datetime import timedelta
 import os
+import re
+from datetime import timedelta
 
 import environ
 import ldap
 from django_auth_ldap.config import LDAPSearch
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -17,12 +16,17 @@ env = environ.Env(DEBUG=(bool, False))
 DEBUG = env("DEBUG")
 
 
-# Sentry
+# Rollbar
 
-if not DEBUG:
-    sentry_sdk.init(
-        dsn=env("SENTRY_DSN"), integrations=[DjangoIntegration()], send_default_pii=True
-    )
+rollbar_token = env.str("ROLLBAR_TOKEN", default="")
+ROLLBAR = {
+    "access_token": rollbar_token,
+    "environment": "development" if DEBUG else "production",
+    "branch": "master",
+    "root": "/backend",
+    "enabled": rollbar_token and not DEBUG,
+    "ignorable_404_urls": (re.compile("/admin"),),
+}
 
 
 SECRET_KEY = env("SECRET_KEY")
@@ -46,6 +50,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "rollbar.contrib.django.middleware.RollbarNotifierMiddlewareOnly404",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -53,6 +58,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "rollbar.contrib.django.middleware.RollbarNotifierMiddlewareExcluding404",
 ]
 
 ROOT_URLCONF = "samuel.urls"

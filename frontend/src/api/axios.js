@@ -4,6 +4,7 @@ import store from 'store'
 import { getAccessToken, removeAccessToken } from 'features/auth/authHelpers'
 import { refreshToken } from 'features/auth/authSlice'
 import { setError } from 'features/network/networkSlice'
+import { rollbar } from 'index'
 
 axios.defaults.baseURL = '/api/'
 
@@ -30,6 +31,11 @@ axios.interceptors.response.use(
     // Handle network errors
     if (!err.response) {
       store.dispatch(setError(true))
+
+      // Disable the error tracking for 100ms
+      rollbar.configure({ enabled: false })
+      setTimeout(() => rollbar.configure({ enabled: true }), 100)
+
       throw err
     }
 

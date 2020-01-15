@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
+import jwt from 'jsonwebtoken'
 
 import * as api from 'api/auth'
 import {
@@ -9,6 +10,7 @@ import {
   getRefreshToken,
   removeAccessToken,
 } from './authHelpers'
+import { rollbar } from 'index'
 
 const initialState = {
   showAuthDialog: false,
@@ -70,6 +72,8 @@ export const authenticate = (email, password) => async dispatch => {
   try {
     const tokens = await api.getToken(email, password)
     dispatch(authenticateSuccess(tokens))
+
+    setRollbarUserId(tokens.access)
   } catch (err) {
     dispatch(authenticateFailure(err.response.data))
   }
@@ -79,6 +83,8 @@ export const refreshToken = () => async dispatch => {
   try {
     const tokens = await api.getNewTokens(getRefreshToken())
     updateTokens(tokens)
+
+    setRollbarUserId(tokens.access)
   } catch (err) {
     if (err.response.data.code === 'token_not_valid') {
       // Remove the invalid refresh token
@@ -100,8 +106,15 @@ export const checkForExpiredToken = () => async dispatch => {
       dispatch(setAuthenticated(true))
     } else {
       dispatch(setAuthenticated(true))
+
+      setRollbarUserId(token)
     }
   }
 
   dispatch(checkForExpiredTokenEnd())
+}
+
+const setRollbarUserId = token => {
+  const { user_id } = jwt.decode(token)
+  if (user_id) rollbar.configure({ payload: { person: { id: user_id } } })
 }

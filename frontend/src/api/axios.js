@@ -4,7 +4,7 @@ import store from 'store'
 import { getAccessToken, removeAccessToken } from 'features/auth/authHelpers'
 import { refreshToken } from 'features/auth/authSlice'
 import { setError } from 'features/network/networkSlice'
-import { rollbar } from 'index'
+import { rollbar } from 'myRollbar'
 
 axios.defaults.baseURL = '/api/'
 

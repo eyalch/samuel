@@ -1,18 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Rollbar from 'rollbar'
 
 import App from './App'
 import './api/axios'
 import * as serviceWorker from './serviceWorker'
 import Providers from './Providers'
-
-export const rollbar = new Rollbar({
-  accessToken: process.env.REACT_APP_ROLLBAR_TOKEN,
-  captureUncaught: true,
-  captureUnhandledRejections: true,
-  payload: { environment: process.env.NODE_ENV },
-})
+import './myRollbar'
 
 const app = (
   <Providers>

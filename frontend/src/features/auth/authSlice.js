@@ -10,7 +10,7 @@ import {
   getRefreshToken,
   removeAccessToken,
 } from './authHelpers'
-import { rollbar } from 'index'
+import { rollbar } from 'myRollbar'
 
 const initialState = {
   showAuthDialog: false,

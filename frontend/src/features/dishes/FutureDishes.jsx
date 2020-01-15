@@ -18,6 +18,7 @@ const futureDishesPerDateSelector = createSelector(
   dishes => {
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
+    tomorrow.setHours(0, 0, 0, 0)
 
     const futureDishes = dishes.filter(dish => new Date(dish.date) >= tomorrow)
     return Object.entries(futureDishes.reduce(perDateReducer, {}))

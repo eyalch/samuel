@@ -23,3 +23,5 @@ export function getPrettyWeekday(targetDateStr) {
       return targetDate.toLocaleDateString('he', { weekday: 'long' })
   }
 }
+
+export const isDishForToday = dish => dish.date === getLocalDateISOString()

@@ -36,7 +36,14 @@ class ScheduledDishSerializer(serializers.ModelSerializer):
         return self.user_future_orders.filter(scheduled_dish=scheduled_dish).count()
 
     def get_has_dishes_left(self, scheduled_dish):
+        # If there's no `orders_left` set for a dish, then it should be available as
+        # long as there's time left to order
         if scheduled_dish.orders_left is None:
+            # If the dish is not for today then there should always be time to order
+            if not scheduled_dish.is_for_today:
+                return True
+
+            # Check if there's time left to order
             try:
                 check_if_time_is_up_for_today()
                 return True

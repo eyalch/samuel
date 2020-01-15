@@ -90,12 +90,10 @@ class DishesEmailModelAdminMixin:
 
 
 def notify_ready_scheduled_dishes(modeladmin, request, scheduled_dishes):
-    today = timezone.now().date()
-
     datatuple = []
     for scheduled_dish in scheduled_dishes:
         # Skip the ScheduledDish if it isn't for today
-        if scheduled_dish.date != today:
+        if not scheduled_dish.is_for_today:
             continue
 
         # Get all ordering users' email addresses for that ScheduledDish

@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 
 import * as api from 'api/dishes'
 import { setShowAuthDialog } from 'features/auth/authSlice'
+import { isDishForToday } from './dishesHelpers'
 
 export const messages = {
   ORDER_SUCCESS: 1,
@@ -162,8 +163,11 @@ export const orderDish = dish => async (dispatch, getState) => {
     return
   }
 
+  const _isDishForToday = isDishForToday(dish)
+
   // Show a confirm dialog if the user has already made an order
   if (
+    (!_isDishForToday || hasTimeLeft) &&
     ordersCountForDate > 0 &&
     !confirmOrderDialog &&
     !confirmLeftOverOrderDialog
@@ -175,7 +179,7 @@ export const orderDish = dish => async (dispatch, getState) => {
   }
 
   // Show a confirm dialog when trying to order a left-over dish which can't be canceled
-  if (!hasTimeLeft && !confirmLeftOverOrderDialog) {
+  if (_isDishForToday && !hasTimeLeft && !confirmLeftOverOrderDialog) {
     dispatch(setConfirmLeftOverOrderDialog(dish))
     return
   } else if (confirmLeftOverOrderDialog) {
@@ -205,7 +209,7 @@ export const orderPendingDish = () => async (dispatch, getState) => {
 export const cancelOrder = dish => async (dispatch, getState) => {
   const { hasTimeLeft } = getState().dishes
 
-  if (!hasTimeLeft) {
+  if (isDishForToday(dish) && !hasTimeLeft) {
     dispatch(setMessage(messages.CANCEL_TIME_IS_UP))
     return
   }

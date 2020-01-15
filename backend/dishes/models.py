@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class Dish(models.Model):
@@ -34,6 +35,11 @@ class ScheduledDish(models.Model):
 
     def __str__(self):
         return f"{self.dish} @ {self.date}"
+
+    @property
+    def is_for_today(self):
+        today = timezone.now().date()
+        return self.date == today
 
 
 class Order(models.Model):

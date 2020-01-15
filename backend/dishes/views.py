@@ -31,14 +31,12 @@ class ScheduledDishViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericViewS
     def order(self, request, pk=None):
         scheduled_dish = self.get_object()
 
-        today = timezone.now().date()
-
         # If there's an order limit, don't check if time is up
         if scheduled_dish.orders_left is not None:
             # Check whether there are dishes left
             if scheduled_dish.orders_left <= 0:
                 raise NoDishesLeftError()
-        elif scheduled_dish.date == today:
+        elif scheduled_dish.is_for_today:
             check_if_time_is_up_for_today()
 
         # Check whether the user has ordered the maximum allowed dishes for the day
@@ -61,8 +59,7 @@ class ScheduledDishViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericViewS
     def delete_order(self, request, pk=None):
         scheduled_dish = self.get_object()
 
-        today = timezone.now().date()
-        if scheduled_dish.date == today:
+        if scheduled_dish.is_for_today:
             check_if_time_is_up_for_today()
 
         order = Order.objects.filter(

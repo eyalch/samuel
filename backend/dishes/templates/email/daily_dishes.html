@@ -106,8 +106,7 @@
   <table border="0" cellpadding="0" cellspacing="0" class="body"
     style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background-color: #303030;">
     <tr>
-      <td
-        style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
+      <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
         &nbsp;
       </td>
       <td class="container"
@@ -131,30 +130,24 @@
                 </a>
 
                 {% if test %}
-                  <p
-                    style="font-family: sans-serif; font-size: 32px; font-weight: bold; margin: 0; Margin-bottom: 8px; color: white; margin-top: 16px; text-decoration: underline;">
+                  <p style="font-family: sans-serif; font-size: 32px; font-weight: bold; margin: 0; Margin-bottom: 8px; color: white; margin-top: 16px; text-decoration: underline;">
                     בדיקה
                   </p>
                 {% endif %}
 
-                <p
-                  style="font-family: sans-serif; font-size: 24px; font-weight: normal; margin: 0; Margin-bottom: 2px; color: white; margin-top: 16px;">
+                <p style="font-family: sans-serif; font-size: 24px; font-weight: normal; margin: 0; Margin-bottom: 2px; color: white; margin-top: 16px;">
                   תפריט ל{{ weekday }}
                 </p>
-                <p
-                  style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 24px; color: white;">
-                  ({{ date }})
+                <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 24px; color: white;">
+                  {{ date }}
                 </p>
 
                 {% for dish in dishes %}
-                <div
-                  style="background-color: #424242; border-radius: 4px; padding: 16px 8px 8px; Margin-bottom: 16px; text-align: right;">
-                  <p
-                    style="font-family: sans-serif; font-size: 24px; font-weight: normal; margin: 0; Margin-bottom: 8px; color: white; padding: 0 8px;">
+                <div style="background-color: #424242; border-radius: 4px; padding: 16px 8px 8px; Margin-bottom: 16px; text-align: right;">
+                  <p style="font-family: sans-serif; font-size: 24px; font-weight: normal; margin: 0; Margin-bottom: 8px; color: white; padding: 0 8px;">
                     {{ dish.name }}
                   </p>
-                  <p
-                    style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; color: #c6c6c6; padding: 0 8px;">
+                  <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; color: #c6c6c6; padding: 0 8px;">
                     {{ dish.description }}
                   </p>
                   <a href="{{ base_url }}"
@@ -172,8 +165,7 @@
           <!-- END CENTERED WHITE CONTAINER -->
         </div>
       </td>
-      <td
-        style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
+      <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
         &nbsp;
       </td>
     </tr>

@@ -14,7 +14,7 @@ const NetworkErrorSnackbar = () => {
       onClose={() => dispatch(setError(false))}
       messageId="network-error-message"
       message="שגיאת תקשורת!"
-      severity="info"
+      severity="error"
     />
   )
 }

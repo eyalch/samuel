@@ -135,7 +135,7 @@ AUTH_USER_MODEL = "users.User"
 
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
-    "users.backend.CustomLDAPBackend",
+    "django_auth_ldap.backend.LDAPBackend",
 )
 
 
@@ -159,11 +159,13 @@ AUTH_LDAP_SERVER_URI = env.str("LDAP_SERVER_URI")
 AUTH_LDAP_BIND_DN = env.str("LDAP_BIND_DN")
 AUTH_LDAP_BIND_PASSWORD = env.str("LDAP_BIND_PASSWORD")
 
-base_dn = env.str("LDAP_BASE_DN")
-AUTH_LDAP_USER_SEARCH = LDAPSearch(base_dn, ldap.SCOPE_SUBTREE, "mail=%(user)s")
+AUTH_LDAP_USER_SEARCH = LDAPSearch(
+    env.str("LDAP_BASE_DN"), ldap.SCOPE_SUBTREE, "(sAMAccountName=%(user)s)"
+)
 
 # Populate the Django user from the LDAP directory.
 AUTH_LDAP_USER_ATTR_MAP = {
+    "username": "sAMAccountName",
     "email": "mail",
     "first_name": "givenName",
     "last_name": "sn",

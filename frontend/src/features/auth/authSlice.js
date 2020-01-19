@@ -67,10 +67,10 @@ export const { setShowAuthDialog, hideCredentialsError } = auth.actions
 
 export default auth.reducer
 
-export const authenticate = (email, password) => async dispatch => {
+export const authenticate = (username, password) => async dispatch => {
   dispatch(hideCredentialsError())
   try {
-    const tokens = await api.getToken(email, password)
+    const tokens = await api.getToken(username, password)
     dispatch(authenticateSuccess(tokens))
 
     setRollbarUserId(tokens.access)

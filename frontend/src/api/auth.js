@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-export const getToken = async (email, password) => {
-  const res = await axios.post('token', { email, password })
+export const getToken = async (username, password) => {
+  const res = await axios.post('token', { username, password })
   return res.data
 }
 

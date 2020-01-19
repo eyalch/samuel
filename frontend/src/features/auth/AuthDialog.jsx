@@ -20,10 +20,7 @@ import LoadingButton from 'common/LoadingButton'
 import SnackbarAlert from 'common/SnackbarAlert'
 
 const schema = yup.object({
-  email: yup
-    .string()
-    .email('כתובת דוא"ל לא תקינה')
-    .required('שדה חובה'),
+  usernameOrEmail: yup.string().required('שדה חובה'),
   password: yup.string().required('שדה חובה'),
 })
 
@@ -31,7 +28,8 @@ const AuthDialog = () => {
   const dispatch = useDispatch()
 
   const handleSubmit = async (values, actions) => {
-    await dispatch(authenticate(values.email, values.password))
+    const username = values.usernameOrEmail.split('@')[0]
+    await dispatch(authenticate(username, values.password))
     actions.setSubmitting(false)
   }
 
@@ -46,7 +44,7 @@ const AuthDialog = () => {
         aria-labelledby="auth-dialog-title">
         <Formik
           validationSchema={schema}
-          initialValues={{ email: '', password: '' }}
+          initialValues={{ usernameOrEmail: '', password: '' }}
           onSubmit={handleSubmit}>
           {({ isSubmitting }) => (
             <Form>
@@ -57,10 +55,10 @@ const AuthDialog = () => {
                 </DialogContentText>
 
                 <Field
-                  label='דוא"ל'
-                  name="email"
+                  label='שם משתמש/דוא"ל'
+                  name="usernameOrEmail"
                   component={TextFormField}
-                  type="email"
+                  type="usernameOrEmail"
                   inputProps={{ style: { direction: 'ltr' } }}
                 />
                 <Field

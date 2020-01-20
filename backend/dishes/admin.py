@@ -103,14 +103,17 @@ def notify_ready_scheduled_dishes(modeladmin, request, scheduled_dishes):
         email_addresses = [order.user.email for order in orders]
 
         subject = f'המנה "{scheduled_dish.dish}" מוכנה!'
-        datatuple.append((subject, "", None, email_addresses))
+
+        for email_address in email_addresses:
+            datatuple.append((subject, "", None, email_address))
 
     messages_sent = send_mass_mail(datatuple)
     if messages_sent > 0:
-        message_and_level = ("Messages sent successfully.", messages.SUCCESS)
+        modeladmin.message_user(
+            request, "Messages sent successfully.", messages.SUCCESS
+        )
     else:
-        message_and_level = ("No messages sent.", messages.WARNING)
-    modeladmin.message_user(request, *message_and_level)
+        modeladmin.message_user(request, "No messages sent.", messages.WARNING)
 
 
 notify_ready_scheduled_dishes.short_description = "Send ready dishes email"
@@ -192,7 +195,7 @@ class DishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
 class ScheduledDishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
     list_display = ("__str__", "orders_left")
     ordering = ("-date",)
-    list_filter = ("dish", "date")
+    list_filter = ("date", "dish")
     date_hierarchy = "date"
     autocomplete_fields = ["dish"]
     actions = [notify_ready_scheduled_dishes]

@@ -11,7 +11,9 @@
     { "directory": "./frontend", "changeProcessCWD": true }
   ],
   "files.exclude": {
-    "backend/.env": true
+    "backend/.env": true,
+    "backend/mediafiles": true,
+    "backend/staticfiles": true
   },
   "files.watcherExclude": {
     "backend/.venv": true

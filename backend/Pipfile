@@ -16,6 +16,7 @@ djangorestframework-simplejwt = "==4.3.*"
 django-dynamic-preferences = "==1.8.*"
 Babel = "==2.7.*"
 rollbar = "==0.14.*"
+django-import-export = "==2.0.*"
 
 [dev-packages]
 flake8 = "*"

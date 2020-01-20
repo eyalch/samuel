@@ -10,6 +10,9 @@ from django.template.loader import get_template
 from django.urls import path
 from django.utils import timezone
 from django.utils.html import mark_safe
+from import_export import resources
+from import_export.admin import ExportActionMixin
+from import_export.fields import Field
 
 from .errors import TimeIsUpError
 from .models import Dish, Order, ScheduledDish
@@ -201,14 +204,34 @@ class ScheduledDishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
     actions = [notify_ready_scheduled_dishes]
 
 
+class OrderResource(resources.ModelResource):
+    user = Field(attribute="user", column_name="User")
+    dish = Field(attribute="scheduled_dish__dish", column_name="Dish")
+    dish_type = Field(
+        attribute="scheduled_dish__dish__dish_type", column_name="Dish Type"
+    )
+    created_at = Field(attribute="created_at", column_name="Ordered At")
+
+    class Meta:
+        model = Order
+        fields = ("user", "dish", "dish_type", "created_at")
+
+
 @admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ("scheduled_dish", "created_at")
-    list_filter = ("created_at", "scheduled_dish")
+class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
+    list_display = ("scheduled_dish", "user", "get_dish_type", "created_at")
+    list_filter = ("created_at", "scheduled_dish__dish")
     list_display_links = None
     ordering = ("-scheduled_dish__date",)
-    actions = None  # Disable the "Delete selected" action
     date_hierarchy = "created_at"
+
+    resource_class = OrderResource
+
+    def get_dish_type(self, obj):
+        return obj.scheduled_dish.dish.dish_type
+
+    get_dish_type.short_description = "Dish type"
+    get_dish_type.admin_order_field = "scheduled_dish__dish__dish_type"
 
     def has_add_permission(self, request, obj=None):
         return False

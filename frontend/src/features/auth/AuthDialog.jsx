@@ -58,7 +58,7 @@ const AuthDialog = () => {
                   label='שם משתמש/דוא"ל'
                   name="usernameOrEmail"
                   component={TextFormField}
-                  type="usernameOrEmail"
+                  type="text"
                   inputProps={{ style: { direction: 'ltr' } }}
                 />
                 <Field

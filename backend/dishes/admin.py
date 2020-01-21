@@ -11,11 +11,11 @@ from django.urls import path
 from django.utils import timezone
 from django.utils.html import mark_safe
 from import_export import resources
-from import_export.admin import ExportActionMixin
+from import_export.admin import ExportActionMixin, ExportMixin
 from import_export.fields import Field
 
 from .errors import TimeIsUpError
-from .models import Dish, Order, ScheduledDish
+from .models import Dish, Order, ScheduledDish, TodayOrder
 from .views import check_if_time_is_up_for_today
 
 plaintext_template = get_template("email/daily_dishes.txt")
@@ -232,6 +232,35 @@ class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
 
     get_dish_type.short_description = "Dish type"
     get_dish_type.admin_order_field = "scheduled_dish__dish__dish_type"
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
+class OrderForTodayResource(resources.ModelResource):
+    user = Field(attribute="user", column_name="משתמש")
+    dish = Field(attribute="scheduled_dish__dish", column_name="מנה")
+
+    class Meta:
+        model = TodayOrder
+        fields = ("user", "dish")
+
+
+@admin.register(TodayOrder)
+class OrdersForToday(ExportMixin, admin.ModelAdmin):
+    list_display = ("user", "get_dish", "created_at")
+    list_display_links = None
+    ordering = ("-created_at",)
+
+    resource_class = OrderForTodayResource
+
+    def get_dish(self, obj):
+        return obj.scheduled_dish.dish
+
+    get_dish.short_description = "Dish"
 
     def has_add_permission(self, request, obj=None):
         return False

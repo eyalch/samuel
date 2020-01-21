@@ -70,3 +70,16 @@ class Order(models.Model):
         if self.scheduled_dish.orders_left is not None:
             self.scheduled_dish.orders_left += 1
             self.scheduled_dish.save()
+
+
+class TodayOrderManager(models.Manager):
+    def get_queryset(self):
+        today = timezone.now().date()
+        return super().get_queryset().filter(scheduled_dish__date=today)
+
+
+class TodayOrder(Order):
+    objects = TodayOrderManager()
+
+    class Meta:
+        proxy = True

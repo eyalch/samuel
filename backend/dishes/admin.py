@@ -223,7 +223,7 @@ class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
     list_filter = ("scheduled_dish__date", "scheduled_dish__dish")
     list_display_links = None
     ordering = ("-scheduled_dish__date",)
-    date_hierarchy = "created_at"
+    date_hierarchy = "scheduled_dish__date"
 
     resource_class = OrderResource
 

@@ -112,9 +112,20 @@ TIME_ZONE = env.str("TIME_ZONE", default="Asia/Jerusalem")
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = False
+
+
+# Date & time formats
+
+DATE_FORMAT = "N j, Y"
+TIME_FORMAT = "H:i"
+DATETIME_FORMAT = f"{DATE_FORMAT}, {TIME_FORMAT}"
+YEAR_MONTH_FORMAT = "F Y"
+MONTH_DAY_FORMAT = "F j"
+SHORT_DATE_FORMAT = "d/m/Y"
+SHORT_DATETIME_FORMAT = f"{SHORT_DATE_FORMAT} {TIME_FORMAT}"
 
 
 # Static files (CSS, JavaScript, Images)

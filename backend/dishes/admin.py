@@ -220,7 +220,7 @@ class OrderResource(resources.ModelResource):
 @admin.register(Order)
 class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
     list_display = ("scheduled_dish", "user", "get_dish_type", "created_at")
-    list_filter = ("created_at", "scheduled_dish__dish")
+    list_filter = ("scheduled_dish__date", "scheduled_dish__dish")
     list_display_links = None
     ordering = ("-scheduled_dish__date",)
     date_hierarchy = "created_at"

@@ -1,11 +1,11 @@
 {% extends 'admin/change_list.html' %}
 
 {% block object-tools %}
-    <form name="email" action="send_email/" method="POST" style="margin-bottom: 15px">
+    <form name="email" action="send_email/" method="POST">
         {% csrf_token %}
         <input type="submit" formaction="send_email_test/" value="Send test email" />
-        <input type="button" onclick="confirmSendEmail()" value="Send email"
-            style="margin-left: 5px" />
+        <input type="button" onclick="confirmSendEmail()" value="Send email" />
+        <input type="submit" formaction="send_dishes_ready/" value="Send dishes ready email" />
     </form>
 
     <script>
@@ -15,6 +15,15 @@
             }
         }
     </script>
+
+    <style>
+        form[name="email"] {
+            margin-bottom: 15px;
+        }
+        form[name="email"] input {
+            margin-right: 5px;
+        }
+    </style>
 
     {{ block.super }}
 {% endblock object-tools %}

@@ -43,6 +43,7 @@ class DishesEmailModelAdminMixin:
         my_urls = [
             path("send_email/", self.send_email),
             path("send_email_test/", self.send_email, {"test": True}),
+            path("send_dishes_ready/", self.send_dishes_ready),
         ]
         return my_urls + urls
 
@@ -89,37 +90,36 @@ class DishesEmailModelAdminMixin:
         )
 
         self.message_user(request, success_message, messages.SUCCESS)
+
         return HttpResponseRedirect("../")
 
+    def send_dishes_ready(self, request):
+        today = timezone.now().date()
+        dishes_scheduled_for_today = ScheduledDish.objects.filter(date=today)
 
-def notify_ready_scheduled_dishes(modeladmin, request, scheduled_dishes):
-    datatuple = []
-    for scheduled_dish in scheduled_dishes:
-        # Skip the ScheduledDish if it isn't for today
-        if not scheduled_dish.is_for_today:
-            continue
+        datatuple = []
 
-        # Get all ordering users' email addresses for that ScheduledDish
-        orders = Order.objects.select_related("user").filter(
-            scheduled_dish=scheduled_dish
-        )
-        email_addresses = [order.user.email for order in orders]
+        for scheduled_dish in dishes_scheduled_for_today:
+            # Get all ordering users' email addresses for the ScheduledDish
+            orders = Order.objects.select_related("user").filter(
+                scheduled_dish=scheduled_dish
+            )
+            email_addresses = [order.user.email for order in orders]
 
-        subject = f'המנה "{scheduled_dish.dish}" מוכנה!'
+            subject = f'המנה "{scheduled_dish.dish}" מוכנה!'
+            body = "בתיאבון!"
 
-        for email_address in email_addresses:
-            datatuple.append((subject, "", None, email_address))
+            for email_address in email_addresses:
+                datatuple.append((subject, body, None, (email_address,)))
 
-    messages_sent = send_mass_mail(datatuple)
-    if messages_sent > 0:
-        modeladmin.message_user(
-            request, "Messages sent successfully.", messages.SUCCESS
-        )
-    else:
-        modeladmin.message_user(request, "No messages sent.", messages.WARNING)
+        messages_sent = send_mass_mail(datatuple)
 
+        if messages_sent > 0:
+            self.message_user(request, "Messages sent successfully.", messages.SUCCESS)
+        else:
+            self.message_user(request, "No messages sent.", messages.WARNING)
 
-notify_ready_scheduled_dishes.short_description = "Send ready dishes email"
+        return HttpResponseRedirect("../")
 
 
 class DishAdminForm(forms.ModelForm):
@@ -136,7 +136,7 @@ class DishAdminForm(forms.ModelForm):
 @admin.register(Dish)
 class DishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
     list_display = ("name", "description", "image_preview")
-    actions = ["schedule_for_today", "schedule_for_tomorrow", "notify_ready"]
+    actions = ["schedule_for_today", "schedule_for_tomorrow"]
     form = DishAdminForm
     inlines = [AddScheduledDishInline]
     actions_on_bottom = True
@@ -178,21 +178,6 @@ class DishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
 
     schedule_for_tomorrow.short_description = "Schedule for tomorrow"
 
-    def notify_ready(self, request, queryset):
-        today = timezone.now().date()
-
-        scheduled_dishes = []
-        for dish in queryset:
-            try:
-                scheduled_dish = ScheduledDish.objects.get(dish=dish, date=today)
-                scheduled_dishes.append(scheduled_dish)
-            except ScheduledDish.DoesNotExist:
-                continue
-
-        return notify_ready_scheduled_dishes(self, request, scheduled_dishes)
-
-    notify_ready.short_description = notify_ready_scheduled_dishes.short_description
-
 
 @admin.register(ScheduledDish)
 class ScheduledDishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
@@ -201,7 +186,6 @@ class ScheduledDishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
     list_filter = ("date", "dish")
     date_hierarchy = "date"
     autocomplete_fields = ["dish"]
-    actions = [notify_ready_scheduled_dishes]
 
 
 class OrderResource(resources.ModelResource):

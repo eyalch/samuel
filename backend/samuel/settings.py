@@ -161,7 +161,9 @@ AUTH_LDAP_BIND_DN = env.str("LDAP_BIND_DN")
 AUTH_LDAP_BIND_PASSWORD = env.str("LDAP_BIND_PASSWORD")
 
 AUTH_LDAP_USER_SEARCH = LDAPSearch(
-    env.str("LDAP_BASE_DN"), ldap.SCOPE_SUBTREE, "(sAMAccountName=%(user)s)"
+    env.str("LDAP_BASE_DN"),
+    ldap.SCOPE_SUBTREE,
+    "(|(sAMAccountName=%(user)s)(mail=%(user)s))",
 )
 
 # Populate the Django user from the LDAP directory.
@@ -179,6 +181,8 @@ AUTH_LDAP_CACHE_TIMEOUT = 3600
 
 # This is needed for Active Directory (no idea why)
 AUTH_LDAP_CONNECTION_OPTIONS = {ldap.OPT_REFERRALS: 0}
+
+AUTH_LDAP_USER_QUERY_FIELD = "username"
 
 LOGGING = {
     "version": 1,

@@ -4,7 +4,7 @@ from babel.dates import format_date
 from django import forms
 from django.conf import settings
 from django.contrib import admin, messages
-from django.core.mail import send_mail, send_mass_mail
+from django.core.mail import EmailMultiAlternatives, send_mass_mail
 from django.http import HttpResponseRedirect
 from django.template.loader import get_template
 from django.urls import path
@@ -74,21 +74,21 @@ class DishesEmailModelAdminMixin:
             "test": test,
         }
 
-        send_mail(
-            "סמואל",
-            plaintext_template.render(context),
-            None,
-            settings.EMAIL_TEST_RECIPIENTS if test else settings.EMAIL_RECIPIENTS,
-            html_message=html_template.render(context),
-        )
+        EmailMultiAlternatives(
+            to=settings.EMAIL_TEST_RECIPIENTS if test else settings.EMAIL_RECIPIENTS,
+            bcc=settings.EMAIL_TEST_RECIPIENTS if not test else None,
+            subject="סמואל",
+            body=plaintext_template.render(context),
+            alternatives=[(html_template.render(context), "text/html")],
+        ).send()
 
-        message = (
+        success_message = (
             "Successfully sent an email."
             if not test
             else "Successfully sent a test email."
         )
 
-        self.message_user(request, message, messages.SUCCESS)
+        self.message_user(request, success_message, messages.SUCCESS)
         return HttpResponseRedirect("../")
 
 

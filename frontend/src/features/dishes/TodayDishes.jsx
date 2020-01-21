@@ -7,6 +7,7 @@ import { Typography } from '@material-ui/core'
 import DishList from './DishList'
 import OrderTimer from './OrderTimer'
 import { todayDishesSelector } from './dishesSelectors'
+import { futureDishesPerDateSelector } from './FutureDishes'
 
 export const StyledDishesSection = styled.section`
   padding-bottom: ${p => p.theme.spacing(5)}px;
@@ -29,15 +30,16 @@ const showTodayDishesSelector = createSelector(
 const TodayDishes = () => {
   const todayDishes = useSelector(todayDishesSelector)
   const showTodayDishes = useSelector(showTodayDishesSelector)
+  const futureDishes = useSelector(futureDishesPerDateSelector)
 
-  if (!showTodayDishes) return null
+  if (!showTodayDishes && futureDishes.length) return null
 
   return (
     <StyledDishesSection>
       {todayDishes.length ? (
         <>
           <OrderTimer />
-          <DishList dishes={todayDishes} />
+          {showTodayDishes && <DishList dishes={todayDishes} />}
         </>
       ) : (
         <Typography variant="h4" component="p" align="center">

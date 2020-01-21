@@ -12,7 +12,7 @@ const perDateReducer = (result, dish) => ({
   [dish.date]: [...(result[dish.date] || []), dish],
 })
 
-const futureDishesPerDateSelector = createSelector(
+export const futureDishesPerDateSelector = createSelector(
   state => state.dishes.dishes,
   state => state.dishes.hasTimeLeft,
   dishes => {

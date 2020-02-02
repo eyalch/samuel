@@ -5,7 +5,11 @@ export const getToken = async (username, password) => {
   return res.data
 }
 
-export const getNewTokens = async refreshToken => {
-  const res = await axios.post('token/refresh', { refresh: refreshToken })
+export const refreshTokens = async refreshToken => {
+  const res = await axios.post(
+    'token/refresh',
+    { refresh: refreshToken },
+    { __isRefreshingTokens: true }
+  )
   return res.data
 }

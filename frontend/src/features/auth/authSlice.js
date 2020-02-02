@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken'
 import * as api from 'api/auth'
 import {
   updateTokens,
-  removeRefreshToken,
   getAccessToken,
   isTokenExpired,
   getRefreshToken,
@@ -12,9 +11,14 @@ import {
 } from './authHelpers'
 import { rollbar } from 'myRollbar'
 
+export const messages = {
+  INVALID_CREDENTIALS: 1,
+  RE_LOGIN: 2,
+}
+
 const initialState = {
   showAuthDialog: false,
-  credentialsError: false,
+  message: null,
   authenticated: false,
   initialAuthentication: true,
 }
@@ -23,26 +27,20 @@ const auth = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    setMessage(state, { payload: message }) {
+      state.message = message
+    },
+    resetMessage(state) {
+      state.message = null
+    },
+
     setShowAuthDialog(state, { payload: show }) {
       state.showAuthDialog = show
     },
-    hideCredentialsError(state) {
-      state.credentialsError = false
-    },
 
-    authenticateSuccess(state, { payload: tokens }) {
-      updateTokens(tokens)
+    authenticateSuccess(state) {
       state.authenticated = true
       state.showAuthDialog = false
-    },
-    authenticateFailure(state, { payload: res }) {
-      if (res.code === 'authentication_failed') {
-        state.credentialsError = true
-      }
-    },
-
-    refreshTokenFailure(state) {
-      state.showAuthDialog = true
     },
 
     setAuthenticated(state, { payload: authenticated }) {
@@ -55,44 +53,39 @@ const auth = createSlice({
   },
 })
 
-const {
-  authenticateSuccess,
-  authenticateFailure,
-  refreshTokenFailure,
-  setAuthenticated,
-  checkForExpiredTokenEnd,
-} = auth.actions
+const { authenticateSuccess, checkForExpiredTokenEnd } = auth.actions
 
-export const { setShowAuthDialog, hideCredentialsError } = auth.actions
+export const {
+  setMessage,
+  resetMessage,
+  setShowAuthDialog,
+  setAuthenticated,
+} = auth.actions
 
 export default auth.reducer
 
 export const authenticate = (username, password) => async dispatch => {
-  dispatch(hideCredentialsError())
+  dispatch(resetMessage())
   try {
     const tokens = await api.getToken(username, password)
-    dispatch(authenticateSuccess(tokens))
+    updateTokens(tokens)
+    dispatch(authenticateSuccess())
 
     setRollbarUserId(tokens.access)
   } catch (err) {
-    dispatch(authenticateFailure(err.response.data))
+    const { status, data } = err.response
+
+    if (status === 401 && data.code === 'authentication_failed') {
+      dispatch(setMessage(messages.INVALID_CREDENTIALS))
+    }
   }
 }
 
-export const refreshToken = () => async dispatch => {
-  try {
-    const tokens = await api.getNewTokens(getRefreshToken())
-    updateTokens(tokens)
+export const refreshToken = () => async () => {
+  const tokens = await api.refreshTokens(getRefreshToken())
+  updateTokens(tokens)
 
-    setRollbarUserId(tokens.access)
-  } catch (err) {
-    if (err.response.data.code === 'token_not_valid') {
-      // Remove the invalid refresh token
-      removeRefreshToken()
-    }
-
-    dispatch(refreshTokenFailure())
-  }
+  setRollbarUserId(tokens.access)
 }
 
 export const checkForExpiredToken = () => async dispatch => {

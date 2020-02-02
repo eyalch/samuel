@@ -13,7 +13,8 @@ import {
 import {
   authenticate,
   setShowAuthDialog,
-  hideCredentialsError,
+  resetMessage,
+  messages,
 } from './authSlice'
 import { TextFormField } from 'common/FormFields'
 import LoadingButton from 'common/LoadingButton'
@@ -32,7 +33,7 @@ const AuthDialog = () => {
     actions.setSubmitting(false)
   }
 
-  const { showAuthDialog, credentialsError } = useSelector(state => state.auth)
+  const { showAuthDialog, message } = useSelector(state => state.auth)
 
   return (
     <>
@@ -50,18 +51,18 @@ const AuthDialog = () => {
               <DialogTitle id="auth-dialog-title">התחברות</DialogTitle>
               <DialogContent>
                 <DialogContentText>
-                  מלאו את פרטי ההזדהות המשמשים לכניסה למחשב בעבודה
+                  הזינו את פרטי ההזדהות למחשב/אימייל במשרד
                 </DialogContentText>
 
                 <Field
-                  label='שם משתמש/דוא"ל'
+                  label="אימייל משרדי"
                   name="username"
                   component={TextFormField}
                   type="text"
                   inputProps={{ style: { direction: 'ltr' } }}
                 />
                 <Field
-                  label="סיסמה"
+                  label="סיסמה למחשב"
                   name="password"
                   component={TextFormField}
                   type="password"
@@ -82,11 +83,18 @@ const AuthDialog = () => {
       </Dialog>
 
       <SnackbarAlert
-        open={credentialsError}
-        onClose={() => dispatch(hideCredentialsError())}
+        open={message === messages.INVALID_CREDENTIALS}
+        onClose={() => dispatch(resetMessage())}
         messageId="wrong-credentials-message"
-        message='דוא"ל או סיסמה שגויים'
+        message="הפרטים שהזנת שגויים"
         severity="error"
+      />
+      <SnackbarAlert
+        open={message === messages.RE_LOGIN}
+        onClose={() => dispatch(resetMessage())}
+        messageId="re-login-message"
+        message="יש להזדהות מחדש"
+        severity="warning"
       />
     </>
   )

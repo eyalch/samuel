@@ -129,7 +129,7 @@ class DishAdminForm(forms.ModelForm):
         # Make the "name" and "description" fields RTL
         self.fields["name"].widget.attrs.update({"style": "direction: rtl"})
         self.fields["description"].widget.attrs.update(
-            {"style": "direction: rtl; width: auto", "rows": 3}
+            {"style": "direction: rtl; width: auto", "rows": 5}
         )
 
 

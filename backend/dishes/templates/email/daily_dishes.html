@@ -148,7 +148,7 @@
                     {{ dish.name }}
                   </p>
                   <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; color: #c6c6c6; padding: 0 8px;">
-                    {{ dish.description }}
+                    {{ dish.description | linebreaksbr }}
                   </p>
                   <a href="{{ base_url }}"
                     style="padding: 8px 11px; font-size: 15px; margin-top: 16px; color: white; text-decoration: underline; display: inline-block;">

@@ -125,7 +125,11 @@ const Dish = ({ dish }) => {
         <Typography gutterBottom variant="h5" component="h3">
           {dish.name}
         </Typography>
-        <Typography variant="body2" color="textSecondary" component="p">
+        <Typography
+          variant="body2"
+          color="textSecondary"
+          component="p"
+          style={{ whiteSpace: 'pre-line' }}>
           {dish.description}
         </Typography>
       </CardContent>

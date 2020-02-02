@@ -61,5 +61,11 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://pluto:8000/"
+  "proxy": "http://pluto:8000/",
+  "jest": {
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "serviceWorker.js"
+    ]
+  }
 }

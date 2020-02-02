@@ -3,7 +3,7 @@ import React from 'react'
 import { render } from 'test-utils'
 import store from 'store'
 import Dish from './Dish'
-import { dish, dishForTomorrow } from 'api/mocks/dishes'
+import { dish, dishForTomorrow } from 'mocks/dishes'
 import { setHasTimeLeft } from './dishesSlice'
 
 const unorderedDish = { ...dish, orders_count: 0 }

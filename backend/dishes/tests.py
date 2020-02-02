@@ -13,12 +13,17 @@ from .models import Dish, ScheduledDish
 from .views import MaxOrdersForDayError, NoDishesLeftError
 
 
-class DishesTests(APITestCase):
+class TestCaseMixin:
     @classmethod
     def setUpTestData(cls):
         cls.today = timezone.now().date()
         cls.tomorrow = cls.today + datetime.timedelta(days=1)
 
+        cls.global_preferences = global_preferences_registry.manager()
+        cls.global_preferences["allow_orders_until"] = datetime.time.max
+
+
+class DishesTests(TestCaseMixin, APITestCase):
     def test_scheduled_dish(self):
         dish = Dish.objects.create(name="Dish 1")
         ScheduledDish.objects.create(dish=dish, date=self.today)
@@ -57,15 +62,10 @@ class DishesTests(APITestCase):
             ScheduledDish.objects.create(dish=dish, date=self.today)
 
 
-class OrdersTests(APITestCase):
+class OrdersTests(TestCaseMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.global_preferences = global_preferences_registry.manager()
-        allow_orders_until = datetime.time.fromisoformat("23:59")
-        cls.global_preferences["allow_orders_until"] = allow_orders_until
-
-        cls.today = timezone.now().date()
-        cls.tomorrow = cls.today + datetime.timedelta(days=1)
+        super().setUpTestData()
 
         dish_1 = Dish.objects.create(name="Dish 1")
         dish_2 = Dish.objects.create(name="Dish 2")

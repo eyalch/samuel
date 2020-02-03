@@ -1,27 +1,26 @@
-FROM python:3.7-alpine
+FROM python:3.7
 
 WORKDIR /app
 
 ENV PYTHONUNBUFFERED 1
 
-RUN apk update \
-    # Install build dependencies
-    && apk add --virtual .build-deps gcc python3-dev musl-dev \
-    # psycopg2 dependencies
-    && apk add postgresql-dev \
-    # Pillow dependencies
-    && apk add jpeg-dev zlib-dev freetype-dev lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev \
-    # OpenLDAP
-    && apk add openldap-dev \
-    # Time Zone Database
-    && apk add --no-cache tzdata \
-    # Daphne dependencies
-    && apk add libffi-dev
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -yq \
+    build-essential \
+    lcov \
+    ldap-utils \
+    libldap2-dev \
+    libsasl2-dev \
+    postgresql-client \
+    python3-dev \
+    slapd \
+    valgrind \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set time zone
 ARG TIME_ZONE
-RUN ln -snf /usr/share/zoneinfo/$TIME_ZONE /etc/localtime \
-    && echo $TIME_ZONE > /etc/timezone
+RUN echo $TIME_ZONE > /etc/timezone \
+    && dpkg-reconfigure -f noninteractive tzdata
 
 # Upgrade pip
 RUN pip install --upgrade pip

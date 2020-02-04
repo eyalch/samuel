@@ -7,11 +7,7 @@ const preferences = createSlice({
   initialState: {},
   reducers: {
     fetchPreferencesSuccess(state, { payload }) {
-      const preferencesObj = payload.reduce(
-        (acc, { key, value }) => ({ ...acc, [key]: value }),
-        {}
-      )
-      Object.assign(state, preferencesObj) // `state = ...` didn't work
+      Object.assign(state, payload) // `state = ...` didn't work
     },
   },
 })
@@ -21,6 +17,12 @@ const { fetchPreferencesSuccess } = preferences.actions
 export default preferences.reducer
 
 export const fetchPreferences = () => async dispatch => {
-  const preferences = await api.getPreferences()
-  dispatch(fetchPreferencesSuccess(preferences))
+  const preferencesArray = await api.getPreferences()
+
+  const preferencesObj = preferencesArray.reduce(
+    (acc, { key, value }) => ({ ...acc, [key]: value }),
+    {}
+  )
+
+  dispatch(fetchPreferencesSuccess(preferencesObj))
 }

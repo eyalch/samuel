@@ -21,7 +21,9 @@ const ConfirmOrderDialog = () => {
     [dispatch]
   )
 
-  const prettyWeekday = pendingDish ? getPrettyWeekday(pendingDish.date) : ''
+  const prettyWeekday = pendingDish
+    ? getPrettyWeekday(new Date(pendingDish.date))
+    : ''
 
   return (
     <Dialog

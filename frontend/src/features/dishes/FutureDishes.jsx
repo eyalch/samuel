@@ -31,7 +31,7 @@ const FutureDishes = () => {
   return futureDishesPerDate.map(([dateStr, dishesForDate]) => (
     <StyledDishesSection key={dateStr}>
       <Typography variant="h4" component="h2" align="center">
-        מנות ל{getPrettyWeekday(dateStr)}
+        מנות ל{getPrettyWeekday(new Date(dateStr))}
       </Typography>
       <DishList dishes={dishesForDate} />
     </StyledDishesSection>

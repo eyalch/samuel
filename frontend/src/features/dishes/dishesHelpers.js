@@ -4,9 +4,8 @@ export function getLocalDateISOString(date = new Date()) {
   return localDate.toISOString().slice(0, 10)
 }
 
-export function getPrettyWeekday(targetDateStr) {
-  const targetDate = new Date(targetDateStr)
-  const targetDateISO = getLocalDateISOString(targetDate)
+export function getPrettyWeekday(date) {
+  const targetDateISO = getLocalDateISOString(date)
 
   const todayDateISO = getLocalDateISOString(new Date())
 
@@ -20,7 +19,7 @@ export function getPrettyWeekday(targetDateStr) {
     case tomorrowDateISO:
       return 'מחר'
     default:
-      return targetDate.toLocaleDateString('he', { weekday: 'long' })
+      return date.toLocaleDateString('he', { weekday: 'long' })
   }
 }
 

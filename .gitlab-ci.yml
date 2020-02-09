@@ -6,8 +6,7 @@ cache:
     - frontend/.yarn-cache/
 
 before_script:
-  - cd frontend
-  - yarn install --pure-lockfile --cache-folder .yarn-cache
+  - yarn --cwd frontend install --pure-lockfile --cache-folder .yarn-cache
 
 test:
   stage: test

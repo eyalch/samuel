@@ -3,10 +3,10 @@ image: node:13.8.0-alpine3.11
 cache:
   paths:
     - frontend/node_modules/
-    - frontend/.yarn/
+    - frontend/.yarn-cache/
 
 before_script:
-  - yarn --cwd frontend install
+  - yarn --cwd frontend install --pure-lockfile --cache-folder .yarn-cache
 
 test:
   stage: test

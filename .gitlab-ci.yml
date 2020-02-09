@@ -11,16 +11,14 @@ before_script:
 test:
   stage: test
   script:
-    - cd frontend
-    - yarn test --runInBand
+    - yarn --cwd frontend test --runInBand
 
 pages:
   stage: deploy
   script:
-    - cd frontend
-    - yarn build
+    - yarn --cwd frontend build
     - rm -rf public
-    - mv build public
+    - mv frontend/build public
   artifacts:
     paths:
       - public

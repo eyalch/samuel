@@ -2,21 +2,21 @@ image: node:12.15.0-alpine3.11
 
 cache:
   paths:
-    - node_modules/
-    - .yarn/
+    - frontend/node_modules/
+    - frontend/.yarn/
 
 before_script:
-  - yarn install
+  - yarn --cwd frontend install
 
 test:
   stage: test
   script:
-    - yarn test --runInBand
+    - yarn --cwd frontend test --runInBand
 
 pages:
   stage: deploy
   script:
-    - yarn build
+    - yarn --cwd frontend build
     - rm -rf public
     - mv build public
   artifacts:

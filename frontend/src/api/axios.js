@@ -15,7 +15,7 @@ import {
 import { setError } from 'features/network/networkSlice'
 import { rollbar } from 'myRollbar'
 
-axios.defaults.baseURL = '/api/'
+axios.defaults.baseURL = process.env.REACT_APP_API_URL
 
 axios.interceptors.request.use(config => {
   const token = getAccessToken()
@@ -29,20 +29,18 @@ axios.interceptors.request.use(config => {
 
 let refreshTokenPromise = null
 
-// Handle network errors
-axios.interceptors.response.use(null, err => {
+export const responseInterceptor = err => {
+  // Handle network errors
   if (!err.response) {
     store.dispatch(setError(true))
 
     // Disable the error tracking for 100ms
     rollbar.configure({ enabled: false })
     setTimeout(() => rollbar.configure({ enabled: true }), 100)
+
+    throw err
   }
 
-  throw err
-})
-
-export const handleUnauthorized = err => {
   const { status, data, config } = err.response
 
   // If the token is invalid AND it's not a retry request (i.e the refresh
@@ -77,4 +75,4 @@ export const handleUnauthorized = err => {
 
   throw err
 }
-axios.interceptors.response.use(null, handleUnauthorized)
+axios.interceptors.response.use(null, responseInterceptor)

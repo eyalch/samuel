@@ -1,6 +1,6 @@
 # Samuel
 
-From a Google Sheets and punch cards to a single-click order! This project was made to streamline the process of managing and scheduling dishes by our company chef, as well as placing orders by the employees.
+From Google Sheets and punch cards to a single-click order! This project was made to streamline the process of managing and scheduling dishes by our company chef, as well as placing orders by the employees.
 
 ## Overview
 

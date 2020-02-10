@@ -2,7 +2,7 @@ import { axios } from 'test-utils'
 import jwt from 'jsonwebtoken'
 
 import { getAccessToken, updateTokens } from 'features/auth/authHelpers'
-import { handleUnauthorized } from './axios'
+import { responseInterceptor } from './axios'
 
 const resolveTimeout = (payload, ms) =>
   new Promise(resolve => setTimeout(() => resolve(payload), ms))
@@ -22,7 +22,7 @@ describe('invalid token', () => {
   }
 
   const runInterceptor = () =>
-    handleUnauthorized({ response: invalidTokenResponse })
+    responseInterceptor({ response: invalidTokenResponse })
 
   const getRefreshCallsCount = () =>
     axios.post.mock.calls.filter(([url]) => url.includes('refresh')).length

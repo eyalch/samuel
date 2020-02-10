@@ -27,7 +27,7 @@ const DishesPage = () => {
   const fetchDishes = useCallback(async () => {
     if (initialAuthentication) return
 
-    return await dispatch(_fetchDishes())
+    return dispatch(_fetchDishes())
   }, [dispatch, initialAuthentication])
 
   // Fetch dishes for the first time and when the user authenticates,

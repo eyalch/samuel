@@ -13,14 +13,11 @@ test:
   script:
     - yarn --cwd frontend test --runInBand
 
-pages:
+source maps:
   stage: deploy
   script:
-    - yarn --cwd frontend build
-    - rm -rf public
-    - mv frontend/build public
-  artifacts:
-    paths:
-      - public
+    - cd frontend
+    - yarn build
+    - ./upload_source_maps.sh
   only:
     - production

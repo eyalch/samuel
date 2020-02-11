@@ -15,7 +15,7 @@ import {
 import { setError } from 'features/network/networkSlice'
 import { rollbar } from 'myRollbar'
 
-axios.defaults.baseURL = process.env.REACT_APP_API_URL
+axios.defaults.baseURL = '/api/'
 
 axios.interceptors.request.use(config => {
   const token = getAccessToken()

@@ -1,24 +1,28 @@
-image: node:13.8.0-buster
-
-cache:
-  paths:
-    - frontend/node_modules/
-    - frontend/.yarn-cache/
-
-before_script:
-  - yarn --cwd frontend install --pure-lockfile --cache-folder .yarn-cache
-
 test:
   stage: test
+  image: node:13.8.0-buster
+  before_script:
+    - yarn --cwd frontend install --pure-lockfile --cache-folder .yarn-cache
   script:
     - yarn --cwd frontend test --runInBand
+  cache:
+    paths:
+      - frontend/node_modules/
+      - frontend/.yarn-cache/
 
 source maps:
   stage: deploy
+  image: node:13.8.0-buster
+  before_script:
+    - yarn --cwd frontend install --pure-lockfile --cache-folder .yarn-cache
   script:
     - cd frontend
     - yarn build
     - ./upload_source_maps.sh
+  cache:
+    paths:
+      - frontend/node_modules/
+      - frontend/.yarn-cache/
   only:
     - production
 

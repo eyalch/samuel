@@ -2,6 +2,7 @@ version: '3.6'
 
 services:
   backend:
+    image: registry.gitlab.com/samuel-bistro/samuel-bistro.gitlab.io/backend
     build:
       context: ./backend
       args:
@@ -16,6 +17,7 @@ services:
     restart: always
 
   nginx:
+    image: registry.gitlab.com/samuel-bistro/samuel-bistro.gitlab.io/nginx
     build:
       context: .
       dockerfile: ./nginx/Dockerfile

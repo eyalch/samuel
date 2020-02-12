@@ -22,7 +22,7 @@ source maps and images:
     - apk add --no-cache docker-compose
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker-compose -f docker-compose.ci.yml --build-arg VERSION=$(git rev-parse HEAD) build
+    - docker-compose -f docker-compose.ci.yml --build-arg VERSION=$CI_COMMIT_SHA build
     - docker-compose -f docker-compose.ci.yml push
   only:
     - production

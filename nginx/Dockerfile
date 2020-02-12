@@ -30,4 +30,5 @@ ARG VERSION
 ENV VERSION=${VERSION}
 
 COPY nginx/upload_source_maps_entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]

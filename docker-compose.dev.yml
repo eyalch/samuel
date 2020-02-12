@@ -4,8 +4,6 @@ services:
   backend:
     build:
       context: ./backend
-      args:
-        TIME_ZONE: $TIME_ZONE
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend:/app

@@ -3,21 +3,17 @@ version: '3.6'
 services:
   backend:
     image: registry.gitlab.com/samuel-bistro/samuel-bistro.gitlab.io/backend
-    build:
-      context: ./backend
     command: daphne -b 0.0.0.0 -p 8000 samuel.asgi:application
     expose:
       - 8000
     volumes:
       - backend_staticfiles:/app/staticfiles
       - backend_mediafiles:/app/mediafiles
+    env_file: .env
     restart: always
 
   nginx:
     image: registry.gitlab.com/samuel-bistro/samuel-bistro.gitlab.io/nginx
-    build:
-      context: .
-      dockerfile: ./nginx/Dockerfile
     volumes:
       - backend_staticfiles:/staticfiles:ro
       - backend_mediafiles:/mediafiles:ro

@@ -5,8 +5,6 @@ services:
     image: registry.gitlab.com/samuel-bistro/samuel-bistro.gitlab.io/backend
     build:
       context: ./backend
-      args:
-        TIME_ZONE: $TIME_ZONE
     command: daphne -b 0.0.0.0 -p 8000 samuel.asgi:application
     expose:
       - 8000

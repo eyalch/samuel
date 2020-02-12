@@ -29,5 +29,5 @@ COPY --from=frontend-build /app/build /usr/share/nginx/html
 ARG VERSION
 ENV VERSION=${VERSION}
 
-COPY upload_source_maps_entrypoint.sh /entrypoint.sh
+COPY nginx/upload_source_maps_entrypoint.sh /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]

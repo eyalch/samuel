@@ -38,7 +38,7 @@ docker images:
     - apk add --no-cache docker-compose
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker-compose build
-    - docker-compose push
+    - docker-compose -f docker-compose.ci.yml build
+    - docker-compose -f docker-compose.ci.yml push
   only:
     - production

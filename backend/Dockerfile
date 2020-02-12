@@ -17,11 +17,6 @@ RUN apt-get update && apt-get install -yq \
     valgrind \
     && rm -rf /var/lib/apt/lists/*
 
-# Set time zone
-ARG TIME_ZONE
-RUN echo $TIME_ZONE > /etc/timezone \
-    && dpkg-reconfigure -f noninteractive tzdata
-
 # Upgrade pip
 RUN pip install --upgrade pip
 

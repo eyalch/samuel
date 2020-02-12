@@ -20,6 +20,8 @@ RUN yarn build
 
 FROM nginx:1.17-alpine
 
+RUN apk --no-cache add curl
+
 RUN rm /etc/nginx/conf.d/default.conf
 
 COPY nginx/nginx.conf /etc/nginx/conf.d/

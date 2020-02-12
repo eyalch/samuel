@@ -21,3 +21,12 @@ source maps:
     - ./upload_source_maps.sh
   only:
     - production
+
+docker images:
+  stage: deploy
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker-compose build
+    - docker-compose push
+  only:
+    - production

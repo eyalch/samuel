@@ -10,23 +10,7 @@ test:
       - frontend/node_modules/
       - frontend/.yarn-cache/
 
-source maps:
-  stage: deploy
-  image: node:13.8.0-buster
-  before_script:
-    - yarn --cwd frontend install --pure-lockfile --cache-folder .yarn-cache
-  script:
-    - cd frontend
-    - yarn build
-    - ./upload_source_maps.sh
-  cache:
-    paths:
-      - frontend/node_modules/
-      - frontend/.yarn-cache/
-  only:
-    - production
-
-docker images:
+source maps and images:
   stage: deploy
   image: docker
   services:
@@ -38,7 +22,7 @@ docker images:
     - apk add --no-cache docker-compose
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker-compose -f docker-compose.ci.yml build
+    - docker-compose -f docker-compose.ci.yml --build-arg VERSION=$(git rev-parse --short HEAD) build
     - docker-compose -f docker-compose.ci.yml push
   only:
     - production

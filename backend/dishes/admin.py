@@ -217,9 +217,6 @@ class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
     get_dish_type.short_description = "Dish type"
     get_dish_type.admin_order_field = "scheduled_dish__dish__dish_type"
 
-    def has_add_permission(self, request, obj=None):
-        return False
-
     def has_change_permission(self, request, obj=None):
         return False
 

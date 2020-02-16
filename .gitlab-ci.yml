@@ -2,9 +2,10 @@ test:
   stage: test
   image: node:13.8.0-buster
   before_script:
-    - yarn --cwd frontend install --pure-lockfile --cache-folder .yarn-cache
+    - cd frontend
+    - yarn install --pure-lockfile --cache-folder .yarn-cache
   script:
-    - yarn --cwd frontend test --runInBand
+    - yarn test --runInBand
   cache:
     paths:
       - frontend/node_modules/

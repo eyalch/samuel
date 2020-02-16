@@ -31,7 +31,7 @@ RUN pip install pipenv
 
 # Install dependencies
 COPY Pipfile Pipfile.lock ./
-RUN pipenv install --system --deploy
+RUN pipenv sync
 
 # Copy source-code
 COPY . .

@@ -25,6 +25,7 @@ ENV VERSION=${VERSION}
 
 RUN apk --no-cache add curl
 
+RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx/nginx.conf /etc/nginx/conf.d/
 
 COPY --from=frontend-build /app/build /usr/share/nginx/html

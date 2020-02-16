@@ -8,7 +8,7 @@ export const rollbar = new Rollbar({
     environment: process.env.NODE_ENV,
     client: {
       javascript: {
-        code_version: process.env.VERSION,
+        code_version: process.env.REACT_APP_VERSION,
       },
     },
   },

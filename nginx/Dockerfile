@@ -12,7 +12,7 @@ RUN yarn install --prod
 COPY frontend/ .
 
 ARG VERSION
-ENV VERSION=${VERSION}
+ENV REACT_APP_VERSION=${VERSION}
 
 # Create a production build
 RUN yarn build

@@ -15,10 +15,14 @@ rollbar_token = env.str("ROLLBAR_TOKEN", default="")
 ROLLBAR = {
     "access_token": rollbar_token,
     "environment": "development" if DEBUG else "production",
-    "branch": "master",
+    "branch": env.str("BRANCH", default="master"),
+    "code_version": env.str("VERSION", default="development"),
     "root": "/backend",
     "enabled": rollbar_token and not DEBUG,
     "ignorable_404_urls": (re.compile("/admin"),),
+    "capture_ip": True,
+    "capture_email": True,
+    "capture_username": True,
 }
 
 

@@ -11,7 +11,7 @@ WORKDIR /app
 ENV PYTHONUNBUFFERED 1
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -yq \
+RUN apt-get update && apt-get install -yq --no-install-recommends \
     build-essential \
     lcov \
     ldap-utils \

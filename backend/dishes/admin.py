@@ -13,6 +13,7 @@ from django.utils.html import mark_safe
 from import_export import resources
 from import_export.admin import ExportActionMixin, ExportMixin
 from import_export.fields import Field
+from rangefilter.filter import DateRangeFilter
 
 from .errors import TimeIsUpError
 from .models import Dish, Order, ScheduledDish, TodayOrder
@@ -204,7 +205,7 @@ class OrderResource(resources.ModelResource):
 @admin.register(Order)
 class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
     list_display = ("scheduled_dish", "user", "get_dish_type", "created_at")
-    list_filter = ("scheduled_dish__date", "scheduled_dish__dish")
+    list_filter = (("scheduled_dish__date", DateRangeFilter),)
     list_display_links = None
     ordering = ("-scheduled_dish__date",)
     date_hierarchy = "scheduled_dish__date"

@@ -1,4 +1,5 @@
 import datetime
+from tempfile import NamedTemporaryFile
 
 from babel.dates import format_date
 from django import forms
@@ -6,14 +7,15 @@ from django.conf import settings
 from django.contrib import admin, messages
 from django.core.mail import EmailMultiAlternatives, send_mass_mail
 from django.db.models import Count, F
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template.loader import get_template
 from django.urls import path
 from django.utils import timezone
 from django.utils.html import mark_safe
 from import_export import resources
-from import_export.admin import ExportActionMixin, ExportMixin
+from import_export.admin import ExportActionMixin
 from import_export.fields import Field
+from openpyxl import Workbook
 from rangefilter.filter import DateRangeFilter
 
 from .errors import TimeIsUpError
@@ -22,6 +24,20 @@ from .views import check_if_time_is_up_for_today
 
 plaintext_template = get_template("email/daily_dishes.txt")
 html_template = get_template("email/daily_dishes.html")
+
+XLSX_MIME_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+
+def auto_adjust_columns(ws):
+    dims = {}
+    for row in ws.rows:
+        for cell in row:
+            if cell.value:
+                dims[cell.column_letter] = max(
+                    (dims.get(cell.column_letter, 0), len(str(cell.value)))
+                )
+    for col, value in dims.items():
+        ws.column_dimensions[col].width = value
 
 
 class AddScheduledDishInline(admin.TabularInline):
@@ -223,23 +239,12 @@ class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
         return False
 
 
-class OrderForTodayResource(resources.ModelResource):
-    user = Field(attribute="user", column_name="משתמש")
-    dish = Field(attribute="scheduled_dish__dish", column_name="מנה")
-
-    class Meta:
-        model = TodayOrder
-        fields = ("user", "dish")
-
-
 @admin.register(TodayOrder)
-class OrdersForToday(ExportMixin, admin.ModelAdmin):
+class OrdersForToday(admin.ModelAdmin):
     list_display = ("user", "get_dish", "created_at")
     list_display_links = None
     ordering = ("-created_at",)
     change_list_template = "admin/today_orders_changelist.html"
-
-    resource_class = OrderForTodayResource
 
     def get_dish(self, obj):
         return obj.scheduled_dish.dish
@@ -265,3 +270,25 @@ class OrdersForToday(ExportMixin, admin.ModelAdmin):
         extra_context["orders_count_per_dish"] = list(orders_count_per_dish)
 
         return super().changelist_view(request, extra_context=extra_context)
+
+    def get_urls(self):
+        return [path("export/", self.export_today_orders)] + super().get_urls()
+
+    def export_today_orders(self, request):
+        wb = Workbook()
+        ws = wb.active
+
+        for index, order in enumerate(TodayOrder.objects.all(), 1):
+            ws.cell(row=index, column=1, value=str(order.user))
+            ws.cell(row=index, column=2, value=str(order.scheduled_dish.dish))
+
+        auto_adjust_columns(ws)
+
+        with NamedTemporaryFile() as tmp:
+            wb.save(tmp.name)
+            tmp.seek(0)
+            stream = tmp.read()
+
+        response = HttpResponse(stream, content_type=XLSX_MIME_TYPE)
+        response["Content-Disposition"] = "attachment; filename=today_orders.xlsx"
+        return response

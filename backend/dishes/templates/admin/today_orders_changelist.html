@@ -1,0 +1,28 @@
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools %}
+    <table id="orders_count_per_dish">
+        <thead>
+            <tr>
+                <th>Dish</th>
+                <th>Orders Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dish in orders_count_per_dish %}
+                <tr>
+                    <td>{{ dish.name }}</td>
+                    <td>{{ dish.orders_count }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <style>
+        #orders_count_per_dish {
+            margin-bottom: 15px;
+        }
+    </style>
+
+    {{ block.super }}
+{% endblock object-tools %}

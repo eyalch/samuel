@@ -5,6 +5,7 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin, messages
 from django.core.mail import EmailMultiAlternatives, send_mass_mail
+from django.db.models import Count, F
 from django.http import HttpResponseRedirect
 from django.template.loader import get_template
 from django.urls import path
@@ -236,6 +237,7 @@ class OrdersForToday(ExportMixin, admin.ModelAdmin):
     list_display = ("user", "get_dish", "created_at")
     list_display_links = None
     ordering = ("-created_at",)
+    change_list_template = "admin/today_orders_changelist.html"
 
     resource_class = OrderForTodayResource
 
@@ -249,3 +251,17 @@ class OrdersForToday(ExportMixin, admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+
+        orders_count_per_dish = (
+            TodayOrder.objects.values(
+                dish_id=F("scheduled_dish__dish"), name=F("scheduled_dish__dish__name")
+            )
+            .annotate(orders_count=Count("dish_id"))
+            .values("name", "orders_count")
+        )
+        extra_context["orders_count_per_dish"] = list(orders_count_per_dish)
+
+        return super().changelist_view(request, extra_context=extra_context)

@@ -5,13 +5,15 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from dishes import views
+import dishes.views
+import users.views
 from global_preferences.views import CustomGlobalPreferencesViewSet
 
 admin.site.site_header = "Samuel administration"
 
 router = DefaultRouter()
-router.register("dishes", views.ScheduledDishViewSet, base_name="dishes")
+router.register("dishes", dishes.views.ScheduledDishViewSet, base_name="dishes")
+router.register("users", users.views.UsersViewSet, base_name="users")
 router.register("preferences", CustomGlobalPreferencesViewSet, base_name="preferences")
 
 api_patterns = [

@@ -1,19 +1,21 @@
-import React from 'react'
-import styled from 'styled-components'
+import React, { useState } from 'react'
 import { Container } from '@material-ui/core'
 
 import Header from './Header'
+import Drawer from './Drawer'
 
-const StyledMain = styled.main`
-  color: white;
-`
+const Layout = ({ children }) => {
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
-const Layout = ({ children }) => (
-  <Container>
-    <Header />
+  return (
+    <Container>
+      <Header onOpenDrawer={() => setDrawerOpen(true)} />
 
-    <StyledMain>{children}</StyledMain>
-  </Container>
-)
+      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+
+      <main>{children}</main>
+    </Container>
+  )
+}
 
 export default Layout

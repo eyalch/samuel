@@ -13,3 +13,8 @@ export const refreshTokens = async refreshToken => {
   )
   return res.data
 }
+
+export const getUserInfo = async () => {
+  const res = await axios.get('users/me')
+  return res.data
+}

@@ -8,6 +8,7 @@ import {
   isTokenExpired,
   getRefreshToken,
   removeAccessToken,
+  removeRefreshToken,
 } from './authHelpers'
 import { rollbar } from 'myRollbar'
 
@@ -18,9 +19,11 @@ export const messages = {
 
 const initialState = {
   showAuthDialog: false,
+  showLogoutDialog: false,
   message: null,
   authenticated: false,
   initialAuthentication: true,
+  user: null,
 }
 
 const auth = createSlice({
@@ -38,6 +41,10 @@ const auth = createSlice({
       state.showAuthDialog = show
     },
 
+    setShowLogoutDialog(state, { payload: show }) {
+      state.showLogoutDialog = show
+    },
+
     authenticateSuccess(state) {
       state.authenticated = true
       state.showAuthDialog = false
@@ -45,20 +52,33 @@ const auth = createSlice({
 
     setAuthenticated(state, { payload: authenticated }) {
       state.authenticated = authenticated
+
+      if (!authenticated) {
+        state.user = null
+      }
     },
 
     checkForExpiredTokenEnd(state) {
       state.initialAuthentication = false
     },
+
+    fetchUserInfoSuccess(state, { payload: userInfo }) {
+      state.user = userInfo
+    },
   },
 })
 
-const { authenticateSuccess, checkForExpiredTokenEnd } = auth.actions
+const {
+  authenticateSuccess,
+  checkForExpiredTokenEnd,
+  fetchUserInfoSuccess,
+} = auth.actions
 
 export const {
   setMessage,
   resetMessage,
   setShowAuthDialog,
+  setShowLogoutDialog,
   setAuthenticated,
 } = auth.actions
 
@@ -110,4 +130,17 @@ export const checkForExpiredToken = () => async dispatch => {
 const setRollbarUserId = token => {
   const { user_id } = jwt.decode(token)
   if (user_id) rollbar.configure({ payload: { person: { id: user_id } } })
+}
+
+export const logout = () => dispatch => {
+  removeAccessToken()
+  removeRefreshToken()
+
+  dispatch(setAuthenticated(false))
+}
+
+export const fetchUserInfo = () => async dispatch => {
+  const userInfo = await api.getUserInfo()
+
+  dispatch(fetchUserInfoSuccess(userInfo))
 }

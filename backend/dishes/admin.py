@@ -226,23 +226,46 @@ class OrderAdmin(admin.ModelAdmin):
         return False
 
     def export_selected_orders(self, request, queryset):
+        orders_per_user = {}
+        for order in queryset:
+            if order.user.id in orders_per_user:
+                orders_per_user[order.user.id].append(order)
+            else:
+                orders_per_user[order.user.id] = [order]
+
         wb = Workbook()
         ws = wb.active
 
         # Header row
         ws.cell(row=1, column=1, value="Name")
         ws.cell(row=1, column=2, value="Email")
-        ws.cell(row=1, column=3, value="Dish")
-        ws.cell(row=1, column=4, value="Type")
-        ws.cell(row=1, column=5, value="Date")
-        ws.freeze_panes = "A2"  # Freeze the header row
+        # Add a column for each dish type
+        for index, dish_type_label in enumerate(Dish.DishType.labels, 3):
+            ws.cell(row=1, column=index, value=dish_type_label)
 
-        for index, order in enumerate(queryset, 2):
-            ws.cell(row=index, column=1, value=str(order.user))
-            ws.cell(row=index, column=2, value=str(order.user.email))
-            ws.cell(row=index, column=3, value=str(order.scheduled_dish.dish))
-            ws.cell(row=index, column=4, value=str(order.scheduled_dish.dish.dish_type))
-            ws.cell(row=index, column=5, value=str(order.created_at.date()))
+        # Freeze the header row
+        ws.freeze_panes = "A2"
+
+        # Iterate the users
+        for index, user_orders in enumerate(orders_per_user.values(), 2):
+            # Iterate the user's orders and count the orders of each dish type
+            dish_type_orders_count = {}
+            for order in user_orders:
+                dish_type = order.scheduled_dish.dish.dish_type
+                if dish_type in dish_type_orders_count:
+                    dish_type_orders_count[dish_type] += 1
+                else:
+                    dish_type_orders_count[dish_type] = 1
+
+            user = user_orders[0].user
+
+            ws.cell(row=index, column=1, value=str(user))
+            ws.cell(row=index, column=2, value=str(user.email))
+
+            # Iterate the dish types & write the count of each type into it's own column
+            for i, dish_type in enumerate(Dish.DishType.values, 3):
+                count = dish_type_orders_count.get(dish_type, 0)
+                ws.cell(row=index, column=i, value=count)
 
         auto_adjust_columns(ws)
 

@@ -33,7 +33,15 @@ export const allowOrdersUntilSelector = createSelector(
 
 const hasDishesLeftForTodaySelector = createSelector(
   todayDishesSelector,
-  todayDishes => todayDishes.some(dish => dish.has_dishes_left)
+  state => state.preferences.show_today_dishes_until,
+  (todayDishes, show_today_dishes_until) => {
+    const showTodayDishesUntil = new Date()
+    showTodayDishesUntil.setHours(...show_today_dishes_until.split(':'))
+
+    if (new Date() > showTodayDishesUntil) return false
+
+    return todayDishes.some(dish => dish.has_dishes_left)
+  }
 )
 
 const OrderTimer = () => {

@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "dynamic_preferences",
-    "import_export",
     "rangefilter",
     "users",
     "dishes",

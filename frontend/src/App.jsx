@@ -5,7 +5,7 @@ import { fetchPreferences } from 'features/preferences/preferencesSlice'
 import { checkForExpiredToken } from 'features/auth/authSlice'
 
 import Layout from 'layout/Layout'
-import AuthDialog from 'features/auth/AuthDialog'
+import Auth from 'features/auth/Auth'
 import DishesPage from 'features/dishes/DishesPage'
 import NetworkErrorSnackbar from 'features/network/NetworkErrorSnackbar'
 
@@ -21,7 +21,7 @@ const App = () => {
     <Layout>
       <DishesPage />
 
-      <AuthDialog />
+      <Auth />
 
       <NetworkErrorSnackbar />
     </Layout>

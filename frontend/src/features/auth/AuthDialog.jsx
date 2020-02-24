@@ -55,7 +55,7 @@ const AuthDialog = () => {
                 </DialogContentText>
 
                 <Field
-                  label="אימייל משרדי"
+                  label="אימייל/משתמש משרדי"
                   name="username"
                   component={TextFormField}
                   type="text"
@@ -73,6 +73,7 @@ const AuthDialog = () => {
                 <LoadingButton
                   loading={isSubmitting}
                   type="submit"
+                  variant="contained"
                   size="large">
                   כניסה
                 </LoadingButton>

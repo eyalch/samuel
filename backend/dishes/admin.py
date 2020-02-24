@@ -1,18 +1,19 @@
 import datetime
+from tempfile import NamedTemporaryFile
 
 from babel.dates import format_date
 from django import forms
 from django.conf import settings
 from django.contrib import admin, messages
 from django.core.mail import EmailMultiAlternatives, send_mass_mail
-from django.http import HttpResponseRedirect
+from django.db.models import Count, F
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template.loader import get_template
 from django.urls import path
 from django.utils import timezone
 from django.utils.html import mark_safe
-from import_export import resources
-from import_export.admin import ExportActionMixin, ExportMixin
-from import_export.fields import Field
+from openpyxl import Workbook
+from rangefilter.filter import DateRangeFilter
 
 from .errors import TimeIsUpError
 from .models import Dish, Order, ScheduledDish, TodayOrder
@@ -20,6 +21,20 @@ from .views import check_if_time_is_up_for_today
 
 plaintext_template = get_template("email/daily_dishes.txt")
 html_template = get_template("email/daily_dishes.html")
+
+XLSX_MIME_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+
+def auto_adjust_columns(ws):
+    dims = {}
+    for row in ws.rows:
+        for cell in row:
+            if cell.value:
+                dims[cell.column_letter] = max(
+                    (dims.get(cell.column_letter, 0), len(str(cell.value)))
+                )
+    for col, value in dims.items():
+        ws.column_dimensions[col].width = value
 
 
 class AddScheduledDishInline(admin.TabularInline):
@@ -188,28 +203,14 @@ class ScheduledDishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
     autocomplete_fields = ["dish"]
 
 
-class OrderResource(resources.ModelResource):
-    user = Field(attribute="user", column_name="User")
-    dish = Field(attribute="scheduled_dish__dish", column_name="Dish")
-    dish_type = Field(
-        attribute="scheduled_dish__dish__dish_type", column_name="Dish Type"
-    )
-    created_at = Field(attribute="created_at", column_name="Ordered At")
-
-    class Meta:
-        model = Order
-        fields = ("user", "dish", "dish_type", "created_at")
-
-
 @admin.register(Order)
-class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
+class OrderAdmin(admin.ModelAdmin):
     list_display = ("scheduled_dish", "user", "get_dish_type", "created_at")
-    list_filter = ("scheduled_dish__date", "scheduled_dish__dish")
+    list_filter = (("scheduled_dish__date", DateRangeFilter),)
     list_display_links = None
     ordering = ("-scheduled_dish__date",)
     date_hierarchy = "scheduled_dish__date"
-
-    resource_class = OrderResource
+    actions = ("export_selected_orders",)
 
     def get_dish_type(self, obj):
         return obj.scheduled_dish.dish.dish_type
@@ -220,23 +221,45 @@ class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
+    def export_selected_orders(self, request, queryset):
+        wb = Workbook()
+        ws = wb.active
 
-class OrderForTodayResource(resources.ModelResource):
-    user = Field(attribute="user", column_name="משתמש")
-    dish = Field(attribute="scheduled_dish__dish", column_name="מנה")
+        # Header row
+        ws.cell(row=1, column=1, value="Name")
+        ws.cell(row=1, column=2, value="Email")
+        ws.cell(row=1, column=3, value="Dish")
+        ws.cell(row=1, column=4, value="Type")
+        ws.cell(row=1, column=5, value="Date")
+        ws.freeze_panes = "A2"  # Freeze the header row
 
-    class Meta:
-        model = TodayOrder
-        fields = ("user", "dish")
+        for index, order in enumerate(queryset, 2):
+            ws.cell(row=index, column=1, value=str(order.user))
+            ws.cell(row=index, column=2, value=str(order.user.email))
+            ws.cell(row=index, column=3, value=str(order.scheduled_dish.dish))
+            ws.cell(row=index, column=4, value=str(order.scheduled_dish.dish.dish_type))
+            ws.cell(row=index, column=5, value=str(order.created_at.date()))
+
+        auto_adjust_columns(ws)
+
+        with NamedTemporaryFile() as tmp:
+            wb.save(tmp.name)
+            tmp.seek(0)
+            stream = tmp.read()
+
+        response = HttpResponse(stream, content_type=XLSX_MIME_TYPE)
+        response["Content-Disposition"] = "attachment; filename=orders.xlsx"
+        return response
+
+    export_selected_orders.short_description = "Export selected orders"
 
 
 @admin.register(TodayOrder)
-class OrdersForToday(ExportMixin, admin.ModelAdmin):
+class OrdersForToday(admin.ModelAdmin):
     list_display = ("user", "get_dish", "created_at")
     list_display_links = None
     ordering = ("-created_at",)
-
-    resource_class = OrderForTodayResource
+    change_list_template = "admin/today_orders_changelist.html"
 
     def get_dish(self, obj):
         return obj.scheduled_dish.dish
@@ -248,3 +271,39 @@ class OrdersForToday(ExportMixin, admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+
+        orders_count_per_dish = (
+            TodayOrder.objects.values(
+                dish_id=F("scheduled_dish__dish"), name=F("scheduled_dish__dish__name")
+            )
+            .annotate(orders_count=Count("dish_id"))
+            .values("name", "orders_count")
+        )
+        extra_context["orders_count_per_dish"] = list(orders_count_per_dish)
+
+        return super().changelist_view(request, extra_context=extra_context)
+
+    def get_urls(self):
+        return [path("export/", self.export_today_orders)] + super().get_urls()
+
+    def export_today_orders(self, request):
+        wb = Workbook()
+        ws = wb.active
+
+        for index, order in enumerate(TodayOrder.objects.all(), 1):
+            ws.cell(row=index, column=1, value=str(order.user))
+            ws.cell(row=index, column=2, value=str(order.scheduled_dish.dish))
+
+        auto_adjust_columns(ws)
+
+        with NamedTemporaryFile() as tmp:
+            wb.save(tmp.name)
+            tmp.seek(0)
+            stream = tmp.read()
+
+        response = HttpResponse(stream, content_type=XLSX_MIME_TYPE)
+        response["Content-Disposition"] = "attachment; filename=today_orders.xlsx"
+        return response

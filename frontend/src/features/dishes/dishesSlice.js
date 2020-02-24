@@ -158,6 +158,7 @@ export const orderDish = dish => async (dispatch, getState) => {
 
   const ordersCountForDate = getOrdersCountForDate(dishes, dish.date)
 
+  // Show a message if the user has already made the maximum amount of orders for the day
   if (ordersCountForDate === max_orders_per_day) {
     dispatch(setMessage(messages.MAX_ORDERS_FOR_DAY))
     return

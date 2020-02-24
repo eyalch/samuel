@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "dynamic_preferences",
     "import_export",
+    "rangefilter",
     "users",
     "dishes",
 ]

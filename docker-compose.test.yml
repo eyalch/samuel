@@ -1,0 +1,18 @@
+version: '3.6'
+
+services:
+  backend_test:
+    build:
+      context: ./backend
+    command: ./manage.py test
+    env_file: .env.example
+    environment:
+      SECRET_KEY: secret-key
+      DATABASE_URL: psql://postgres:password@test_db:5432/samuel_test
+    depends_on:
+      - test_db
+
+  test_db:
+    image: postgres:12.2-alpine
+    environment:
+      POSTGRES_PASSWORD: password

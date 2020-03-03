@@ -32,6 +32,7 @@ class ScheduledDish(models.Model):
                 fields=["dish", "date"], name="unique_scheduled_dish"
             )
         ]
+        ordering = ["dish"]
 
     def __str__(self):
         return f"{self.dish} @ {self.date}"

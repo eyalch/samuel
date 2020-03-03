@@ -32,7 +32,7 @@ AUTH_LDAP_BIND_PASSWORD = env.str("LDAP_BIND_PASSWORD")
 AUTH_LDAP_USER_SEARCH = LDAPSearch(
     env.str("LDAP_BASE_DN"),
     ldap.SCOPE_SUBTREE,
-    "(|(sAMAccountName=%(user)s)(mail=%(user)s))",
+    "(|(userPrincipalName=%(user)s)(sAMAccountName=%(user)s)(mail=%(user)s))",
 )
 AUTH_LDAP_USER_ATTR_MAP = {
     "username": "sAMAccountName",

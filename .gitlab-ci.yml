@@ -25,7 +25,7 @@ test backend:
   stage: test
   extends: .dind
   script:
-    - docker-compose -f docker-compose.test.yml --exit-code-from backend_test up
+    - docker-compose -f docker-compose.test.yml up --exit-code-from backend_test
 
 source maps and images:
   stage: deploy

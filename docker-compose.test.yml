@@ -4,7 +4,7 @@ services:
   backend_test:
     build:
       context: ./backend
-    command: ./manage.py test
+    command: bash -c 'while !</dev/tcp/test_db/5432; do sleep 1; done; ./manage.py test'
     env_file: .env.example
     environment:
       SECRET_KEY: secret-key
@@ -15,4 +15,6 @@ services:
   test_db:
     image: postgres:12.2-alpine
     environment:
-      POSTGRES_PASSWORD: password
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=samuel_test

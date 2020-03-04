@@ -6,4 +6,11 @@ from .models import User
 
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
-    pass
+    list_display = (
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "domain",
+        "is_staff",
+    )

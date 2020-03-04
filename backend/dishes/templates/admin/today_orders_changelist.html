@@ -6,7 +6,7 @@
         <input type="submit" value="Export" />
     </form>
 
-    <table id="orders_count_per_dish">
+    <table id="orders_count_by_dish">
         <thead>
             <tr>
                 <th>Dish</th>
@@ -14,7 +14,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for dish in orders_count_per_dish %}
+            {% for dish in orders_count_by_dish %}
                 <tr>
                     <td>{{ dish.name }}</td>
                     <td>{{ dish.orders_count }}</td>
@@ -31,7 +31,7 @@
             margin-right: 5px;
         }
 
-        #orders_count_per_dish {
+        #orders_count_by_dish {
             margin-bottom: 15px;
         }
     </style>

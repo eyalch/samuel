@@ -1,4 +1,5 @@
 import datetime
+from collections import defaultdict
 from tempfile import NamedTemporaryFile
 
 from babel.dates import format_date
@@ -26,15 +27,9 @@ XLSX_MIME_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sh
 
 
 def auto_adjust_columns(ws):
-    dims = {}
-    for row in ws.rows:
-        for cell in row:
-            if cell.value:
-                dims[cell.column_letter] = max(
-                    (dims.get(cell.column_letter, 0), len(str(cell.value)))
-                )
-    for col, value in dims.items():
-        ws.column_dimensions[col].width = value
+    for column_cells in ws.columns:
+        length = max(len(str(cell.value) or "") for cell in column_cells)
+        ws.column_dimensions[column_cells[0].column_letter].width = length + 1
 
 
 class AddScheduledDishInline(admin.TabularInline):
@@ -203,6 +198,33 @@ class ScheduledDishAdmin(DishesEmailModelAdminMixin, admin.ModelAdmin):
     autocomplete_fields = ["dish"]
 
 
+def add_orders_header_row(ws):
+    ws.cell(row=1, column=1, value="Name")
+    ws.cell(row=1, column=2, value="Email")
+
+    # Add a column for each dish type
+    for index, dish_type_label in enumerate(Dish.DishType.labels, 3):
+        ws.cell(row=1, column=index, value=dish_type_label)
+
+    # Freeze the header row
+    ws.freeze_panes = "A2"
+
+
+def add_orders_user_row(ws, user, user_orders, index):
+    # Iterate the user's orders and count the orders of each dish type
+    orders_count_by_dish_type = defaultdict(int)
+    for order in user_orders:
+        orders_count_by_dish_type[order.scheduled_dish.dish.dish_type] += 1
+
+    ws.cell(row=index, column=1, value=str(user))
+    ws.cell(row=index, column=2, value=str(user.email))
+
+    # Iterate the dish types and put the count of each dish type into it's own column
+    for i, dish_type in enumerate(Dish.DishType.values, 3):
+        count = orders_count_by_dish_type.get(dish_type, 0)
+        ws.cell(row=index, column=i, value=count)
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ("scheduled_dish", "user", "get_dish_type", "created_at")
@@ -226,49 +248,38 @@ class OrderAdmin(admin.ModelAdmin):
         return False
 
     def export_selected_orders(self, request, queryset):
-        orders_per_user = {}
+        # Group the orders by user and then by domain
+        orders_by_user_by_domain = defaultdict(lambda: defaultdict(list))
         for order in queryset:
-            if order.user.id in orders_per_user:
-                orders_per_user[order.user.id].append(order)
-            else:
-                orders_per_user[order.user.id] = [order]
+            orders_by_user_by_domain[order.user.domain][order.user].append(order)
 
         wb = Workbook()
-        ws = wb.active
+        main_ws = wb.active
 
-        # Header row
-        ws.cell(row=1, column=1, value="Name")
-        ws.cell(row=1, column=2, value="Email")
-        # Add a column for each dish type
-        for index, dish_type_label in enumerate(Dish.DishType.labels, 3):
-            ws.cell(row=1, column=index, value=dish_type_label)
+        # Prepare the main orders sheet (w/ all users)
+        main_ws.title = "All"
+        add_orders_header_row(main_ws)
 
-        # Freeze the header row
-        ws.freeze_panes = "A2"
+        all_users_index = 2
 
-        # Iterate the users
-        for index, user_orders in enumerate(orders_per_user.values(), 2):
-            # Iterate the user's orders and count the orders of each dish type
-            dish_type_orders_count = {}
-            for order in user_orders:
-                dish_type = order.scheduled_dish.dish.dish_type
-                if dish_type in dish_type_orders_count:
-                    dish_type_orders_count[dish_type] += 1
-                else:
-                    dish_type_orders_count[dish_type] = 1
+        for domain, orders_by_user in orders_by_user_by_domain.items():
+            # Prepare the domain orders sheet (w/ users only from that domain)
+            domain_ws = wb.create_sheet(domain)
+            add_orders_header_row(domain_ws)
 
-            user = user_orders[0].user
+            for index, (user, user_orders) in enumerate(orders_by_user.items(), 2):
+                # Add a row of the user to the domain sheet
+                add_orders_user_row(domain_ws, user, user_orders, index)
 
-            ws.cell(row=index, column=1, value=str(user))
-            ws.cell(row=index, column=2, value=str(user.email))
+                # Add a row of the user to the main sheet
+                add_orders_user_row(main_ws, user, user_orders, all_users_index)
+                all_users_index += 1
 
-            # Iterate the dish types & write the count of each type into it's own column
-            for i, dish_type in enumerate(Dish.DishType.values, 3):
-                count = dish_type_orders_count.get(dish_type, 0)
-                ws.cell(row=index, column=i, value=count)
+            auto_adjust_columns(domain_ws)
 
-        auto_adjust_columns(ws)
+        auto_adjust_columns(main_ws)
 
+        # Save to a temporary file
         with NamedTemporaryFile() as tmp:
             wb.save(tmp.name)
             tmp.seek(0)
@@ -302,14 +313,14 @@ class OrdersForToday(admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}
 
-        orders_count_per_dish = (
+        orders_count_by_dish = (
             TodayOrder.objects.values(
                 dish_id=F("scheduled_dish__dish"), name=F("scheduled_dish__dish__name")
             )
             .annotate(orders_count=Count("dish_id"))
             .values("name", "orders_count")
         )
-        extra_context["orders_count_per_dish"] = list(orders_count_per_dish)
+        extra_context["orders_count_by_dish"] = list(orders_count_by_dish)
 
         return super().changelist_view(request, extra_context=extra_context)
 

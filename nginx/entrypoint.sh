@@ -12,6 +12,6 @@ for source_map_filename in static/js/*.map; do
                 -F minified_url=$minified_url \
                 -F source_map=@$source_map_filename
 done
-echo "Done uploading source maps."
+printf "\nDone uploading source maps.\n"
 
 nginx -g "daemon off;"

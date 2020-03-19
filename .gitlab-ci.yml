@@ -27,7 +27,7 @@ test backend:
   script:
     - docker-compose -f docker-compose.test.yml up --exit-code-from backend_test
 
-source maps and images:
+push images:
   stage: deploy
   extends: .dind
   script:

@@ -3,8 +3,6 @@ name: Main
 on:
   push:
     branches: [master, production]
-  pull_request:
-    branches: [master, production]
 
 jobs:
   test-frontend:

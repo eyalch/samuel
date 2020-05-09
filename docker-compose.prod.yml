@@ -2,7 +2,7 @@ version: '3.6'
 
 services:
   backend:
-    image: registry.gitlab.com/eyal0803/samuel/backend
+    image: docker.pkg.github.com/eyalch/samuel/backend
     command: daphne -b 0.0.0.0 -p 8000 samuel.asgi:application
     expose:
       - 8000
@@ -13,7 +13,7 @@ services:
     restart: always
 
   nginx:
-    image: registry.gitlab.com/eyal0803/samuel/nginx
+    image: docker.pkg.github.com/eyalch/samuel/nginx
     volumes:
       - backend_staticfiles:/staticfiles:ro
       - backend_mediafiles:/mediafiles:ro

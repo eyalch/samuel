@@ -1,0 +1,52 @@
+name: Main
+
+on:
+  push:
+    branches: [master, production]
+  pull_request:
+    branches: [master, production]
+
+jobs:
+  test-frontend:
+    name: Test frontend
+    runs-on: ubuntu-18.04
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v2.1.0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v1.4.2
+        with:
+          node-version: 13.8.0
+
+      - run: yarn install --pure-lockfile
+      - run: yarn test --runInBand
+
+  test-backend:
+    name: Test backend
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2.1.0
+
+      - run: docker-compose -f docker-compose.test.yml up --exit-code-from backend_test
+
+  build-and-push:
+    name: Build Docker images and push to GPR
+    runs-on: ubuntu-18.04
+    if: github.ref == 'refs/heads/production'
+    needs: [test-frontend, test-backend]
+    steps:
+      - uses: actions/checkout@v2.1.0
+
+      - name: Build images
+        run: docker-compose -f docker-compose.ci.yml build
+          --build-arg VERSION=${{ github.sha }}
+          --build-arg BRANCH=${{ github.ref }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+
+      - name: Push images
+        run: docker-compose -f docker-compose.ci.yml push

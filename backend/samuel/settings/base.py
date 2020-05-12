@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "rangefilter",
     "users",
     "dishes",
+    "corona",
 ]
 
 MIDDLEWARE = [

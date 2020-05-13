@@ -1,4 +1,4 @@
-import Rollbar from 'rollbar'
+import Rollbar from "rollbar"
 
 export const rollbar = new Rollbar({
   accessToken: process.env.REACT_APP_ROLLBAR_TOKEN,

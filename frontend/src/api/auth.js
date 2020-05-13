@@ -1,13 +1,13 @@
-import axios from 'axios'
+import axios from "axios"
 
 export const getToken = async (username, password) => {
-  const res = await axios.post('token', { username, password })
+  const res = await axios.post("token", { username, password })
   return res.data
 }
 
-export const refreshTokens = async refreshToken => {
+export const refreshTokens = async (refreshToken) => {
   const res = await axios.post(
-    'token/refresh',
+    "token/refresh",
     { refresh: refreshToken },
     { __isRefreshingTokens: true }
   )
@@ -15,6 +15,6 @@ export const refreshTokens = async refreshToken => {
 }
 
 export const getUserInfo = async () => {
-  const res = await axios.get('users/me')
+  const res = await axios.get("users/me")
   return res.data
 }

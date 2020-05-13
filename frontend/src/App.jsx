@@ -1,13 +1,11 @@
-import React, { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-
-import { fetchPreferences } from 'features/preferences/preferencesSlice'
-import { checkForExpiredToken } from 'features/auth/authSlice'
-
-import Layout from 'layout/Layout'
-import Auth from 'features/auth/Auth'
-import DishesPage from 'features/dishes/DishesPage'
-import NetworkErrorSnackbar from 'features/network/NetworkErrorSnackbar'
+import Auth from "features/auth/Auth"
+import { checkForExpiredToken } from "features/auth/authSlice"
+import DishesPage from "features/dishes/DishesPage"
+import NetworkErrorSnackbar from "features/network/NetworkErrorSnackbar"
+import { fetchPreferences } from "features/preferences/preferencesSlice"
+import Layout from "layout/Layout"
+import React, { useEffect } from "react"
+import { useDispatch } from "react-redux"
 
 const App = () => {
   const dispatch = useDispatch()

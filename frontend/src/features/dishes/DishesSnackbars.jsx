@@ -1,12 +1,11 @@
-import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-
-import SnackbarAlert from 'common/SnackbarAlert'
-import { resetMessage, messages } from './dishesSlice'
+import SnackbarAlert from "common/SnackbarAlert"
+import React from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { messages, resetMessage } from "./dishesSlice"
 
 export default function DishesSnackbars() {
-  const { message } = useSelector(state => state.dishes)
-  const { max_orders_per_day } = useSelector(state => state.preferences)
+  const { message } = useSelector((state) => state.dishes)
+  const { max_orders_per_day } = useSelector((state) => state.preferences)
   const dispatch = useDispatch()
 
   return (
@@ -41,7 +40,7 @@ export default function DishesSnackbars() {
         messageId="max-orders-for-day-message"
         message={
           max_orders_per_day === 1
-            ? 'ניתן להזמין מנה אחת ליום!'
+            ? "ניתן להזמין מנה אחת ליום!"
             : `ניתן להזמין עד ${max_orders_per_day} מנות ליום`
         }
         severity="warning"

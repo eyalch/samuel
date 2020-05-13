@@ -1,5 +1,3 @@
-import React, { useCallback } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
 import {
   Button,
   Dialog,
@@ -7,15 +5,16 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-} from '@material-ui/core'
-
+} from "@material-ui/core"
+import React, { useCallback } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import {
-  resetConfirmLeftOverOrderDialog,
   orderPendingDish,
-} from './dishesSlice'
+  resetConfirmLeftOverOrderDialog,
+} from "./dishesSlice"
 
 const ConfirmLeftOverOrderDialog = () => {
-  const { confirmLeftOverOrderDialog } = useSelector(state => state.dishes)
+  const { confirmLeftOverOrderDialog } = useSelector((state) => state.dishes)
   const dispatch = useDispatch()
 
   const hideConfirmLeftOverOrderDialog = useCallback(
@@ -28,7 +27,8 @@ const ConfirmLeftOverOrderDialog = () => {
       open={confirmLeftOverOrderDialog}
       onClose={hideConfirmLeftOverOrderDialog}
       aria-labelledby="confirm-left-over-order-dialog-title"
-      aria-describedby="confirm-left-over-order-dialog-description">
+      aria-describedby="confirm-left-over-order-dialog-description"
+    >
       <DialogTitle id="confirm-left-over-order-dialog-title">
         שימו לב!
       </DialogTitle>
@@ -44,7 +44,8 @@ const ConfirmLeftOverOrderDialog = () => {
         <Button
           onClick={() => dispatch(orderPendingDish())}
           color="primary"
-          variant="contained">
+          variant="contained"
+        >
           כן
         </Button>
       </DialogActions>

@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
-import { Container } from '@material-ui/core'
-
-import Header from './Header'
-import Drawer from './Drawer'
+import { Container } from "@material-ui/core"
+import React, { useState } from "react"
+import Drawer from "./Drawer"
+import Header from "./Header"
 
 const Layout = ({ children }) => {
   const [drawerOpen, setDrawerOpen] = useState(false)

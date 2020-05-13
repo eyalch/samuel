@@ -1,11 +1,10 @@
-import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-
-import SnackbarAlert from 'common/SnackbarAlert'
-import { setError } from './networkSlice'
+import SnackbarAlert from "common/SnackbarAlert"
+import React from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { setError } from "./networkSlice"
 
 const NetworkErrorSnackbar = () => {
-  const networkError = useSelector(state => state.network.error)
+  const networkError = useSelector((state) => state.network.error)
   const dispatch = useDispatch()
 
   return (

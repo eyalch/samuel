@@ -1,40 +1,39 @@
-import React from 'react'
-import styled from 'styled-components'
 import {
-  Drawer as MuiDrawer,
-  Typography,
   Divider,
+  Drawer as MuiDrawer,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-} from '@material-ui/core'
-import AccountCircleIcon from '@material-ui/icons/AccountCircle'
-import ExitToAppIcon from '@material-ui/icons/ExitToApp'
-import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew'
-import { useSelector, useDispatch } from 'react-redux'
-
-import { setShowAuthDialog, setShowLogoutDialog } from 'features/auth/authSlice'
+  Typography,
+} from "@material-ui/core"
+import AccountCircleIcon from "@material-ui/icons/AccountCircle"
+import ExitToAppIcon from "@material-ui/icons/ExitToApp"
+import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew"
+import { setShowAuthDialog, setShowLogoutDialog } from "features/auth/authSlice"
+import React from "react"
+import { useDispatch, useSelector } from "react-redux"
+import styled from "styled-components"
 
 const StyledDrawer = styled(({ ...props }) => (
-  <MuiDrawer classes={{ paper: 'paper' }} {...props} />
+  <MuiDrawer classes={{ paper: "paper" }} {...props} />
 ))`
   & .paper {
     width: 270px;
   }
 `
 const StyledUserDetails = styled.div`
-  padding: ${p => p.theme.spacing(2)}px;
+  padding: ${(p) => p.theme.spacing(2)}px;
   direction: ltr;
   display: flex;
   align-items: center;
 `
 const StyledAccountCircleIcon = styled(AccountCircleIcon)`
-  margin-right: ${p => p.theme.spacing(1)}px;
+  margin-right: ${(p) => p.theme.spacing(1)}px;
 `
 
 const Drawer = ({ open, onClose }) => {
-  const { authenticated, user } = useSelector(state => state.auth)
+  const { authenticated, user } = useSelector((state) => state.auth)
   const dispatch = useDispatch()
 
   return (
@@ -57,7 +56,8 @@ const Drawer = ({ open, onClose }) => {
               onClick={() => {
                 dispatch(setShowLogoutDialog(true))
                 onClose()
-              }}>
+              }}
+            >
               <ListItemIcon>
                 <PowerSettingsNewIcon />
               </ListItemIcon>
@@ -72,7 +72,8 @@ const Drawer = ({ open, onClose }) => {
             onClick={() => {
               dispatch(setShowAuthDialog(true))
               onClose()
-            }}>
+            }}
+          >
             <ListItemIcon>
               <ExitToAppIcon />
             </ListItemIcon>

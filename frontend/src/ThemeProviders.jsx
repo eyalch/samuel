@@ -1,45 +1,45 @@
-import React from 'react'
-import { CssBaseline } from '@material-ui/core'
-import { createMuiTheme } from '@material-ui/core/styles'
-import { jssPreset, StylesProvider, ThemeProvider } from '@material-ui/styles'
-import { create as createJss } from 'jss'
-import rtl from 'jss-rtl'
+import { CssBaseline } from "@material-ui/core"
+import { createMuiTheme } from "@material-ui/core/styles"
+import { jssPreset, StylesProvider, ThemeProvider } from "@material-ui/styles"
+import { create as createJss } from "jss"
+import rtl from "jss-rtl"
+import React from "react"
 import {
   createGlobalStyle,
   ThemeProvider as StyledThemeProvider,
-} from 'styled-components'
+} from "styled-components"
 
 const theme = createMuiTheme({
-  direction: 'rtl',
+  direction: "rtl",
   palette: {
-    type: 'dark',
+    type: "dark",
     primary: {
-      main: '#fff',
+      main: "#fff",
     },
     success: {
-      light: '#81c784',
-      main: '#4caf50',
-      dark: '#388e3c',
+      light: "#81c784",
+      main: "#4caf50",
+      dark: "#388e3c",
     },
     info: {
-      light: '#64b5f6',
-      main: '#2196f3',
-      dark: '#1976d2',
+      light: "#64b5f6",
+      main: "#2196f3",
+      dark: "#1976d2",
     },
     warning: {
-      light: '#ffb74d',
-      main: '#ff9800',
-      dark: '#f57c00',
+      light: "#ffb74d",
+      main: "#ff9800",
+      dark: "#f57c00",
     },
     error: {
-      light: '#e57373',
-      main: '#f44336',
-      dark: '#d32f2f',
+      light: "#e57373",
+      main: "#f44336",
+      dark: "#d32f2f",
     },
   },
   typography: {
-    fontFamily: ['Heebo', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'].join(
-      ', '
+    fontFamily: ["Heebo", "Roboto", "Helvetica", "Arial", "sans-serif"].join(
+      ", "
     ),
   },
 })
@@ -48,7 +48,7 @@ const theme = createMuiTheme({
 // mimicking the behavior of `injectFirst`. This is actually very similar to
 // the source code of Material UI for handling `injectFirst`.
 const head = document.head
-const injectFirstNode = document.createElement('mui-inject-first')
+const injectFirstNode = document.createElement("mui-inject-first")
 head.insertBefore(injectFirstNode, head.firstChild)
 
 const jss = createJss({

@@ -1,6 +1,6 @@
-import React from 'react'
-import { getIn } from 'formik'
-import { TextField } from '@material-ui/core'
+import { TextField } from "@material-ui/core"
+import { getIn } from "formik"
+import React from "react"
 
 export const TextFormField = ({ field, form, ...props }) => {
   const errorText =

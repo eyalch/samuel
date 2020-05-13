@@ -1,23 +1,22 @@
-import { axios } from 'test-utils'
-import jwt from 'jsonwebtoken'
-
-import { getAccessToken, updateTokens } from 'features/auth/authHelpers'
-import { responseInterceptor } from './axios'
+import { getAccessToken, updateTokens } from "features/auth/authHelpers"
+import jwt from "jsonwebtoken"
+import { axios } from "test-utils"
+import { responseInterceptor } from "./axios"
 
 const resolveTimeout = (payload, ms) =>
-  new Promise(resolve => setTimeout(() => resolve(payload), ms))
+  new Promise((resolve) => setTimeout(() => resolve(payload), ms))
 
-describe('invalid token', () => {
+describe("invalid token", () => {
   const invalidTokenResponse = {
     status: 401,
-    config: { url: '' },
-    data: { code: 'token_not_valid' },
+    config: { url: "" },
+    data: { code: "token_not_valid" },
   }
 
   const refreshResponse = {
     data: {
-      access: jwt.sign({ user_id: 1 }, 'test'),
-      refresh: jwt.sign({ user_id: 1 }, 'test'),
+      access: jwt.sign({ user_id: 1 }, "test"),
+      refresh: jwt.sign({ user_id: 1 }, "test"),
     },
   }
 
@@ -25,14 +24,14 @@ describe('invalid token', () => {
     responseInterceptor({ response: invalidTokenResponse })
 
   const getRefreshCallsCount = () =>
-    axios.post.mock.calls.filter(([url]) => url.includes('refresh')).length
+    axios.post.mock.calls.filter(([url]) => url.includes("refresh")).length
 
   beforeEach(() => {
     axios.post.mockResolvedValueOnce(refreshResponse)
   })
 
-  test('should remove the invalid access token', () => {
-    updateTokens({ access: 'some-invalid-token' })
+  test("should remove the invalid access token", () => {
+    updateTokens({ access: "some-invalid-token" })
 
     expect(getAccessToken()).not.toBeNull()
 
@@ -43,13 +42,13 @@ describe('invalid token', () => {
     expect(getAccessToken()).toBeNull()
   })
 
-  test('should retry the request after refreshing the tokens', async () => {
+  test("should retry the request after refreshing the tokens", async () => {
     await runInterceptor()
 
     expect(axios.request).toHaveBeenCalledWith(invalidTokenResponse.config)
   })
 
-  test('should refresh only if not already refreshing', async () => {
+  test("should refresh only if not already refreshing", async () => {
     axios.post.mockReset()
 
     // Set the refresh request to be taking 50ms to resolve

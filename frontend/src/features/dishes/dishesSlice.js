@@ -1,8 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit'
-
-import * as api from 'api/dishes'
-import { setShowAuthDialog } from 'features/auth/authSlice'
-import { isDishForToday } from './dishesHelpers'
+import { createSlice } from "@reduxjs/toolkit"
+import * as api from "api/dishes"
+import { setShowAuthDialog } from "features/auth/authSlice"
+import { isDishForToday } from "./dishesHelpers"
 
 export const messages = {
   ORDER_SUCCESS: 1,
@@ -13,9 +12,9 @@ export const messages = {
   CANCEL_TIME_IS_UP: 6,
 }
 
-const ERR_TIME_IS_UP = 'time_is_up'
-const ERR_MAX_ORDERS_FOR_DAY = 'max_orders_for_day'
-const ERR_NO_DISHES_LEFT = 'no_dishes_left'
+const ERR_TIME_IS_UP = "time_is_up"
+const ERR_MAX_ORDERS_FOR_DAY = "max_orders_for_day"
+const ERR_NO_DISHES_LEFT = "no_dishes_left"
 
 const initialState = {
   dishes: [],
@@ -30,17 +29,17 @@ const initialState = {
 // Find how many orders the user has made for a given date
 const getOrdersCountForDate = (dishes, date) => {
   return dishes
-    .filter(dish => dish.date === date)
+    .filter((dish) => dish.date === date)
     .reduce((count, dish) => count + dish.orders_count, 0)
 }
 
 const updateDish = (state, updatedDish) => {
-  const dishIndex = state.dishes.findIndex(d => d.id === updatedDish.id)
+  const dishIndex = state.dishes.findIndex((d) => d.id === updatedDish.id)
   state.dishes[dishIndex] = updatedDish
 }
 
 const dishes = createSlice({
-  name: 'dishes',
+  name: "dishes",
   initialState,
   reducers: {
     setMessage(state, { payload: message }) {
@@ -128,7 +127,7 @@ export const {
 
 export default dishes.reducer
 
-export const fetchDishes = () => async dispatch => {
+export const fetchDishes = () => async (dispatch) => {
   dispatch(fetchDishesStart())
   try {
     const dishes = await api.getDishes()
@@ -138,7 +137,7 @@ export const fetchDishes = () => async dispatch => {
   }
 }
 
-export const orderDish = dish => async (dispatch, getState) => {
+export const orderDish = (dish) => async (dispatch, getState) => {
   const {
     auth: { authenticated },
     dishes: {
@@ -207,7 +206,7 @@ export const orderPendingDish = () => async (dispatch, getState) => {
   dispatch(orderDish(pendingDish))
 }
 
-export const cancelOrder = dish => async (dispatch, getState) => {
+export const cancelOrder = (dish) => async (dispatch, getState) => {
   const { hasTimeLeft } = getState().dishes
 
   if (isDishForToday(dish) && !hasTimeLeft) {

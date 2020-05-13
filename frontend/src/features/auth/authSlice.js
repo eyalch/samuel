@@ -1,16 +1,15 @@
-import { createSlice } from '@reduxjs/toolkit'
-import jwt from 'jsonwebtoken'
-
-import * as api from 'api/auth'
+import { createSlice } from "@reduxjs/toolkit"
+import * as api from "api/auth"
+import jwt from "jsonwebtoken"
+import { rollbar } from "myRollbar"
 import {
-  updateTokens,
   getAccessToken,
-  isTokenExpired,
   getRefreshToken,
+  isTokenExpired,
   removeAccessToken,
   removeRefreshToken,
-} from './authHelpers'
-import { rollbar } from 'myRollbar'
+  updateTokens,
+} from "./authHelpers"
 
 export const messages = {
   INVALID_CREDENTIALS: 1,
@@ -27,7 +26,7 @@ const initialState = {
 }
 
 const auth = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     setMessage(state, { payload: message }) {
@@ -84,7 +83,7 @@ export const {
 
 export default auth.reducer
 
-export const authenticate = (username, password) => async dispatch => {
+export const authenticate = (username, password) => async (dispatch) => {
   dispatch(resetMessage())
   try {
     const tokens = await api.getToken(username, password)
@@ -95,7 +94,7 @@ export const authenticate = (username, password) => async dispatch => {
   } catch (err) {
     const { status, data } = err.response
 
-    if (status === 401 && data.code === 'authentication_failed') {
+    if (status === 401 && data.code === "authentication_failed") {
       dispatch(setMessage(messages.INVALID_CREDENTIALS))
     }
   }
@@ -108,7 +107,7 @@ export const refreshToken = () => async () => {
   setRollbarUserId(tokens.access)
 }
 
-export const checkForExpiredToken = () => async dispatch => {
+export const checkForExpiredToken = () => async (dispatch) => {
   const token = getAccessToken()
 
   if (token) {
@@ -127,19 +126,19 @@ export const checkForExpiredToken = () => async dispatch => {
   dispatch(checkForExpiredTokenEnd())
 }
 
-const setRollbarUserId = token => {
+const setRollbarUserId = (token) => {
   const { user_id } = jwt.decode(token)
   if (user_id) rollbar.configure({ payload: { person: { id: user_id } } })
 }
 
-export const logout = () => dispatch => {
+export const logout = () => (dispatch) => {
   removeAccessToken()
   removeRefreshToken()
 
   dispatch(setAuthenticated(false))
 }
 
-export const fetchUserInfo = () => async dispatch => {
+export const fetchUserInfo = () => async (dispatch) => {
   const userInfo = await api.getUserInfo()
 
   dispatch(fetchUserInfoSuccess(userInfo))

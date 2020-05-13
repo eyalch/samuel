@@ -1,11 +1,10 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-
-import App from './App'
-import './api/axios'
-import * as serviceWorker from './serviceWorker'
-import Providers from './Providers'
-import './myRollbar'
+import React from "react"
+import ReactDOM from "react-dom"
+import "./api/axios"
+import App from "./App"
+import "./myRollbar"
+import Providers from "./Providers"
+import * as serviceWorker from "./serviceWorker"
 
 const app = (
   <Providers>
@@ -13,7 +12,7 @@ const app = (
   </Providers>
 )
 
-ReactDOM.render(app, document.getElementById('root'))
+ReactDOM.render(app, document.getElementById("root"))
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

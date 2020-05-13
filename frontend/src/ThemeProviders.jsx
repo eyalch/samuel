@@ -42,6 +42,12 @@ const theme = createMuiTheme({
       ", "
     ),
   },
+  props: {
+    MuiTextField: {
+      margin: "normal",
+      variant: "outlined",
+    },
+  },
 })
 
 // Since we can't use both `jss` and `injectFirst` on <StylesProvider>, we're

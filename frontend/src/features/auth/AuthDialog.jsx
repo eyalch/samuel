@@ -5,10 +5,10 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@material-ui/core"
-import { TextFormField } from "common/FormFields"
 import LoadingButton from "common/LoadingButton"
 import SnackbarAlert from "common/SnackbarAlert"
 import { Field, Form, Formik } from "formik"
+import { TextField } from "formik-material-ui"
 import React from "react"
 import { useDispatch, useSelector } from "react-redux"
 import * as yup from "yup"
@@ -58,16 +58,18 @@ const AuthDialog = () => {
                 <Field
                   label="אימייל/משתמש משרדי"
                   name="username"
-                  component={TextFormField}
+                  component={TextField}
                   type="text"
                   inputProps={{ style: { direction: "ltr" } }}
+                  fullWidth
                 />
                 <Field
                   label="סיסמה למחשב"
                   name="password"
-                  component={TextFormField}
+                  component={TextField}
                   type="password"
                   inputProps={{ style: { direction: "ltr" } }}
+                  fullWidth
                 />
               </DialogContent>
               <DialogActions>

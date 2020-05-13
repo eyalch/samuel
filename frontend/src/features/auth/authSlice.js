@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import * as api from "api/auth"
+import * as api from "api"
 import jwt from "jsonwebtoken"
 import { rollbar } from "myRollbar"
 import {
@@ -86,7 +86,7 @@ export default auth.reducer
 export const authenticate = (username, password) => async (dispatch) => {
   dispatch(resetMessage())
   try {
-    const tokens = await api.getToken(username, password)
+    const { data: tokens } = await api.auth.getToken(username, password)
     updateTokens(tokens)
     dispatch(authenticateSuccess())
 
@@ -101,7 +101,7 @@ export const authenticate = (username, password) => async (dispatch) => {
 }
 
 export const refreshToken = () => async () => {
-  const tokens = await api.refreshTokens(getRefreshToken())
+  const { data: tokens } = await api.auth.refreshTokens(getRefreshToken())
   updateTokens(tokens)
 
   setRollbarUserId(tokens.access)
@@ -139,7 +139,7 @@ export const logout = () => (dispatch) => {
 }
 
 export const fetchUserInfo = () => async (dispatch) => {
-  const userInfo = await api.getUserInfo()
+  const { data: userInfo } = await api.auth.getUserInfo()
 
   dispatch(fetchUserInfoSuccess(userInfo))
 }

@@ -13,7 +13,7 @@ class AlreadyStatedError(exceptions.APIException):
     code = "already_stated"
 
 
-class HealthStatementViewSet(viewsets.mixins.CreateModelMixin, viewsets.GenericViewSet):
+class HealthStatementViewSet(viewsets.GenericViewSet):
     @action(methods=["POST"], detail=False, permission_classes=[IsAuthenticated])
     def state_health(self, request):
         if request.user.stated_health_today:

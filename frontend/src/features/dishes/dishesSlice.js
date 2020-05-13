@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import * as api from "api/dishes"
+import * as api from "api"
 import { setShowAuthDialog } from "features/auth/authSlice"
 import { isDishForToday } from "./dishesHelpers"
 
@@ -130,7 +130,7 @@ export default dishes.reducer
 export const fetchDishes = () => async (dispatch) => {
   dispatch(fetchDishesStart())
   try {
-    const dishes = await api.getDishes()
+    const { data: dishes } = await api.dishes.getDishes()
     dispatch(fetchDishesSuccess(dishes))
   } finally {
     dispatch(fetchDishesEnd())
@@ -189,7 +189,7 @@ export const orderDish = (dish) => async (dispatch, getState) => {
   dispatch(resetMessage())
 
   try {
-    const updatedDish = await api.orderDish(dish.id)
+    const { data: updatedDish } = await api.dishes.orderDish(dish.id)
     dispatch(orderDishSuccess(updatedDish))
   } catch (err) {
     dispatch(handleErrors(err.response.data.code))
@@ -217,7 +217,7 @@ export const cancelOrder = (dish) => async (dispatch, getState) => {
   dispatch(resetMessage())
 
   try {
-    const updatedDish = await api.cancelOrder(dish.id)
+    const { data: updatedDish } = await api.dishes.cancelOrder(dish.id)
     dispatch(cancelOrderSuccess(updatedDish))
   } catch (err) {
     dispatch(handleErrors(err.response.data.code))

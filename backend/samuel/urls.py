@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import token_obtain_pair, token_refresh
 
 import corona.views
 import dishes.views
@@ -20,8 +20,8 @@ router.register("corona", corona.views.HealthStatementViewSet, base_name="corona
 
 api_patterns = [
     path("", include(router.urls)),
-    path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("token/", token_obtain_pair, name="token_obtain_pair"),
+    path("token/refresh/", token_refresh, name="token_refresh"),
     path("auth/", include("rest_framework.urls")),
 ]
 

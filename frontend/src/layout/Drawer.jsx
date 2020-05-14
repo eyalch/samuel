@@ -9,10 +9,12 @@ import {
 } from "@material-ui/core"
 import AccountCircleIcon from "@material-ui/icons/AccountCircle"
 import ExitToAppIcon from "@material-ui/icons/ExitToApp"
+import LocalHospitalIcon from "@material-ui/icons/LocalHospital"
 import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew"
 import { setShowAuthDialog, setShowLogoutDialog } from "features/auth/authSlice"
 import React from "react"
 import { useDispatch, useSelector } from "react-redux"
+import { Link } from "react-router-dom"
 import styled from "styled-components"
 
 const StyledDrawer = styled(({ ...props }) => (
@@ -38,7 +40,7 @@ const Drawer = ({ open, onClose }) => {
 
   return (
     <StyledDrawer open={open} onClose={onClose}>
-      {authenticated && user ? (
+      {authenticated && user && (
         <>
           <StyledUserDetails>
             <StyledAccountCircleIcon fontSize="large" />
@@ -49,24 +51,24 @@ const Drawer = ({ open, onClose }) => {
           </StyledUserDetails>
 
           <Divider />
-
-          <List>
-            <ListItem
-              button
-              onClick={() => {
-                dispatch(setShowLogoutDialog(true))
-                onClose()
-              }}
-            >
-              <ListItemIcon>
-                <PowerSettingsNewIcon />
-              </ListItemIcon>
-              <ListItemText primary="התנתקות" />
-            </ListItem>
-          </List>
         </>
-      ) : (
-        <List>
+      )}
+
+      <List>
+        {authenticated && user ? (
+          <ListItem
+            button
+            onClick={() => {
+              dispatch(setShowLogoutDialog(true))
+              onClose()
+            }}
+          >
+            <ListItemIcon>
+              <PowerSettingsNewIcon />
+            </ListItemIcon>
+            <ListItemText primary="התנתקות" />
+          </ListItem>
+        ) : (
           <ListItem
             button
             onClick={() => {
@@ -79,8 +81,15 @@ const Drawer = ({ open, onClose }) => {
             </ListItemIcon>
             <ListItemText primary="התחברות" />
           </ListItem>
-        </List>
-      )}
+        )}
+
+        <ListItem button onClick={onClose} component={Link} to="/corona">
+          <ListItemIcon>
+            <LocalHospitalIcon />
+          </ListItemIcon>
+          <ListItemText primary="הצהרת בריאות" />
+        </ListItem>
+      </List>
     </StyledDrawer>
   )
 }

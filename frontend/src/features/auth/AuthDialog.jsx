@@ -32,7 +32,9 @@ const AuthDialog = () => {
     actions.setSubmitting(false)
   }
 
-  const { showAuthDialog, message } = useSelector((state) => state.auth)
+  const { showAuthDialog, canDismissAuthDialog, message } = useSelector(
+    (state) => state.auth
+  )
 
   return (
     <>
@@ -41,6 +43,8 @@ const AuthDialog = () => {
         onClose={() => dispatch(setShowAuthDialog(false))}
         scroll="body"
         aria-labelledby="auth-dialog-title"
+        disableBackdropClick={!canDismissAuthDialog}
+        disableEscapeKeyDown={!canDismissAuthDialog}
       >
         <Formik
           validationSchema={schema}

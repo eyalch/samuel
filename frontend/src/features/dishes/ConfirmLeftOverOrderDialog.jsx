@@ -38,12 +38,9 @@ const ConfirmLeftOverOrderDialog = () => {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={hideConfirmLeftOverOrderDialog} color="primary">
-          לא
-        </Button>
+        <Button onClick={hideConfirmLeftOverOrderDialog}>לא</Button>
         <Button
           onClick={() => dispatch(orderPendingDish())}
-          color="primary"
           variant="contained"
         >
           כן

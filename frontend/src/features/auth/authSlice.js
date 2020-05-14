@@ -18,11 +18,13 @@ export const messages = {
 
 const initialState = {
   showAuthDialog: false,
+  canDismissAuthDialog: true,
   showLogoutDialog: false,
   message: null,
   authenticated: false,
   initialAuthentication: true,
   user: null,
+  loadingUserInfo: true,
 }
 
 const auth = createSlice({
@@ -36,8 +38,15 @@ const auth = createSlice({
       state.message = null
     },
 
-    setShowAuthDialog(state, { payload: show }) {
-      state.showAuthDialog = show
+    setShowAuthDialog(state, { payload }) {
+      if (typeof payload === "boolean") {
+        state.showAuthDialog = payload
+        state.canDismissAuthDialog = true
+      } else if (typeof payload === "object") {
+        state.showAuthDialog = payload.show
+        state.canDismissAuthDialog =
+          payload.canDismiss !== undefined ? payload.canDismiss : true
+      }
     },
 
     setShowLogoutDialog(state, { payload: show }) {
@@ -63,6 +72,15 @@ const auth = createSlice({
 
     fetchUserInfoSuccess(state, { payload: userInfo }) {
       state.user = userInfo
+      state.loadingUserInfo = false
+    },
+
+    setLoadingUserInfo(state, { payload: loading }) {
+      state.loadingUserInfo = loading
+    },
+
+    stateHealthSuccess(state) {
+      state.user = { ...state.user, stated_health_today: true }
     },
   },
 })
@@ -71,6 +89,7 @@ const {
   authenticateSuccess,
   checkForExpiredTokenEnd,
   fetchUserInfoSuccess,
+  setLoadingUserInfo,
 } = auth.actions
 
 export const {
@@ -79,6 +98,7 @@ export const {
   setShowAuthDialog,
   setShowLogoutDialog,
   setAuthenticated,
+  stateHealthSuccess,
 } = auth.actions
 
 export default auth.reducer
@@ -121,6 +141,8 @@ export const checkForExpiredToken = () => async (dispatch) => {
 
       setRollbarUserId(token)
     }
+  } else {
+    dispatch(setLoadingUserInfo(false))
   }
 
   dispatch(checkForExpiredTokenEnd())

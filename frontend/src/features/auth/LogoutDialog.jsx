@@ -32,15 +32,12 @@ const LogoutDialog = () => {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={hideDialog} color="primary">
-          לא
-        </Button>
+        <Button onClick={hideDialog}>לא</Button>
         <Button
           onClick={() => {
             dispatch(logout())
             hideDialog()
           }}
-          color="primary"
           variant="contained"
         >
           כן

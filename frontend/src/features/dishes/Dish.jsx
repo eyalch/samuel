@@ -140,7 +140,6 @@ const Dish = ({ dish }) => {
       {isAllowedToOrder && (
         <StyledCardActions>
           <Button
-            color="primary"
             size="large"
             variant={isOrdered ? "outlined" : "contained"}
             onClick={onOrder}

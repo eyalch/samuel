@@ -13,8 +13,8 @@ const ButtonProgress = styled(CircularProgress)`
   margin-left: -12px;
 `
 
-const LoadingButton = ({ loading, disabled, ...props }) => (
-  <LoadingButtonContainer>
+const LoadingButton = ({ loading, disabled, className, ...props }) => (
+  <LoadingButtonContainer className={className}>
     <Button disabled={loading || disabled} {...props} />
     {loading && <ButtonProgress size={24} />}
   </LoadingButtonContainer>

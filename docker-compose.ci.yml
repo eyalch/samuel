@@ -1,0 +1,8 @@
+version: "3.6"
+
+services:
+  backend:
+    build: ./backend
+
+  frontend:
+    build: ./frontend

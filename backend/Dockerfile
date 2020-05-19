@@ -35,3 +35,7 @@ RUN pipenv install --system --deploy
 
 # Copy source-code
 COPY . .
+
+CMD [ "daphne", "-b", "0.0.0.0", "-p", "8000", "samuel.asgi:application" ]
+
+EXPOSE 8000

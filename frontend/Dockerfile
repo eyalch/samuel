@@ -1,6 +1,6 @@
 ARG VERSION="development"
 
-FROM node:lts-alpine as frontend-build
+FROM node:lts-alpine as build
 
 ARG VERSION
 ENV REACT_APP_VERSION=${VERSION}
@@ -8,11 +8,11 @@ ENV REACT_APP_VERSION=${VERSION}
 WORKDIR /app
 
 # Install dependencies
-COPY frontend/package.json frontend/yarn.lock ./
+COPY package.json yarn.lock ./
 RUN yarn install --prod --frozen-lockfile
 
 # Copy source-code
-COPY frontend/ .
+COPY . .
 
 # Create a production build
 RUN yarn build
@@ -26,10 +26,10 @@ ENV VERSION=${VERSION}
 RUN apk --no-cache add curl
 
 RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx/nginx.conf /etc/nginx/conf.d/
+COPY nginx.conf /etc/nginx/conf.d/
 
-COPY --from=frontend-build /app/build /usr/share/nginx/html
+COPY --from=build /app/build /usr/share/nginx/html
 
-COPY nginx/entrypoint.sh /
+COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]

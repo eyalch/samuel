@@ -1,19 +1,18 @@
-version: '3.6'
+version: "3.6"
 
 services:
   backend:
-    image: docker.pkg.github.com/eyalch/samuel/backend
-    command: daphne -b 0.0.0.0 -p 8000 samuel.asgi:application
-    expose:
-      - 8000
+    image: eyalch/samuel-backend
+    build: ./backend
     volumes:
       - backend_staticfiles:/app/staticfiles
       - backend_mediafiles:/app/mediafiles
     env_file: .env
     restart: always
 
-  nginx:
-    image: docker.pkg.github.com/eyalch/samuel/nginx
+  frontend:
+    image: eyalch/samuel-frontend
+    build: ./frontend
     volumes:
       - backend_staticfiles:/staticfiles:ro
       - backend_mediafiles:/mediafiles:ro

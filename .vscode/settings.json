@@ -19,5 +19,8 @@
   "files.watcherExclude": {
     "backend/.venv": true
   },
-  "python.terminal.activateEnvironment": false
+  "python.terminal.activateEnvironment": false,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  }
 }

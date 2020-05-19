@@ -3,8 +3,6 @@ name: Main
 on:
   push:
     branches: [master, production]
-  pull_request:
-    branches: [master, production]
 
 jobs:
   test-frontend:
@@ -30,10 +28,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2.1.0
 
-      - run: docker-compose -f docker-compose.test.yml up --exit-code-from backend_test
+      - run: docker-compose -f backend/docker-compose.test.yml up --exit-code-from tests
 
   build-and-push:
-    name: Build Docker images and push to GPR
+    name: Build and push Docker images
     runs-on: ubuntu-18.04
     if: github.ref == 'refs/heads/production'
     needs: [test-frontend, test-backend]
@@ -41,12 +39,12 @@ jobs:
       - uses: actions/checkout@v2.1.0
 
       - name: Build images
-        run: docker-compose -f docker-compose.ci.yml build
+        run: docker-compose build
           --build-arg VERSION=${{ github.sha }}
           --build-arg BRANCH=${{ github.ref }}
 
       - name: Log into registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+        run: echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u ${{ github.actor }} --password-stdin
 
       - name: Push images
-        run: docker-compose -f docker-compose.ci.yml push
+        run: docker-compose push

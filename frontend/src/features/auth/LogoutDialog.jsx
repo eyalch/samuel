@@ -1,5 +1,3 @@
-import React, { useCallback } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
 import {
   Button,
   Dialog,
@@ -7,12 +5,13 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-} from '@material-ui/core'
-
-import { setShowLogoutDialog, logout } from './authSlice'
+} from "@material-ui/core"
+import React, { useCallback } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { logout, setShowLogoutDialog } from "./authSlice"
 
 const LogoutDialog = () => {
-  const { showLogoutDialog } = useSelector(state => state.auth)
+  const { showLogoutDialog } = useSelector((state) => state.auth)
   const dispatch = useDispatch()
 
   const hideDialog = useCallback(() => dispatch(setShowLogoutDialog(false)), [
@@ -24,7 +23,8 @@ const LogoutDialog = () => {
       open={showLogoutDialog}
       onClose={hideDialog}
       aria-labelledby="logout-dialog-title"
-      aria-describedby="logout-dialog-description">
+      aria-describedby="logout-dialog-description"
+    >
       <DialogTitle id="logout-dialog-title">התנתקות</DialogTitle>
       <DialogContent>
         <DialogContentText id="logout-dialog-description">
@@ -32,16 +32,14 @@ const LogoutDialog = () => {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={hideDialog} color="primary">
-          לא
-        </Button>
+        <Button onClick={hideDialog}>לא</Button>
         <Button
           onClick={() => {
             dispatch(logout())
             hideDialog()
           }}
-          color="primary"
-          variant="contained">
+          variant="contained"
+        >
           כן
         </Button>
       </DialogActions>

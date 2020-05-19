@@ -1,6 +1,3 @@
-import axios from 'axios'
+import axios from "axios"
 
-export const getPreferences = async () => {
-  const res = await axios.get('preferences')
-  return res.data
-}
+export const getPreferences = () => axios.get("/api/preferences")

@@ -1,18 +1,16 @@
-import { render } from '@testing-library/react'
-import '@testing-library/jest-dom/extend-expect'
-import axios from 'axios'
+import "@testing-library/jest-dom/extend-expect"
+import { render } from "@testing-library/react"
+import "api/axios"
+import axios from "axios"
+import "mocks/localStorage"
+import Providers from "./Providers"
 
-import Providers from './Providers'
-import 'api/axios'
-import 'mocks/localStorage'
-
-jest.mock('axios')
+jest.mock("axios")
 
 const customRender = (ui, options) =>
   render(ui, { wrapper: Providers, ...options })
 
 // re-export everything
-export * from '@testing-library/react'
-
+export * from "@testing-library/react"
 // override render method
 export { customRender as render, axios }

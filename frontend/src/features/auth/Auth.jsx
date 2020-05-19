@@ -1,12 +1,11 @@
-import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-
-import AuthDialog from './AuthDialog'
-import LogoutDialog from './LogoutDialog'
-import { fetchUserInfo } from './authSlice'
+import React, { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import AuthDialog from "./AuthDialog"
+import { fetchUserInfo } from "./authSlice"
+import LogoutDialog from "./LogoutDialog"
 
 const Auth = () => {
-  const { authenticated } = useSelector(state => state.auth)
+  const { authenticated } = useSelector((state) => state.auth)
   const dispatch = useDispatch()
 
   useEffect(() => {

@@ -1,35 +1,32 @@
-import axios from 'axios'
-
-import store from 'store'
+import axios from "axios"
 import {
   getAccessToken,
   removeAccessToken,
   removeRefreshToken,
-} from 'features/auth/authHelpers'
+} from "features/auth/authHelpers"
 import {
-  refreshToken,
-  setShowAuthDialog,
   messages,
+  refreshToken,
   setMessage,
-} from 'features/auth/authSlice'
-import { setError } from 'features/network/networkSlice'
-import { rollbar } from 'myRollbar'
+  setShowAuthDialog,
+} from "features/auth/authSlice"
+import { setError } from "features/network/networkSlice"
+import { rollbar } from "myRollbar"
+import store from "store"
 
-axios.defaults.baseURL = '/api/'
-
-axios.interceptors.request.use(config => {
+axios.interceptors.request.use((config) => {
   const token = getAccessToken()
-  if (token) config.headers['Authorization'] = `Bearer ${token}`
+  if (token) config.headers["Authorization"] = `Bearer ${token}`
 
   // Add a trailing slash
-  if (config.url[config.url.length - 1] !== '/') config.url += '/'
+  if (config.url[config.url.length - 1] !== "/") config.url += "/"
 
   return config
 })
 
 let refreshTokenPromise = null
 
-export const responseInterceptor = err => {
+export const responseInterceptor = (err) => {
   // Handle network errors
   if (!err.response) {
     store.dispatch(setError(true))
@@ -45,7 +42,7 @@ export const responseInterceptor = err => {
 
   // If the token is invalid AND it's not a retry request (i.e the refresh
   // token is invalid), refresh the token(s) and retry the request
-  if (status === 401 && data.code === 'token_not_valid') {
+  if (status === 401 && data.code === "token_not_valid") {
     // If the refresh token is invalid then the user should re-authenticate
     if (config.__isRefreshingTokens) {
       // Remove the invalid refresh token
@@ -68,7 +65,7 @@ export const responseInterceptor = err => {
 
     return refreshTokenPromise.then(() => {
       // Retry the request
-      config.baseURL = ''
+      config.baseURL = ""
       return axios.request(config)
     })
   }

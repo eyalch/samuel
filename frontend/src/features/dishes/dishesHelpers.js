@@ -15,12 +15,12 @@ export function getPrettyWeekday(date) {
 
   switch (targetDateISO) {
     case todayDateISO:
-      return 'היום'
+      return "היום"
     case tomorrowDateISO:
-      return 'מחר'
+      return "מחר"
     default:
-      return date.toLocaleDateString('he', { weekday: 'long' })
+      return date.toLocaleDateString("he", { weekday: "long" })
   }
 }
 
-export const isDishForToday = dish => dish.date === getLocalDateISOString()
+export const isDishForToday = (dish) => dish.date === getLocalDateISOString()

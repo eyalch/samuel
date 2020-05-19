@@ -1,20 +1,24 @@
-import React, { useState } from 'react'
-import { Container } from '@material-ui/core'
+import { Container } from "@material-ui/core"
+import React, { useState } from "react"
+import styled from "styled-components"
+import Drawer from "./Drawer"
+import Header from "./Header"
 
-import Header from './Header'
-import Drawer from './Drawer'
+const StyledContainer = styled(Container)`
+  padding-bottom: ${(p) => p.theme.spacing(3)}px;
+`
 
 const Layout = ({ children }) => {
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   return (
-    <Container>
+    <StyledContainer>
       <Header onOpenDrawer={() => setDrawerOpen(true)} />
 
       <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <main>{children}</main>
-    </Container>
+    </StyledContainer>
   )
 }
 

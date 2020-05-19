@@ -1,16 +1,15 @@
-import { createSlice } from '@reduxjs/toolkit'
-import jwt from 'jsonwebtoken'
-
-import * as api from 'api/auth'
+import { createSlice } from "@reduxjs/toolkit"
+import * as api from "api"
+import jwt from "jsonwebtoken"
+import { rollbar } from "myRollbar"
 import {
-  updateTokens,
   getAccessToken,
-  isTokenExpired,
   getRefreshToken,
+  isTokenExpired,
   removeAccessToken,
   removeRefreshToken,
-} from './authHelpers'
-import { rollbar } from 'myRollbar'
+  updateTokens,
+} from "./authHelpers"
 
 export const messages = {
   INVALID_CREDENTIALS: 1,
@@ -19,15 +18,17 @@ export const messages = {
 
 const initialState = {
   showAuthDialog: false,
+  canDismissAuthDialog: true,
   showLogoutDialog: false,
   message: null,
   authenticated: false,
   initialAuthentication: true,
   user: null,
+  loadingUserInfo: true,
 }
 
 const auth = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     setMessage(state, { payload: message }) {
@@ -37,8 +38,15 @@ const auth = createSlice({
       state.message = null
     },
 
-    setShowAuthDialog(state, { payload: show }) {
-      state.showAuthDialog = show
+    setShowAuthDialog(state, { payload }) {
+      if (typeof payload === "boolean") {
+        state.showAuthDialog = payload
+        state.canDismissAuthDialog = true
+      } else if (typeof payload === "object") {
+        state.showAuthDialog = payload.show
+        state.canDismissAuthDialog =
+          payload.canDismiss !== undefined ? payload.canDismiss : true
+      }
     },
 
     setShowLogoutDialog(state, { payload: show }) {
@@ -64,6 +72,15 @@ const auth = createSlice({
 
     fetchUserInfoSuccess(state, { payload: userInfo }) {
       state.user = userInfo
+      state.loadingUserInfo = false
+    },
+
+    setLoadingUserInfo(state, { payload: loading }) {
+      state.loadingUserInfo = loading
+    },
+
+    stateHealthSuccess(state) {
+      state.user = { ...state.user, stated_health_today: true }
     },
   },
 })
@@ -72,6 +89,7 @@ const {
   authenticateSuccess,
   checkForExpiredTokenEnd,
   fetchUserInfoSuccess,
+  setLoadingUserInfo,
 } = auth.actions
 
 export const {
@@ -80,14 +98,15 @@ export const {
   setShowAuthDialog,
   setShowLogoutDialog,
   setAuthenticated,
+  stateHealthSuccess,
 } = auth.actions
 
 export default auth.reducer
 
-export const authenticate = (username, password) => async dispatch => {
+export const authenticate = (username, password) => async (dispatch) => {
   dispatch(resetMessage())
   try {
-    const tokens = await api.getToken(username, password)
+    const { data: tokens } = await api.auth.getToken(username, password)
     updateTokens(tokens)
     dispatch(authenticateSuccess())
 
@@ -95,20 +114,20 @@ export const authenticate = (username, password) => async dispatch => {
   } catch (err) {
     const { status, data } = err.response
 
-    if (status === 401 && data.code === 'authentication_failed') {
+    if (status === 401 && data.code === "authentication_failed") {
       dispatch(setMessage(messages.INVALID_CREDENTIALS))
     }
   }
 }
 
 export const refreshToken = () => async () => {
-  const tokens = await api.refreshTokens(getRefreshToken())
+  const { data: tokens } = await api.auth.refreshTokens(getRefreshToken())
   updateTokens(tokens)
 
   setRollbarUserId(tokens.access)
 }
 
-export const checkForExpiredToken = () => async dispatch => {
+export const checkForExpiredToken = () => async (dispatch) => {
   const token = getAccessToken()
 
   if (token) {
@@ -122,25 +141,27 @@ export const checkForExpiredToken = () => async dispatch => {
 
       setRollbarUserId(token)
     }
+  } else {
+    dispatch(setLoadingUserInfo(false))
   }
 
   dispatch(checkForExpiredTokenEnd())
 }
 
-const setRollbarUserId = token => {
+const setRollbarUserId = (token) => {
   const { user_id } = jwt.decode(token)
   if (user_id) rollbar.configure({ payload: { person: { id: user_id } } })
 }
 
-export const logout = () => dispatch => {
+export const logout = () => (dispatch) => {
   removeAccessToken()
   removeRefreshToken()
 
   dispatch(setAuthenticated(false))
 }
 
-export const fetchUserInfo = () => async dispatch => {
-  const userInfo = await api.getUserInfo()
+export const fetchUserInfo = () => async (dispatch) => {
+  const { data: userInfo } = await api.auth.getUserInfo()
 
   dispatch(fetchUserInfoSuccess(userInfo))
 }

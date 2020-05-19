@@ -1,15 +1,14 @@
-import React, { useEffect, useCallback } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import styled from 'styled-components'
-import { CircularProgress } from '@material-ui/core'
-
-import { fetchDishes as _fetchDishes, orderPendingDish } from './dishesSlice'
-import ConfirmOrderDialog from './ConfirmOrderDialog'
-import ConfirmLeftOverOrderDialog from './ConfirmLeftOverOrderDialog'
-import DishesSnackbars from './DishesSnackbars'
-import FutureDishes from './FutureDishes'
-import TodayDishes from './TodayDishes'
-import { allowOrdersUntilSelector } from './OrderTimer'
+import { CircularProgress } from "@material-ui/core"
+import React, { useCallback, useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import styled from "styled-components"
+import ConfirmLeftOverOrderDialog from "./ConfirmLeftOverOrderDialog"
+import ConfirmOrderDialog from "./ConfirmOrderDialog"
+import { fetchDishes as _fetchDishes, orderPendingDish } from "./dishesSlice"
+import DishesSnackbars from "./DishesSnackbars"
+import FutureDishes from "./FutureDishes"
+import { allowOrdersUntilSelector } from "./OrderTimer"
+import TodayDishes from "./TodayDishes"
 
 const StyledProgress = styled(CircularProgress)`
   display: block;
@@ -17,9 +16,9 @@ const StyledProgress = styled(CircularProgress)`
 `
 
 const DishesPage = () => {
-  const { loading } = useSelector(state => state.dishes)
+  const { loading } = useSelector((state) => state.dishes)
   const { authenticated, initialAuthentication } = useSelector(
-    state => state.auth
+    (state) => state.auth
   )
   const allowOrdersUntil = useSelector(allowOrdersUntilSelector)
   const dispatch = useDispatch()

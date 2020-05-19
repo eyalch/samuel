@@ -1,51 +1,50 @@
-import React, { useEffect, useState, useCallback } from 'react'
-import { createSelector } from '@reduxjs/toolkit'
-import { useSelector, useDispatch } from 'react-redux'
-import styled from 'styled-components'
-import { Typography } from '@material-ui/core'
-
-import { setHasTimeLeft } from './dishesSlice'
-import { todayDishesSelector } from './dishesSelectors'
+import { Typography } from "@material-ui/core"
+import { createSelector } from "@reduxjs/toolkit"
+import React, { useCallback, useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import styled from "styled-components"
+import { todayDishesSelector } from "./dishesSelectors"
+import { setHasTimeLeft } from "./dishesSlice"
 
 const StyledContainer = styled.div`
-  margin-top: -${p => p.theme.spacing(1)}px;
+  margin-top: -${(p) => p.theme.spacing(1)}px;
   height: 62px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  ${p => p.theme.breakpoints.up('sm')} {
-    margin-top: -${p => p.theme.spacing(2)}px;
+  ${(p) => p.theme.breakpoints.up("sm")} {
+    margin-top: -${(p) => p.theme.spacing(2)}px;
   }
 `
 
 export const allowOrdersUntilSelector = createSelector(
-  state => state.preferences.allow_orders_until,
-  allow_orders_until => {
+  (state) => state.preferences.allow_orders_until,
+  (allow_orders_until) => {
     if (!allow_orders_until) return
 
     const endTime = new Date()
-    endTime.setHours(...allow_orders_until.split(':'))
+    endTime.setHours(...allow_orders_until.split(":"))
     return endTime
   }
 )
 
 const hasDishesLeftForTodaySelector = createSelector(
   todayDishesSelector,
-  state => state.preferences.show_today_dishes_until,
+  (state) => state.preferences.show_today_dishes_until,
   (todayDishes, show_today_dishes_until) => {
     const showTodayDishesUntil = new Date()
-    showTodayDishesUntil.setHours(...show_today_dishes_until.split(':'))
+    showTodayDishesUntil.setHours(...show_today_dishes_until.split(":"))
 
     if (new Date() > showTodayDishesUntil) return false
 
-    return todayDishes.some(dish => dish.has_dishes_left)
+    return todayDishes.some((dish) => dish.has_dishes_left)
   }
 )
 
 const OrderTimer = () => {
-  const { hasTimeLeft } = useSelector(state => state.dishes)
+  const { hasTimeLeft } = useSelector((state) => state.dishes)
   const allowOrdersUntil = useSelector(allowOrdersUntilSelector)
   const hasDishesLeftForToday = useSelector(hasDishesLeftForTodaySelector)
   const dispatch = useDispatch()

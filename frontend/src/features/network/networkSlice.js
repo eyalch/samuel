@@ -1,11 +1,11 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {
   error: false,
 }
 
 const network = createSlice({
-  name: 'network',
+  name: "network",
   initialState,
   reducers: {
     setError(state, { payload: error }) {

@@ -1,7 +1,7 @@
-import jwt from 'jsonwebtoken'
+import jwt from "jsonwebtoken"
 
-const KEY_ACCESS_TOKEN = 'access_token'
-const KEY_REFRESH_TOKEN = 'refresh_token'
+const KEY_ACCESS_TOKEN = "access_token"
+const KEY_REFRESH_TOKEN = "refresh_token"
 
 export const getAccessToken = () => localStorage.getItem(KEY_ACCESS_TOKEN)
 export const getRefreshToken = () => localStorage.getItem(KEY_REFRESH_TOKEN)
@@ -15,7 +15,7 @@ export const removeAccessToken = () => localStorage.removeItem(KEY_ACCESS_TOKEN)
 export const removeRefreshToken = () =>
   localStorage.removeItem(KEY_REFRESH_TOKEN)
 
-export const isTokenExpired = token => {
+export const isTokenExpired = (token) => {
   const decoded = jwt.decode(token)
 
   if (!decoded) return false

@@ -1,8 +1,0 @@
-version: "3.6"
-
-services:
-  backend:
-    env_file: .env.example
-
-  frontend:
-    env_file: .env.example

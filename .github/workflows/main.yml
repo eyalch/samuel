@@ -41,8 +41,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2.1.0
 
+      - name: Rename .env.example to .env
+        run: mv .env.example .env
+
       - name: Build images
-        run: docker-compose -f docker-compose.yml -f docker-compose.ci.yml build
+        run: docker-compose build
           --build-arg VERSION=${{ github.sha }}
           --build-arg BRANCH=${{ github.ref }}
 

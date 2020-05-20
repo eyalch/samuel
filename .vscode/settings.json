@@ -2,7 +2,7 @@
   "[python]": {
     "editor.rulers": [88]
   },
-  "python.pythonPath": "backend/.venv/bin/python",
+  "python.pythonPath": "${env:PYTHON_BIN}",
   "python.formatting.provider": "black",
   "python.linting.flake8Enabled": true,
   "python.linting.pylintEnabled": false,
@@ -15,9 +15,6 @@
     "backend/mediafiles": true,
     "backend/staticfiles": true,
     "**/*.swp": true
-  },
-  "files.watcherExclude": {
-    "backend/.venv": true
   },
   "python.terminal.activateEnvironment": false,
   "editor.codeActionsOnSave": {

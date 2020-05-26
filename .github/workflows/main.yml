@@ -53,4 +53,4 @@ jobs:
         run: echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u ${{ github.actor }} --password-stdin
 
       - name: Push images
-        run: docker-compose push
+        run: docker-compose -f docker-compose.yml -f docker-compose.ci.yml push

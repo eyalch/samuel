@@ -45,7 +45,7 @@ jobs:
         run: mv .env.example .env
 
       - name: Build images
-        run: docker-compose build
+        run: docker-compose build --no-cache
           --build-arg VERSION=${{ github.sha }}
           --build-arg BRANCH=${{ github.ref }}
 

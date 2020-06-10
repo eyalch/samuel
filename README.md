@@ -10,9 +10,117 @@ After scheduling some dishes and distributing them by email, the users could ord
 
 Instead of getting a 10-hole punch card and punching it for every order you make, now nothing needs to be done! The accounting department could charge employees by exporting their orders directly from the admin panel.
 
+## Environment Variables
+
+Before developing/deploying, don't forget to set environment variables by:
+
+```sh
+cp .env.example .env
+```
+
+and modify the values.
+
+## Development
+
+### Prerequisites
+
+#### Back-end
+
+- [Python 3.7](https://www.python.org/downloads/release/python-377/)
+- [Pipenv](https://pipenv.kennethreitz.org/)
+- [PostgreSQL](https://www.postgresql.org/)
+- LDAP server running Active Directory Domain Service (AD DS)
+
+#### Front-end
+
+- [Node.js](https://nodejs.org/)
+- [Yarn](https://classic.yarnpkg.com/en/)
+
+### Dependencies
+
+#### Back-end
+
+```sh
+cd backend
+PIPENV_VENV_IN_PROJECT=true pipenv install -d
+```
+
+[`PIPENV_VENV_IN_PROJECT` documentation](https://pipenv.pypa.io/en/latest/advanced/#pipenv.environments.PIPENV_VENV_IN_PROJECT).
+
+#### Front-end
+
+```sh
+cd frontend
+yarn install
+```
+
+### Usage
+
+#### Back-end
+
+##### VS Code
+
+There's a VS Code launch configuration called `Python: Django`, so just hitting F5 should work for both running and debugging.
+
+##### Docker
+
+```sh
+cd backend
+docker-compose -f docker-compose.dev.yml up
+```
+
+#### Front-end
+
+```sh
+cd frontend
+yarn start
+```
+
+## Test
+
+### Back-end
+
+#### VS Code
+
+Just as the `Python: Django` configuration, there the `Python: Django Test` launch configuration that allows to run and debug tests.
+
+#### Docker
+
+```sh
+cd backend
+docker-compose -f docker-compose.test.yml up --exit-code-from tests
+```
+
+### Front-end
+
+```sh
+cd frontend
+yarn test --runInBand
+```
+
+## Deploy
+
+### Download Required Files
+
+```sh
+curl https://github.com/eyalch/samuel/blob/production/docker-compose.yml -O
+curl https://github.com/eyalch/samuel/blob/production/.env.example -o .env
+```
+
+_Don't forget to configure [environment variables](#environment-variables) in `.env`._
+
+### Run
+
+After the CI/CD pipeline has finished successfully, run the following in the same directory where you've [downloaded the required files](#download-required-files):
+
+```sh
+docker-compose pull
+docker-compose up -d
+```
+
 ## Technologies
 
-### Backend
+### Back-end
 
 - [Django](https://www.djangoproject.com/)
 - [Django REST Framework](https://www.django-rest-framework.org/)
@@ -20,7 +128,7 @@ Instead of getting a 10-hole punch card and punching it for every order you make
 - [NGINX](https://www.nginx.com/)
 - [Pipenv](https://pipenv.kennethreitz.org/)
 
-### Frontend
+### Front-end
 
 - [React](https://reactjs.org/)
 - [Material UI](https://material-ui.com/)

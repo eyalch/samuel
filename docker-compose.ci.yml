@@ -2,7 +2,14 @@ version: "3.6"
 
 services:
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      target: base
+
+  cron:
+    build:
+      context: ./backend
+      target: cron
 
   frontend:
     build: ./frontend

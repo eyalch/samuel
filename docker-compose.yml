@@ -9,6 +9,13 @@ services:
     env_file: .env
     restart: always
 
+  cron:
+    image: eyalch/samuel-cron
+    env_file: .env
+    depends_on:
+      - backend
+    restart: always
+
   frontend:
     image: eyalch/samuel-frontend
     volumes:

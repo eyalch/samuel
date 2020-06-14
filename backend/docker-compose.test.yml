@@ -2,7 +2,9 @@ version: "3.6"
 
 services:
   tests:
-    build: .
+    build:
+      context: .
+      target: base
     command: >
       bash -c "
         while !</dev/tcp/test_db/5432; do sleep 1; done &&

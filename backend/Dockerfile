@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.7 AS base
 
 ARG VERSION="development"
 ENV VERSION=${VERSION}
@@ -39,3 +39,13 @@ COPY . .
 CMD [ "daphne", "-b", "0.0.0.0", "-p", "8000", "samuel.asgi:application" ]
 
 EXPOSE 8000
+
+
+FROM base AS cron
+
+RUN apt-get update && apt-get -y install -qq cron
+
+RUN crontab /app/health-statement-reminder-email
+
+RUN chmod +x /app/cron_entrypoint.sh
+ENTRYPOINT [ "/app/cron_entrypoint.sh" ]

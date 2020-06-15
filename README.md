@@ -103,8 +103,7 @@ yarn test --runInBand
 ### Download Required Files
 
 ```sh
-curl https://github.com/eyalch/samuel/blob/production/docker-compose.yml -O
-curl https://github.com/eyalch/samuel/blob/production/.env.example -o .env
+curl --remote-name-all https://raw.githubusercontent.com/eyalch/samuel/production/{docker-compose.yml,.env.example}
 ```
 
 _Don't forget to configure [environment variables](#environment-variables) in `.env`._

@@ -90,7 +90,7 @@ DATABASES = {"default": env.db()}
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = env.str("TIME_ZONE", default="Asia/Jerusalem")
+TIME_ZONE = env.str("TZ")
 
 USE_I18N = True
 

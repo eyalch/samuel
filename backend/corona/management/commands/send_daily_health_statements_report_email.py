@@ -5,8 +5,6 @@ from django.utils import timezone
 
 from corona.models import HealthStatement
 
-subject = "דוח הצהרות בריאות יומי"
-
 
 class Command(BaseCommand):
     help = "Send a daily report email of today's health statements"
@@ -28,6 +26,8 @@ class Command(BaseCommand):
 
             # Get a list of users who made a statement
             users = [health_statement.user for health_statement in health_statements]
+
+            subject = f"דוח הצהרות בריאות ({domain})"
 
             # The message body has on each line the user's full name & email
             body = "\n".join(

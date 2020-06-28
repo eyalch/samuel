@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "dynamic_preferences",
     "rangefilter",
+    "corsheaders",
     "users",
     "dishes",
     "corona",
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "rollbar.contrib.django.middleware.RollbarNotifierMiddlewareOnly404",
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -143,3 +145,8 @@ LOGGING = {
 # Base URL
 
 BASE_URL = env.str("BASE_URL")
+
+
+# CORS (in development)
+
+CORS_ORIGIN_WHITELIST = ["http://localhost:3000"]

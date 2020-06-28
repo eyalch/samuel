@@ -1,0 +1,2 @@
+0 8 * * Sun-Thu /usr/local/bin/python /app/manage.py send_health_statement_reminder_email > /proc/1/fd/1 2>/proc/1/fd/2
+0 10 * * Sun-Thu /usr/local/bin/python /app/manage.py send_daily_health_statements_report_email > /proc/1/fd/1 2>/proc/1/fd/2

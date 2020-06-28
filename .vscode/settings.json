@@ -22,5 +22,6 @@
   "python.terminal.activateEnvironment": false,
   "editor.codeActionsOnSave": {
     "source.organizeImports": true
-  }
+  },
+  "conventionalCommits.scopes": ["corona"]
 }

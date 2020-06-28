@@ -45,7 +45,7 @@ FROM base AS cron
 
 RUN apt-get update && apt-get -y install -qq cron
 
-RUN crontab /app/health-statement-reminder-email
+RUN crontab /app/jobs.crontab
 
 RUN chmod +x /app/cron_entrypoint.sh
 ENTRYPOINT [ "/app/cron_entrypoint.sh" ]

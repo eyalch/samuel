@@ -2,7 +2,6 @@
   "[python]": {
     "editor.rulers": [88]
   },
-  "python.pythonPath": "backend/.venv/bin/python",
   "python.formatting.provider": "black",
   "python.linting.flake8Enabled": true,
   "python.linting.pylintEnabled": false,

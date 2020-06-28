@@ -1,1 +1,0 @@
-0 8 * * 0-4 /usr/local/bin/python /app/manage.py health_statement_reminder_email > /proc/1/fd/1 2>/proc/1/fd/2

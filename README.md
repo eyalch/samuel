@@ -142,3 +142,7 @@ docker-compose up -d
 ### Error Tracking
 
 - [Rollbar](https://rollbar.com/)
+
+# Architecture Diagram
+
+![image](https://github.com/eyalch/samuel/assets/5116133/0db0cad1-be07-437b-93c5-82c02f0c13bc)
